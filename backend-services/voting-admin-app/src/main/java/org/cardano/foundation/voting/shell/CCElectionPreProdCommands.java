@@ -36,13 +36,10 @@ public class CCElectionPreProdCommands {
             return "This command can only be run on PRE-PROD network!";
         }
 
-        long startEpoch = 218;
-        long endSlot = 223;
-
         var createEventCommand = CreateEventCommand.builder()
                 .id(EVENT_NAME)
-                .startSlot(Optional.of(startEpoch))
-                .endSlot(Optional.of(endSlot))
+                .startEpoch(Optional.of(218))
+                .endEpoch(Optional.of(223))
                 .votingPowerAsset(Optional.of(ADA))
                 .organisers("TEST ORGANISER")
                 .votingEventType(STAKE_BASED)
