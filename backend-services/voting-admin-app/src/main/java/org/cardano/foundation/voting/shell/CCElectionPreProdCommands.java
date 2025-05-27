@@ -48,7 +48,8 @@ public class CCElectionPreProdCommands {
                 .highLevelEventResultsWhileVoting(true)
                 .highLevelCategoryResultsWhileVoting(true)
                 .categoryResultsWhileVoting(false)
-                .proposalsRevealEpoch(Optional.of(224))
+                .proposalsRevealEpoch(Optional.of(219))
+                .snapshotEpoch(Optional.of(220))
                 .build();
 
         l1SubmissionService.submitEvent(createEventCommand);
