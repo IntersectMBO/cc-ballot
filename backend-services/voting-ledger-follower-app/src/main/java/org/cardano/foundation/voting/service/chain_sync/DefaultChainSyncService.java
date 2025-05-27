@@ -52,7 +52,8 @@ public class DefaultChainSyncService implements ChainSyncService {
     public SyncStatus fetchSyncStatus() {
         try {
             var orgLastBlockResult = orgBackendService.getBlockService().getLatestBlock();
-            var yaciLastBlockResult = yaciBackendService.getBlockService().getLatestBlock();
+            var yaciLastBlockResult = orgLastBlockResult;
+//            var yaciLastBlockResult = yaciBackendService.getBlockService().getLatestBlock();
 
             if (orgLastBlockResult.isSuccessful() && yaciLastBlockResult.isSuccessful()) {
                 var diff = orgLastBlockResult.getValue().getSlot() - yaciLastBlockResult.getValue().getSlot();
