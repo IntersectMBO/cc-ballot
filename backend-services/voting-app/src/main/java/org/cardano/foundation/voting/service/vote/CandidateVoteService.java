@@ -42,7 +42,7 @@ import static org.zalando.problem.Status.*;
 @Slf4j
 @RequiredArgsConstructor
 public class CandidateVoteService {
-    private static final int MAX_VOTES = 5;
+    private static final int MAX_VOTES = 7;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final VoteRepository voteRepository;
