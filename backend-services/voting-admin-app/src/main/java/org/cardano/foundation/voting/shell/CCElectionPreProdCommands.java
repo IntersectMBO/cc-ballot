@@ -40,7 +40,7 @@ public class CCElectionPreProdCommands {
         long endSlot = 223;
 
         var createEventCommand = CreateEventCommand.builder()
-                .id(EVENT_NAME+ "_" + shortUUID(4))
+                .id(EVENT_NAME)
                 .startSlot(Optional.of(startEpoch))
                 .endSlot(Optional.of(endSlot))
                 .votingPowerAsset(Optional.of(ADA))
