@@ -36,13 +36,10 @@ public class CCElectionPreProdCommands {
             return "This command can only be run on PRE-PROD network!";
         }
 
-        long startEpoch = 218;
-        long endSlot = 223;
-
         var createEventCommand = CreateEventCommand.builder()
-                .id(EVENT_NAME+ "_" + shortUUID(4))
-                .startSlot(Optional.of(startEpoch))
-                .endSlot(Optional.of(endSlot))
+                .id(EVENT_NAME)
+                .startEpoch(Optional.of(218))
+                .endEpoch(Optional.of(223))
                 .votingPowerAsset(Optional.of(ADA))
                 .organisers("TEST ORGANISER")
                 .votingEventType(STAKE_BASED)
@@ -51,7 +48,8 @@ public class CCElectionPreProdCommands {
                 .highLevelEventResultsWhileVoting(true)
                 .highLevelCategoryResultsWhileVoting(true)
                 .categoryResultsWhileVoting(false)
-                .proposalsRevealEpoch(Optional.of(224))
+                .proposalsRevealEpoch(Optional.of(219))
+                .snapshotEpoch(Optional.of(217))
                 .build();
 
         l1SubmissionService.submitEvent(createEventCommand);
