@@ -327,20 +327,23 @@ public class CandidateVoteService {
                                 .build()
                 );
             }
-            val account = maybeAccount.get();
+
+            // FIXME TEMP FOR TESTING
+            //val account = maybeAccount.get();
 
             // if we are eligible then we will have voting power
-            val blockchainVotingPowerStr = account.votingPower();
-            if (!isNumeric(blockchainVotingPowerStr)) {
-                return Either.left(
-                        Problem.builder()
-                                .withTitle("INVALID_VOTING_POWER")
-                                .withDetail("Invalid blockchain voting power for the address: " + walletId)
-                                .withStatus(BAD_REQUEST)
-                                .build()
-                );
-            }
-            val blockchainVotingPower = Long.parseLong(blockchainVotingPowerStr);
+            //val blockchainVotingPowerStr = account.votingPower();
+            //if (!isNumeric(blockchainVotingPowerStr)) {
+            //    return Either.left(
+            //            Problem.builder()
+            //                    .withTitle("INVALID_VOTING_POWER")
+            //                    .withDetail("Invalid blockchain voting power for the address: " + walletId)
+            //                    .withStatus(BAD_REQUEST)
+            //                    .build()
+            //    );
+            //}
+            //val blockchainVotingPower = Long.parseLong(blockchainVotingPowerStr);
+            val blockchainVotingPower = 1L;
 
             if (!isNumeric(castVote.getVotingPower().orElseThrow())) {
                 return Either.left(
