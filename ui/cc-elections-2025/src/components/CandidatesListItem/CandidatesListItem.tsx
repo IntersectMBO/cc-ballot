@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Chip from "@mui/material/Chip";
+import CheckIcon from '@mui/icons-material/Check';
 import Tooltip from "@mui/material/Tooltip";
 import Typography from '@mui/material/Typography';
 
-import { Button } from '@atoms';
+import { Button, VoteIcon } from '@atoms';
 import { ICONS } from "@consts";
 import { useDeleteCandidate } from "@hooks";
 import {useCardano, useModal} from "@context";
@@ -20,6 +21,11 @@ type CandidatesListItemProps = {
   verified: boolean;
   walletAddress: string;
   isEditActive: boolean;
+  isVoteActive: boolean;
+  onCandidateSelect: (id: number) => void;
+  onCandidateDeselect: (id: number) => void;
+  selected: boolean;
+  disableSelect: boolean;
 };
 
 export const CandidatesListItem = (props: CandidatesListItemProps) => {
@@ -113,6 +119,33 @@ export const CandidatesListItem = (props: CandidatesListItemProps) => {
             <Button variant="text" onClick={handleEdit}>Edit</Button>
             <Button variant="text" color="error" onClick={handleDelete}>Delete</Button>
           </>
+        )}
+        {props.isVoteActive && !props.selected && (
+          <Button
+            disabled={props.disableSelect}
+            onClick={() => props.onCandidateSelect(props.id)}
+            sx={{
+              borderRadius: '12px',
+            }}
+            startIcon={<VoteIcon />}
+          >
+            Select candidate
+          </Button>
+        )}
+        {props.isVoteActive && props.selected && (
+          <Button
+            variant="outlined"
+            onClick={() => props.onCandidateDeselect(props.id)}
+            sx={{
+              borderRadius: '12px',
+              borderColor: '#218230',
+              color: '#218230',
+              backgroundColor: '#EBFAED',
+            }}
+            startIcon={<CheckIcon />}
+          >
+            Candidate selected
+          </Button>
         )}
       </Box>
     </Box>

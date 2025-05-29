@@ -1,24 +1,38 @@
 import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
+import Chip from "@mui/material/Chip";
 import Typography from "@mui/material/Typography";
+import { v4 as uuidv4 } from "uuid";
+import {
+  Address,
+} from "@emurgo/cardano-serialization-lib-asmjs";
 
+import { Button } from "@atoms";
+import { useCardano } from "@context";
 import { geographicRepresentationList, getInitials } from "@utils";
 import { CandidatesListItem } from "./CandidatesListItem/CandidatesListItem.tsx";
 import { Candidate } from "@models";
-import {DataActionsBar} from "@/components/molecules";
+import { DataActionsBar } from "@/components/molecules";
+import {getSlotNumber, submitVote } from "@/services/requests/voteService.ts";
+import {Buffer} from "buffer";
 
 type CandidatesListProps = {
   candidates: Candidate[];
   isEditActive: boolean;
+  isVoteActive: boolean;
 };
 
-export const CandidatesList = ({ candidates, isEditActive }: CandidatesListProps) => {
+export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: CandidatesListProps) => {
+  const { isEnabled, walletApi } = useCardano();
+
   const [filteredCandidates, setFilteredCandidates] = useState<Candidate[]>(candidates);
   const [sortOpen, setSortOpen] = useState<boolean>(false);
   const [chosenSorting, setChosenSorting] = useState<string>("Random");
   const [searchText, setSearchText] = useState<string>("");
   const [filterOpen, setFilterOpen] = useState<boolean>(false);
   const [chosenFilters, setChosenFilters] = useState<string[][]>([[],[],[]]);
+
+  const [selectedCandidates, setSelectedCandidates] = useState<number[]>([]);
 
   const geographicRepresentation = geographicRepresentationList().map(item => ({ key: item.label, label: item.label }));
 
@@ -39,6 +53,69 @@ export const CandidatesList = ({ candidates, isEditActive }: CandidatesListProps
     { key: "Random", label: "Random" },
     { key: "Name", label: "Name" },
   ];
+
+  const onCandidateSelect = (id: number) => {
+    setSelectedCandidates((prev) => [...prev, id]);
+  }
+
+  const onCandidateDeselect = (id: number) => {
+    setSelectedCandidates((prev) => prev.filter(candidateId => candidateId !== id));
+  }
+
+  const toHex = (str: string) => {
+    return Array.from(new TextEncoder().encode(str))
+      .map(b => b.toString(16).padStart(2, "0"))
+      .join("");
+  }
+
+  const vote = async () => {
+    if(walletApi) {
+      try {
+        // @ts-ignore
+        const slotNumber = (await getSlotNumber())?.absoluteSlot;
+
+        const rewardAddresses = await walletApi.getRewardAddresses();
+        const stakeAddress = rewardAddresses[0];
+
+        const stakeAddressHex = Address.from_bytes(Buffer.from(stakeAddress, 'hex'));
+
+        const walletId = stakeAddressHex.to_bech32();
+
+        const payload = {
+          action: "CAST_VOTE",
+          slot: slotNumber,
+          data: {
+            event: "CANDIDATES_123",
+            category: "MAIN_1",
+            proposal: "36cfad40-29fc-4832-8d3f-ec4b795cb134",
+            id: uuidv4(),
+            votedAt: slotNumber,
+            votingPower: "1",
+            walletId: walletId,
+            walletType: "CARDANO",
+            network: import.meta.env.VITE_TARGET_NETWORK,
+            votes: selectedCandidates
+          },
+        }
+
+        const payloadStr = JSON.stringify(payload);
+        const payloadHex = await toHex(payloadStr);
+
+        const signed = await walletApi.signData(stakeAddress, payloadHex);
+
+        const response = await submitVote(signed, payloadStr);
+
+        if(response.ok) {
+          alert('OK');
+        } else {
+          console.error(response);
+        }
+
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
 
   useEffect(() => {
     setFilteredCandidates(candidates);
@@ -71,7 +148,7 @@ export const CandidatesList = ({ candidates, isEditActive }: CandidatesListProps
     <Box>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '40px 0 24px' }}>
         <Typography variant="h2">Candidates List</Typography>
-        <Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <DataActionsBar
             chosenSorting={chosenSorting}
             closeSorts={() => setSortOpen(false)}
@@ -90,6 +167,28 @@ export const CandidatesList = ({ candidates, isEditActive }: CandidatesListProps
             chosenFilters={chosenFilters}
             chosenFiltersLength={chosenFilters.flat().length}
           />
+          {isVoteActive && !isEnabled && (
+            <Button sx={{ borderRadius: 0 }}>Connect wallet to vote</Button>
+          )}
+          {isVoteActive && isEnabled && (
+            <Box sx={{ display: 'flex', gap: '16px', alignItems: 'center'}}>
+              <Chip
+                label={`${selectedCandidates.length}/7 votes`}
+                sx={{
+                  borderRadius: '100px',
+                  color: '#212A3D',
+                  backgroundColor: '#EDEBFF',
+                }}
+              />
+              <Button
+                disabled={selectedCandidates.length === 0}
+                onClick={vote}
+                sx={{ minWidth: '162px'}}
+              >
+                {selectedCandidates.length === 0 ? 'Vote' : 'Submit your vote'}
+              </Button>
+            </Box>
+          )}
         </Box>
       </Box>
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '24px', paddingBottom: '24px', minHeight: '277px' }}>
@@ -104,6 +203,11 @@ export const CandidatesList = ({ candidates, isEditActive }: CandidatesListProps
             verified={candidate.candidate.verified}
             walletAddress={candidate.candidate.walletAddress}
             isEditActive={isEditActive}
+            isVoteActive={isVoteActive}
+            onCandidateSelect={onCandidateSelect}
+            onCandidateDeselect={onCandidateDeselect}
+            selected={selectedCandidates.includes(candidate.candidate.id)}
+            disableSelect={selectedCandidates.length > 2}
           />
         ))}
       </Box>
