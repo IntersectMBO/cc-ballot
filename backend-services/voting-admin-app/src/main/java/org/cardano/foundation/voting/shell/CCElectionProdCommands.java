@@ -31,7 +31,7 @@ public class CCElectionProdCommands {
 
     private final CardanoNetwork network;
 
-    @ShellMethod(key = "create_pre_prod_test_vote", value = "Create My Voting Event on a MAINNET network.")
+    @ShellMethod(key = "create_prod_test_vote", value = "Create My Voting Event on a MAINNET network.")
     public String createMyVotingEvent() {
         if (network != MAIN) {
             return "This command can only be run on MAINNET network!";
