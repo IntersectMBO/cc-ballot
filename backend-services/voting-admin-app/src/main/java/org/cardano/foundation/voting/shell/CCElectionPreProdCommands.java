@@ -39,7 +39,7 @@ public class CCElectionPreProdCommands {
         var createEventCommand = CreateEventCommand.builder()
                 .id(EVENT_NAME)
                 .startEpoch(Optional.of(218))
-                .endEpoch(Optional.of(223))
+                .endEpoch(Optional.of(219))
                 .votingPowerAsset(Optional.of(ADA))
                 .organisers("TEST ORGANISER")
                 .votingEventType(STAKE_BASED)
@@ -48,7 +48,7 @@ public class CCElectionPreProdCommands {
                 .highLevelEventResultsWhileVoting(true)
                 .highLevelCategoryResultsWhileVoting(true)
                 .categoryResultsWhileVoting(false)
-                .proposalsRevealEpoch(Optional.of(219))
+                .proposalsRevealEpoch(Optional.of(220))
                 .snapshotEpoch(Optional.of(217))
                 .build();
 
