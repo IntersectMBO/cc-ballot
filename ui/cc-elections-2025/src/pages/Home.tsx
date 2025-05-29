@@ -23,7 +23,7 @@ type HomeProps = {
   isEditActive: boolean;
 }
 
-export const Home = ({ applyEndTime, isEditActive }: HomeProps) => {
+export const Home = ({ applyEndTime, isEditActive, isVoteActive }: HomeProps) => {
   const  navigate = useNavigate();
   const { openModal } = useModal();
   const { isEnabled } = useCardano();
@@ -43,7 +43,7 @@ export const Home = ({ applyEndTime, isEditActive }: HomeProps) => {
         <Box>
           <Box sx={{ padding: { xxs: '0 16px', md: '0 32px', xl: '0 64px'} }}>
             <Box sx={{ padding: '24px 0' }}>
-              <CCStepper activeStep={0} steps={steps} />
+              <CCStepper activeStep={isVoteActive ? 1 : 0} steps={steps} />
             </Box>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px', backgroundColor: 'white', borderRadius: '16px', padding: '20px 24px 32px 24px', boxShadow: '0px 20px 25px -5px #212A3D14' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
@@ -133,6 +133,7 @@ export const Home = ({ applyEndTime, isEditActive }: HomeProps) => {
                 <CandidatesList
                   candidates={allCandidates}
                   isEditActive={isEditActive}
+                  isVoteActive={isVoteActive}
                 />
               )}
             </Box>

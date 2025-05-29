@@ -12,5 +12,6 @@ export * from "./SearchIcon";
 export * from "./Select";
 export * from "./SelectIcon";
 export * from "./TextArea";
+export * from "./VoteIcon";
 
 export * from "./types";
