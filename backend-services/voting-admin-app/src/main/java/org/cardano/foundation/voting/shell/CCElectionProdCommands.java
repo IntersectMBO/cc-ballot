@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.cardano.foundation.voting.domain.CardanoNetwork.MAIN;
 import static org.cardano.foundation.voting.domain.CardanoNetwork.PREPROD;
 import static org.cardano.foundation.voting.domain.SchemaVersion.V1;
 import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
@@ -22,33 +23,33 @@ import static org.cardano.foundation.voting.utils.MoreUUID.shortUUID;
 @ShellComponent
 @Slf4j
 @RequiredArgsConstructor
-public class CCElectionPreProdCommands {
+public class CCElectionProdCommands {
 
-    private final static String EVENT_NAME = "TEST_VOTE";
+    private final static String EVENT_NAME = "CC-Elections";
 
     private final L1SubmissionService l1SubmissionService;
 
     private final CardanoNetwork network;
 
-    @ShellMethod(key = "create_pre_prod_test_vote", value = "Create My Voting Event on a PRE-PROD network.")
+    @ShellMethod(key = "create_prod_test_vote", value = "Create My Voting Event on a MAINNET network.")
     public String createMyVotingEvent() {
-        if (network != PREPROD) {
-            return "This command can only be run on PRE-PROD network!";
+        if (network != MAIN) {
+            return "This command can only be run on MAINNET network!";
         }
 
         var createEventCommand = CreateEventCommand.builder()
                 .id(EVENT_NAME)
                 .startEpoch(Optional.of(218))
-                .endEpoch(Optional.of(219))
+                .endEpoch(Optional.of(223))
                 .votingPowerAsset(Optional.of(ADA))
-                .organisers("TEST ORGANISER")
+                .organisers("IntersectMBO")
                 .votingEventType(STAKE_BASED)
                 .schemaVersion(V1)
                 .allowVoteChanging(true)
                 .highLevelEventResultsWhileVoting(true)
                 .highLevelCategoryResultsWhileVoting(true)
                 .categoryResultsWhileVoting(false)
-                .proposalsRevealEpoch(Optional.of(220))
+                .proposalsRevealEpoch(Optional.of(219))
                 .snapshotEpoch(Optional.of(217))
                 .build();
 
@@ -57,10 +58,10 @@ public class CCElectionPreProdCommands {
         return "Created My Event: " + createEventCommand;
     }
 
-    @ShellMethod(key = "create_my_voting_category1-pre-prod", value = "Create a my voting category1 on pre-prod.")
+    @ShellMethod(key = "create_my_voting_category1-prod", value = "Create a my voting category1 on Mainnet.")
     public String create1Category1(@ShellOption String event) {
         if (network != PREPROD) {
-            return "This command can only be run on a PRE-PROD network!";
+            return "This command can only be run on a MAINNET network!";
         }
 
         Proposal n1 = Proposal.builder()

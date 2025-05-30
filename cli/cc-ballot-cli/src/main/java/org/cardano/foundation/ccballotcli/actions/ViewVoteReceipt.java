@@ -15,7 +15,7 @@ import java.util.Properties;
 public class ViewVoteReceipt {
     public static void execute(String[] args) {
         if (args.length < 4) {
-            System.out.println("Usage: cc-ballot-cli view_vote_receipt <payloadStr> <signature> <publicKey>");
+            System.out.println("Usage: cc-ballot-cli view_vote_receipt <payloadFilePath> <signature> <publicKey>");
             return;
         }
 
