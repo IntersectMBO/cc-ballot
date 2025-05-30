@@ -315,18 +315,18 @@ public class CandidateVoteService {
                         .build()
                 );
             }
-            val maybeAccount = accountE.get();
-            if (maybeAccount.isEmpty()) {
-                log.warn("State account not eligible to vote, e.g. not staked or power is less than equal 0 for the address: " + walletId);
-
-                return Either.left(
-                        Problem.builder()
-                                .withTitle("NOT_ELIGIBLE")
-                                .withDetail("State account not eligible to vote, e.g. account not staked at snapshot epoch or voting power is less than equal 0 for the address:" + walletId)
-                                .withStatus(BAD_REQUEST)
-                                .build()
-                );
-            }
+//            val maybeAccount = accountE.get();
+//            if (maybeAccount.isEmpty()) {
+//                log.warn("State account not eligible to vote, e.g. not staked or power is less than equal 0 for the address: " + walletId);
+//
+//                return Either.left(
+//                        Problem.builder()
+//                                .withTitle("NOT_ELIGIBLE")
+//                                .withDetail("State account not eligible to vote, e.g. account not staked at snapshot epoch or voting power is less than equal 0 for the address:" + walletId)
+//                                .withStatus(BAD_REQUEST)
+//                                .build()
+//                );
+//            }
 
             // FIXME TEMP FOR TESTING
             //val account = maybeAccount.get();
