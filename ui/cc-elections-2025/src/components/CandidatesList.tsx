@@ -207,7 +207,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
             onCandidateSelect={onCandidateSelect}
             onCandidateDeselect={onCandidateDeselect}
             selected={selectedCandidates.includes(candidate.candidate.id)}
-            disableSelect={selectedCandidates.length > 2}
+            disableSelect={selectedCandidates.length > import.meta.env.VITE_MAX_VOTES - 1}
           />
         ))}
       </Box>

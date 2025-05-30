@@ -15,7 +15,7 @@ export interface SignedWeb3Request {
 
 export const getSlotNumber = async () => {
   try {
-    const response =  await axios.get<ChainTip>(`http://localhost:9090/api/blockchain/tip`, {
+    const response =  await axios.get<ChainTip>(`${import.meta.env.VOTING_LEDGER_FOLLOWER_APP_URL}/api/blockchain/tip`, {
       headers: {
         "accept": "application/json",
       }
@@ -24,7 +24,7 @@ export const getSlotNumber = async () => {
     return response.data;
   }
   catch (error) {
-    console.error(`Unknown error processing request to ${import.meta.env.VOTING_LEDGER_FOLLOWER_APP_SERVER_URL}/api/blockchain/tip`);
+    console.error(`Unknown error processing request to ${import.meta.env.VOTING_LEDGER_FOLLOWER_APP_URL}/api/blockchain/tip`);
     return {
       error: true,
       message: "An unknown error occurred",
@@ -38,7 +38,7 @@ export const submitVote = async (
   payloadStr: string,
 ) => {
   try {
-    const response =  await axios.post(`http://localhost:9091/api/vote/candidate/cast`, undefined, {
+    const response =  await axios.post(`${import.meta.env.VOTING_APP_URL}/api/vote/candidate/cast`, undefined, {
       headers: {
         "Content-Type": "application/json",
         "X-Ballot-Signature": signed.signature,
@@ -65,7 +65,7 @@ export const getVoteReceipt = async (
   payloadStr: string,
 ) => {
   try {
-    const response =  await axios.get(`http://localhost:9091/api/vote/candidate/receipt`, {
+    const response =  await axios.get(`${import.meta.env.VOTING_APP_URL}/api/vote/candidate/receipt`, {
       headers: {
         "Content-Type": "application/json",
         "X-Ballot-Signature": signed.signature,
