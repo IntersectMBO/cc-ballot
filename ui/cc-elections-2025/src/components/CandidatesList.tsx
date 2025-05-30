@@ -82,15 +82,16 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
         const walletId = stakeAddressHex.to_bech32();
 
         const payload = {
-          action: "CAST_VOTE",
+          action: "cast_vote",
           slot: slotNumber,
           data: {
-            event: "CANDIDATES_123",
-            category: "MAIN_1",
-            proposal: "36cfad40-29fc-4832-8d3f-ec4b795cb134",
+            event: "TEST_CC_VOTE",
+            category: "CC_CATEGORY_TEST_144E",
+            proposal: "37d5f23a-c7f2-426e-8e23-4778d09c9459",
             id: uuidv4(),
             votedAt: slotNumber,
             votingPower: "1",
+            timestamp: Math.floor(Date.now() / 1000),
             walletId: walletId,
             walletType: "CARDANO",
             network: import.meta.env.VITE_TARGET_NETWORK,
