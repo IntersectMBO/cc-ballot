@@ -13,9 +13,29 @@ export interface SignedWeb3Request {
   key?: string;
 }
 
+export interface AccountInfo {
+  stake_address: string;
+  status: string;
+  delegated_pool: string;
+  delegated_drep: string;
+  total_balance: string;
+  utxo: string;
+  rewards: string;
+  withdrawals: string;
+  rewards_available: string;
+  deposit: string;
+  reserves: string;
+  treasury: string;
+  proposal_refund: string;
+}
+
+const VOTING_LEDGER_FOLLOWER_APP_URL = import.meta.env.VITE_VOTING_LEDGER_FOLLOWER_APP_URL;
+const VOTING_APP_URL = import.meta.env.VITE_VOTING_APP_URL;
+const ACCOUNT_INFO_URL = import.meta.env.VITE_ACCOUNT_INFO_URL;
+
 export const getSlotNumber = async () => {
   try {
-    const response =  await axios.get<ChainTip>(`${import.meta.env.VOTING_LEDGER_FOLLOWER_APP_URL}/api/blockchain/tip`, {
+    const response =  await axios.get<ChainTip>(`${VOTING_LEDGER_FOLLOWER_APP_URL}/api/blockchain/tip`, {
       headers: {
         "accept": "application/json",
       }
@@ -24,7 +44,7 @@ export const getSlotNumber = async () => {
     return response.data;
   }
   catch (error) {
-    console.error(`Unknown error processing request to ${import.meta.env.VOTING_LEDGER_FOLLOWER_APP_URL}/api/blockchain/tip`);
+    console.error(`Unknown error processing request to ${VOTING_LEDGER_FOLLOWER_APP_URL}/api/blockchain/tip`);
     return {
       error: true,
       message: "An unknown error occurred",
@@ -38,7 +58,7 @@ export const submitVote = async (
   payloadStr: string,
 ) => {
   try {
-    const response =  await axios.post(`${import.meta.env.VOTING_APP_URL}/api/vote/candidate/cast`, undefined, {
+    const response =  await axios.post(`${VOTING_APP_URL}/api/vote/candidate/cast`, undefined, {
       headers: {
         "Content-Type": "application/json",
         "X-Ballot-Signature": signed.signature,
@@ -60,12 +80,20 @@ export const submitVote = async (
   }
 }
 
+export const getAccountInfo = async (
+  walletId: string,
+) => {
+  const response =  await axios.get<AccountInfo>(`${ACCOUNT_INFO_URL}/api/account-info?stakeAddress=${walletId}`)
+
+  return response.data;
+}
+
 export const getVoteReceipt = async (
   signed: SignedWeb3Request,
   payloadStr: string,
 ) => {
   try {
-    const response =  await axios.get(`${import.meta.env.VOTING_APP_URL}/api/vote/candidate/receipt`, {
+    const response =  await axios.get(`${VOTING_APP_URL}/api/vote/candidate/receipt`, {
       headers: {
         "Content-Type": "application/json",
         "X-Ballot-Signature": signed.signature,

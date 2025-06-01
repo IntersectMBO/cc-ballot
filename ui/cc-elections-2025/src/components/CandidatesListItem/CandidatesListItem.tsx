@@ -18,6 +18,14 @@ type CandidatesListItemProps = {
   initials: string;
   bio: string;
   candidateType: "individual" | "company" | "consortium";
+  publicContact: string;
+  drepId: string;
+  stakeId: string;
+  socialX: string;
+  socialLinkedin: string;
+  socialDiscord: string;
+  socialTelegram: string;
+  socialOther: string;
   verified: boolean;
   walletAddress: string;
   isEditActive: boolean;
@@ -35,7 +43,25 @@ export const CandidatesListItem = (props: CandidatesListItemProps) => {
   const deleteCandidate = useDeleteCandidate(props.candidateType);
 
   const handleClick = () => {
-    navigate(`/candidateDetails/${props.id}`);
+    openModal({
+      type: "candidateDetailsModal",
+      state: {
+        id: props.id,
+        name: props.name,
+        initials: props.initials,
+        candidateType: chipText(props.candidateType),
+        walletAddress: props.walletAddress,
+        publicContact: props.publicContact,
+        stakeId: props.stakeId,
+        drepId: props.drepId,
+        socialX: props.socialX,
+        socialLinkedin: props.socialLinkedin,
+        socialDiscord: props.socialDiscord,
+        socialTelegram: props.socialTelegram,
+        socialOther: props.socialOther,
+        verified: props.verified,
+      }
+    });
   };
 
   const handleEdit = () => {

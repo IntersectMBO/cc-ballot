@@ -3,18 +3,15 @@ import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import Typography from "@mui/material/Typography";
 import { v4 as uuidv4 } from "uuid";
-import {
-  Address,
-} from "@emurgo/cardano-serialization-lib-asmjs";
 
 import { Button } from "@atoms";
-import { useCardano } from "@context";
+import {useCardano, useModal} from "@context";
+import { useVotePayload } from "@hooks";
 import { geographicRepresentationList, getInitials } from "@utils";
 import { CandidatesListItem } from "./CandidatesListItem/CandidatesListItem.tsx";
 import { Candidate } from "@models";
 import { DataActionsBar } from "@/components/molecules";
-import {getSlotNumber, submitVote } from "@/services/requests/voteService.ts";
-import {Buffer} from "buffer";
+import {getVoteReceipt, submitVote} from "@/services/requests/voteService.ts";
 
 type CandidatesListProps = {
   candidates: Candidate[];
@@ -24,6 +21,10 @@ type CandidatesListProps = {
 
 export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: CandidatesListProps) => {
   const { isEnabled, walletApi } = useCardano();
+
+  const { slotNumber, stakeAddress, walletId, votingPower } = useVotePayload(walletApi);
+
+  const { openModal, closeModal } = useModal();
 
   const [filteredCandidates, setFilteredCandidates] = useState<Candidate[]>(candidates);
   const [sortOpen, setSortOpen] = useState<boolean>(false);
@@ -68,55 +69,103 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
       .join("");
   }
 
+  const openVoteModal = () => {
+    openModal({
+      type: "voteOptions",
+      state: {
+        onLightWalletSelect: () => {
+          vote();
+          closeModal();
+        },
+        onCLISelect: () => {
+          openModal({
+            type: "voteCLIModal",
+            state: {
+              id: uuidv4(),
+              slot: slotNumber,
+              timestamp: Math.floor(Date.now() / 1000),
+              votes: selectedCandidates,
+              votingPower: votingPower,
+              walletId,
+            }
+          });
+        },
+      }
+    });
+  }
+
   const vote = async () => {
-    if(walletApi) {
+
+    const payload = {
+      action: "cast_vote",
+      slot: slotNumber,
+      data: {
+        event: "TEST_CC_VOTE",
+        category: "CC_CATEGORY_TEST_144E",
+        proposal: "37d5f23a-c7f2-426e-8e23-4778d09c9459",
+        id: uuidv4(),
+        votedAt: slotNumber,
+        votingPower: votingPower,
+        timestamp: Math.floor(Date.now() / 1000),
+        walletId: walletId,
+        walletType: "CARDANO",
+        network: import.meta.env.VITE_TARGET_NETWORK,
+        votes: selectedCandidates
+      },
+    }
+
+    const payloadStr = JSON.stringify(payload);
+
+    try {
+      const payloadHex = await toHex(payloadStr);
+
+      const signed = await walletApi?.signData(stakeAddress, payloadHex);
+
+      const response = await submitVote(signed, payloadStr);
+
+      if (response.ok) {
+        alert('OK');
+      } else {
+        console.error(response);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  useEffect(() => {
+    if (!stakeAddress) return;
+
+    const getVotes = async () => {
       try {
-        // @ts-ignore
-        const slotNumber = (await getSlotNumber())?.absoluteSlot;
-
-        const rewardAddresses = await walletApi.getRewardAddresses();
-        const stakeAddress = rewardAddresses[0];
-
-        const stakeAddressHex = Address.from_bytes(Buffer.from(stakeAddress, 'hex'));
-
-        const walletId = stakeAddressHex.to_bech32();
-
         const payload = {
-          action: "cast_vote",
+          action: "view_vote_receipt",
           slot: slotNumber,
           data: {
             event: "TEST_CC_VOTE",
             category: "CC_CATEGORY_TEST_144E",
             proposal: "37d5f23a-c7f2-426e-8e23-4778d09c9459",
-            id: uuidv4(),
-            votedAt: slotNumber,
-            votingPower: "1",
             timestamp: Math.floor(Date.now() / 1000),
-            walletId: walletId,
+            walletId,
             walletType: "CARDANO",
             network: import.meta.env.VITE_TARGET_NETWORK,
-            votes: selectedCandidates
-          },
-        }
+          }
+        };
 
         const payloadStr = JSON.stringify(payload);
         const payloadHex = await toHex(payloadStr);
 
-        const signed = await walletApi.signData(stakeAddress, payloadHex);
+        const signed = await walletApi?.signData(stakeAddress, payloadHex);
 
-        const response = await submitVote(signed, payloadStr);
-
-        if(response.ok) {
-          alert('OK');
-        } else {
-          console.error(response);
-        }
-
+        return await getVoteReceipt(signed, payloadStr);
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     }
-  }
+
+    const votes = getVotes();
+    console.log(votes);
+  }, [stakeAddress]);
 
   useEffect(() => {
     setFilteredCandidates(candidates);
@@ -169,7 +218,12 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
             chosenFiltersLength={chosenFilters.flat().length}
           />
           {isVoteActive && !isEnabled && (
-            <Button sx={{ borderRadius: 0 }}>Connect wallet to vote</Button>
+            <Button
+              sx={{ borderRadius: 0 }}
+              onClick={() => openModal({ type: "chooseWallet" })}
+            >
+              Connect wallet to vote
+            </Button>
           )}
           {isVoteActive && isEnabled && (
             <Box sx={{ display: 'flex', gap: '16px', alignItems: 'center'}}>
@@ -183,7 +237,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
               />
               <Button
                 disabled={selectedCandidates.length === 0}
-                onClick={vote}
+                onClick={openVoteModal}
                 sx={{ minWidth: '162px'}}
               >
                 {selectedCandidates.length === 0 ? 'Vote' : 'Submit your vote'}
@@ -202,6 +256,14 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
             key={candidate.candidate.id}
             name={candidate.candidate.name}
             verified={candidate.candidate.verified}
+            publicContact={candidate.candidate.publicContact}
+            stakeId={candidate.candidate.stakeId}
+            drepId={candidate.candidate.drepId}
+            socialX={candidate.candidate.socialX}
+            socialLinkedin={candidate.candidate.socialLinkedin}
+            socialDiscord={candidate.candidate.socialDiscord}
+            socialTelegram={candidate.candidate.socialTelegram}
+            socialOther={candidate.candidate.socialOther}
             walletAddress={candidate.candidate.walletAddress}
             isEditActive={isEditActive}
             isVoteActive={isVoteActive}

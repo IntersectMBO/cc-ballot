@@ -1,7 +1,7 @@
 import {forwardRef} from "react";
 import {useModal} from "@context";
 import {useScreenDimension} from "@hooks";
-import { ModalContents, ModalHeader, ModalWrapper } from "@atoms";
+import { ModalHeader, ModalWrapper } from "@atoms";
 
 export interface ConfirmModalState {
   buttonText?: string;
@@ -20,7 +20,7 @@ export interface ConfirmModalState {
 }
 
 export const ConfirmModal = forwardRef<HTMLDivElement>((_, ref) => {
-  const { state, closeModal } = useModal<ConfirmModalState>();
+  const { state } = useModal<ConfirmModalState>();
   const { isMobile } = useScreenDimension();
 
   return (
@@ -32,4 +32,5 @@ export const ConfirmModal = forwardRef<HTMLDivElement>((_, ref) => {
         {state?.title}
       </ModalHeader>
     </ModalWrapper>
-}
+  )
+});

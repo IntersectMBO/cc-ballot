@@ -2,8 +2,11 @@ import { createContext, useContext, useMemo, useReducer } from "react";
 
 import { type MuiModalChildren } from "@atoms";
 import {
+  CandidateDetailsModal,
   ChooseWalletModal,
-  StatusModal
+  StatusModal,
+  VoteCLIModal,
+  VotingOptionsModal
 } from "@organisms";
 import { basicReducer, callAll, BasicReducer } from "@utils";
 
@@ -25,7 +28,10 @@ export type ModalType =
   | "statusModal"
   | "externalLink"
   | "submittedVotes"
-  | "voteContext";
+  | "voteContext"
+  | "voteOptions"
+  | "voteCLIModal"
+  | "candidateDetailsModal";
 
 const modals: Record<ModalType, ContextModal> = {
   none: {
@@ -37,6 +43,15 @@ const modals: Record<ModalType, ContextModal> = {
   statusModal: {
     component: <StatusModal />,
   },
+  voteOptions: {
+    component: <VotingOptionsModal />,
+  },
+  voteCLIModal: {
+    component: <VoteCLIModal />,
+  },
+  candidateDetailsModal: {
+    component: <CandidateDetailsModal />,
+  }
 };
 
 type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;

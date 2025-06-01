@@ -1,0 +1,70 @@
+import {forwardRef} from "react";
+import { CopyBlock, dracula } from "react-code-blocks";
+
+import { ModalWrapper } from "@atoms";
+import { Button } from "@atoms";
+import { Box, Typography } from "@mui/material";
+import {useModal} from "@context";
+
+type VoteCLIModalState = {
+  id: string;
+  slot: number;
+  timestamp: number;
+  votes: number[];
+  votingPower: number;
+  walletId: string;
+}
+
+export const VoteCLIModal = forwardRef<HTMLDivElement>((_, ref) => {
+  const { state, closeModal } = useModal<VoteCLIModalState>();
+
+  const aa = `{
+    "action": "cast",
+    "slot": ${state?.slot},
+    "data": {
+      "event": "TEST_CC_VOTE",
+      "category": "CC_CATEGORY_TEST_144E",
+      "proposal": "37d5f23a-c7f2-426e-8e23-4778d09c9459",
+      "id": "${state?.id}",
+      "votedAt": ${state?.slot},
+      "votingPower": ${state?.votingPower},
+      "timestamp": ${state?.timestamp},
+      "walletId": "${state?.walletId}",
+      "walletType": "CARDANO",
+      "network": "PREPROD",
+      "votes": ${JSON.stringify(state?.votes)},
+    }
+  }`;
+
+  return (
+    <ModalWrapper
+      dataTestId={ "voting-modal"}
+      hideCloseButton={true}
+      ref={ref}
+      sx={{ padding: '32px 40px', minWidth: '800px' }}
+    >
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px'}}>
+        <Typography variant="h1">Vote using a Command-Line Interface</Typography>
+        <Typography variant="body1">
+          Copy the following vote metadata and use it as a payload to submit a transaction using CLI tool
+        </Typography>
+      </Box>
+      <Box sx={{ padding: '16px 0' }}>
+        <CopyBlock
+          language={'JavaScript'}
+          text={aa}
+          showLineNumbers={true}
+          theme={dracula}
+        />
+      </Box>
+      <Box sx={{ padding: '0 16px' }}>
+        <Button
+          variant="outlined"
+          onClick={closeModal}
+        >
+          Cancel
+        </Button>
+      </Box>
+    </ModalWrapper>
+  )
+});
