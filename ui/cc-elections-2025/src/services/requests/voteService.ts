@@ -38,50 +38,30 @@ const VOTING_APP_URL = import.meta.env.VITE_VOTING_APP_URL;
 const ACCOUNT_INFO_URL = import.meta.env.VITE_ACCOUNT_INFO_URL;
 
 export const getSlotNumber = async () => {
-  try {
-    const response =  await axios.get<ChainTip>(`${VOTING_LEDGER_FOLLOWER_APP_URL}/api/blockchain/tip`, {
-      headers: {
-        "accept": "application/json",
-      }
-    });
+  const response =  await axios.get<ChainTip>(`${VOTING_LEDGER_FOLLOWER_APP_URL}/api/blockchain/tip`, {
+    headers: {
+      "accept": "application/json",
+    }
+  });
 
-    return response.data;
-  }
-  catch (error) {
-    console.error(`Unknown error processing request to ${VOTING_LEDGER_FOLLOWER_APP_URL}/api/blockchain/tip`);
-    return {
-      error: true,
-      message: "An unknown error occurred",
-      status: 500,
-    };
-  }
+  return response.data;
 }
 
 export const submitVote = async (
   signed: SignedWeb3Request,
   payloadStr: string,
 ) => {
-  try {
-    const response =  await axios.post(`${VOTING_APP_URL}/api/vote/candidate/cast`, undefined, {
-      headers: {
-        "Content-Type": "application/json",
-        "X-Ballot-Signature": signed.signature,
-        "X-Ballot-Payload": payloadStr,
-        "X-Ballot-Public-Key": signed.key,
-        "X-Ballot-Wallet-Type": "CARDANO",
-      }
-    });
+  const response =  await axios.post(`${VOTING_APP_URL}/api/vote/candidate/cast`, undefined, {
+    headers: {
+      "Content-Type": "application/json",
+      "X-Ballot-Signature": signed.signature,
+      "X-Ballot-Payload": payloadStr,
+      "X-Ballot-Public-Key": signed.key,
+      "X-Ballot-Wallet-Type": "CARDANO",
+    }
+  });
 
-    return response.data;
-  }
-  catch (error) {
-    console.error(error);
-    return {
-      error: true,
-      message: "An unknown error occurred",
-      status: 500,
-    };
-  }
+  return response.data;
 }
 
 export const getAccountInfo = async (

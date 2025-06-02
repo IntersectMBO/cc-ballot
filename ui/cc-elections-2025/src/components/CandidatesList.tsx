@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import { v4 as uuidv4 } from "uuid";
 
 import { Button } from "@atoms";
-import {useCardano, useModal} from "@context";
+import {useCardano, useModal, useSnackbar} from "@context";
 import { geographicRepresentationList, getInitials, getPayloadData } from "@utils";
 import { CandidatesListItem } from "./CandidatesListItem/CandidatesListItem.tsx";
 import { Candidate } from "@models";
@@ -30,6 +30,8 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
 
   const { openModal, closeModal } = useModal();
 
+  const { addSuccessAlert, addErrorAlert } = useSnackbar();
+
   const [filteredCandidates, setFilteredCandidates] = useState<Candidate[]>(candidates);
   const [sortOpen, setSortOpen] = useState<boolean>(false);
   const [chosenSorting, setChosenSorting] = useState<string>("Random");
@@ -38,6 +40,8 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
   const [chosenFilters, setChosenFilters] = useState<string[][]>([[],[],[]]);
 
   const [votes, setVotes] = useState<number[]>([]);
+
+  const [recastVote, setRecastVote] = useState<boolean>(false);
 
   const [selectedCandidates, setSelectedCandidates] = useState<number[]>([]);
 
@@ -112,7 +116,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     if (!walletApiRef.current) return;
 
     try {
-      const { slotNumber, stakeAddress, walletId, votingPower } = await getPayloadData(walletApiRef.current);
+      const { slotNumber, stakeAddress, walletId, votingPower } = await getPayloadData(walletApiRef.current, addErrorAlert);
 
       const payload = {
         action: "cast",
@@ -141,12 +145,12 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
       const response = await submitVote(signed, payloadStr);
 
       if (response.ok) {
-        alert('OK');
+        addSuccessAlert('You voted successfully!')
       } else {
-        console.error(response);
+        addErrorAlert('Voting failure.');
       }
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      addErrorAlert(error.message);
     }
   }
 
@@ -154,7 +158,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     if (!walletApi) return;
 
     try {
-      const { slotNumber, stakeAddress, walletId } = await getPayloadData(walletApi);
+      const { slotNumber, stakeAddress, walletId } = await getPayloadData(walletApi, addErrorAlert);
 
       const payload = {
         action: "view_vote_receipt",
@@ -181,8 +185,9 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
       const resPayload: { votes: number[] } = JSON.parse(response.payload);
 
       setVotes(resPayload.votes);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
+      addErrorAlert(error.message);
     }
   }
 
@@ -236,7 +241,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
             chosenFilters={chosenFilters}
             chosenFiltersLength={chosenFilters.flat().length}
           />
-          {isVoteActive && !votes.length && (
+          {isVoteActive && (!votes.length || recastVote)  && (
             <Box sx={{ display: 'flex', gap: '16px', alignItems: 'center'}}>
               {isEnabled && (
                 <Button
@@ -262,7 +267,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
               </Button>
             </Box>
           )}
-          {isVoteActive && isEnabled && !!votes.length && (
+          {isVoteActive && isEnabled && !!votes.length && !recastVote && (
             <Box sx={{ display: 'flex', gap: '16px', alignItems: 'center'}}>
               <Box
                 sx={{
@@ -277,11 +282,23 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
                 }}
               >
                 <Typography component="span" variant="body2">Your vote has been cast. </Typography>
-                <Link variant="body2">Read more</Link>
+                <Link
+                  variant="body2"
+                  onClick={() => openModal({
+                    type: "textModal",
+                    state: {
+                      title: 'Read more',
+                      text: 'Suspendisse eleifend pretium est, vitae eleifend quam sagittis ac. Etiam cursus mi enim, in auctor magna interdum blandit. Ut iaculis tristique leo, nec placerat dui. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Mauris egestas magna a felis pulvinar sodales. Maecenas eu nisi ut purus suscipit aliquam et in ligula. Nulla a augue lorem. Nunc eu gravida justo. Mauris urna dolor, vulputate id aliquet id, iaculis quis magna. Suspendisse sit amet nisi egestas, sodales nulla non, pharetra mauris.'
+                    }
+                  })}
+                  sx={{ cursor: 'pointer' }}
+                >
+                  Read more
+                </Link>
               </Box>
               <Button
                 variant="text"
-                onClick={() => {}}
+                onClick={() => setRecastVote(true)}
                 sx={{ minWidth: '162px'}}
               >
                 {'Recast your vote'}
@@ -317,6 +334,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
             disableSelect={selectedCandidates.length > import.meta.env.VITE_MAX_VOTES - 1}
             voteCast={votes.length > 0}
             voted={votes.includes(candidate.candidate.id)}
+            recast={recastVote}
           />
         ))}
       </Box>

@@ -5,6 +5,7 @@ import {
   CandidateDetailsModal,
   ChooseWalletModal,
   StatusModal,
+  TextModal,
   VoteCLIModal,
   VotingOptionsModal
 } from "@organisms";
@@ -31,7 +32,8 @@ export type ModalType =
   | "voteContext"
   | "voteOptions"
   | "voteCLIModal"
-  | "candidateDetailsModal";
+  | "candidateDetailsModal"
+  | "textModal";
 
 const modals: Record<ModalType, ContextModal> = {
   none: {
@@ -51,6 +53,9 @@ const modals: Record<ModalType, ContextModal> = {
   },
   candidateDetailsModal: {
     component: <CandidateDetailsModal />,
+  },
+  textModal: {
+    component: <TextModal />
   }
 };
 

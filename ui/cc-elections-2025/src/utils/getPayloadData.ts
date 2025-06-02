@@ -3,7 +3,7 @@ import {getAccountInfo, getSlotNumber} from "@/services/requests/voteService.ts"
 import {Address} from "@emurgo/cardano-serialization-lib-asmjs";
 import {Buffer} from "buffer";
 
-export const getPayloadData = async (walletApi: CardanoApiWallet) => {
+export const getPayloadData = async (walletApi: CardanoApiWallet, errorAlert: (message: string, autoHideDuration?: number) => void) => {
   let slotNumber = 0;
   let stakeAddress: string = '';
   let walletId: string = '';
@@ -18,8 +18,9 @@ export const getPayloadData = async (walletApi: CardanoApiWallet) => {
     walletId = stakeAddressHex.to_bech32();
     const total_balance = Number((await getAccountInfo(stakeAddressHex.to_bech32()))?.total_balance);
     votingPower = Math.floor(total_balance/1000000);
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
+    errorAlert(err.message);
   }
 
   return {

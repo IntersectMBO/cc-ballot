@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ThemeProvider } from '@emotion/react';
-import { CardanoProvider, ModalProvider } from "@context";
+import { CardanoProvider, ModalProvider, SnackbarProvider } from "@context";
 
 import { App } from './App'
 import { theme } from './theme';
@@ -23,9 +23,11 @@ createRoot(document.getElementById('root')!).render(
       <ThemeProvider theme={theme}>
         <BrowserRouter>
           <ModalProvider>
-            <CardanoProvider>
-              <App />
-            </CardanoProvider>
+            <SnackbarProvider>
+              <CardanoProvider>
+                <App />
+              </CardanoProvider>
+            </SnackbarProvider>
           </ModalProvider>
         </BrowserRouter>
       </ThemeProvider>

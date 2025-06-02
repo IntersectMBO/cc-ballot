@@ -36,6 +36,7 @@ type CandidatesListItemProps = {
   disableSelect: boolean;
   voteCast: boolean;
   voted: boolean;
+  recast: boolean;
 };
 
 export const CandidatesListItem = (props: CandidatesListItemProps) => {
@@ -148,7 +149,7 @@ export const CandidatesListItem = (props: CandidatesListItemProps) => {
             <Button variant="text" color="error" onClick={handleDelete}>Delete</Button>
           </>
         )}
-        {props.isVoteActive && !props.selected && !props.voteCast && (
+        {props.isVoteActive && !props.selected && (!props.voteCast || props.recast) && (
           <Button
             disabled={props.disableSelect}
             onClick={() => props.onCandidateSelect(props.id)}
@@ -160,7 +161,7 @@ export const CandidatesListItem = (props: CandidatesListItemProps) => {
             Select candidate
           </Button>
         )}
-        {props.isVoteActive && props.selected && !props.voteCast && (
+        {props.isVoteActive && props.selected && (!props.voteCast || props.recast) && (
           <Button
             variant="outlined"
             onClick={() => props.onCandidateDeselect(props.id)}
@@ -175,7 +176,7 @@ export const CandidatesListItem = (props: CandidatesListItemProps) => {
             Candidate selected
           </Button>
         )}
-        {props.isVoteActive && props.voted && (
+        {props.isVoteActive && props.voted && !props.recast && (
           <Button
             variant="text"
             disabled={true}
