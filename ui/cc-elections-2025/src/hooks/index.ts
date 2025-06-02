@@ -6,7 +6,6 @@ export * from "./usePrevious";
 export * from "./useRegisterFormContext";
 export * from "./useSaveScrollPosition";
 export * from "./useScreenDimension";
-export * from "./useVotePayload";
 export * from "./useWalletConnectionListener";
 
 export * from './queries';
