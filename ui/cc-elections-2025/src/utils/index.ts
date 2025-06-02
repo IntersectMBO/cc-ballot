@@ -4,6 +4,7 @@ export * from "./checkIsMaintenanceOn";
 export * from "./geographicRepresentationList";
 export * from "./getDRepID";
 export * from "./getInitials";
+export * from "./getPayloadData";
 export * from "./localStorage";
 export * from "./openInNewTab";
 export * from "./parseBoolean";

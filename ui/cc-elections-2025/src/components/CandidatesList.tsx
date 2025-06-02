@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState} from "react";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
+import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import { v4 as uuidv4 } from "uuid";
 
 import { Button } from "@atoms";
 import {useCardano, useModal} from "@context";
-import { useVotePayload } from "@hooks";
-import { geographicRepresentationList, getInitials } from "@utils";
+import { geographicRepresentationList, getInitials, getPayloadData } from "@utils";
 import { CandidatesListItem } from "./CandidatesListItem/CandidatesListItem.tsx";
 import { Candidate } from "@models";
 import { DataActionsBar } from "@/components/molecules";
@@ -22,7 +22,11 @@ type CandidatesListProps = {
 export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: CandidatesListProps) => {
   const { isEnabled, walletApi } = useCardano();
 
-  const { slotNumber, stakeAddress, walletId, votingPower } = useVotePayload(walletApi);
+  const walletApiRef = useRef(walletApi);
+
+  useEffect(() => {
+    walletApiRef.current = walletApi;
+  }, [walletApi]);
 
   const { openModal, closeModal } = useModal();
 
@@ -32,6 +36,8 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
   const [searchText, setSearchText] = useState<string>("");
   const [filterOpen, setFilterOpen] = useState<boolean>(false);
   const [chosenFilters, setChosenFilters] = useState<string[][]>([[],[],[]]);
+
+  const [votes, setVotes] = useState<number[]>([]);
 
   const [selectedCandidates, setSelectedCandidates] = useState<number[]>([]);
 
@@ -74,19 +80,26 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
       type: "voteOptions",
       state: {
         onLightWalletSelect: () => {
-          vote();
-          closeModal();
+          if (isEnabled){
+            vote();
+            closeModal();
+          } else {
+            openModal({
+              type: "chooseWallet", state: {
+                onWalletSelect: () => {
+                  vote();
+                }
+              }
+            });
+          }
         },
         onCLISelect: () => {
           openModal({
             type: "voteCLIModal",
             state: {
               id: uuidv4(),
-              slot: slotNumber,
               timestamp: Math.floor(Date.now() / 1000),
               votes: selectedCandidates,
-              votingPower: votingPower,
-              walletId,
             }
           });
         },
@@ -96,30 +109,34 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
 
   const vote = async () => {
 
-    const payload = {
-      action: "cast_vote",
-      slot: slotNumber,
-      data: {
-        event: "TEST_CC_VOTE",
-        category: "CC_CATEGORY_TEST_144E",
-        proposal: "37d5f23a-c7f2-426e-8e23-4778d09c9459",
-        id: uuidv4(),
-        votedAt: slotNumber,
-        votingPower: votingPower,
-        timestamp: Math.floor(Date.now() / 1000),
-        walletId: walletId,
-        walletType: "CARDANO",
-        network: import.meta.env.VITE_TARGET_NETWORK,
-        votes: selectedCandidates
-      },
-    }
-
-    const payloadStr = JSON.stringify(payload);
+    if (!walletApiRef.current) return;
 
     try {
+      const { slotNumber, stakeAddress, walletId, votingPower } = await getPayloadData(walletApiRef.current);
+
+      const payload = {
+        action: "cast",
+        slot: slotNumber,
+        data: {
+          event: "TEST_CC_VOTE",
+          category: "CC_CATEGORY_TEST_144E",
+          proposal: "37d5f23a-c7f2-426e-8e23-4778d09c9459",
+          id: uuidv4(),
+          votedAt: slotNumber,
+          votingPower: votingPower,
+          timestamp: Math.floor(Date.now() / 1000),
+          walletId: walletId,
+          walletType: "CARDANO",
+          network: import.meta.env.VITE_TARGET_NETWORK,
+          votes: selectedCandidates
+        },
+      }
+
+      const payloadStr = JSON.stringify(payload);
+
       const payloadHex = await toHex(payloadStr);
 
-      const signed = await walletApi?.signData(stakeAddress, payloadHex);
+      const signed = await walletApiRef.current?.signData(stakeAddress, payloadHex);
 
       const response = await submitVote(signed, payloadStr);
 
@@ -133,39 +150,41 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     }
   }
 
-  useEffect(() => {
-    if (!stakeAddress) return;
+  const fetchVoteReceipt = async () => {
+    if (!walletApi) return;
 
-    const getVotes = async () => {
-      try {
-        const payload = {
-          action: "view_vote_receipt",
-          slot: slotNumber,
-          data: {
-            event: "TEST_CC_VOTE",
-            category: "CC_CATEGORY_TEST_144E",
-            proposal: "37d5f23a-c7f2-426e-8e23-4778d09c9459",
-            timestamp: Math.floor(Date.now() / 1000),
-            walletId,
-            walletType: "CARDANO",
-            network: import.meta.env.VITE_TARGET_NETWORK,
-          }
-        };
+    try {
+      const { slotNumber, stakeAddress, walletId } = await getPayloadData(walletApi);
 
-        const payloadStr = JSON.stringify(payload);
-        const payloadHex = await toHex(payloadStr);
+      const payload = {
+        action: "view_vote_receipt",
+        slot: slotNumber,
+        data: {
+          event: "TEST_CC_VOTE",
+          category: "CC_CATEGORY_TEST_144E",
+          proposal: "37d5f23a-c7f2-426e-8e23-4778d09c9459",
+          timestamp: Math.floor(Date.now() / 1000),
+          walletId,
+          walletType: "CARDANO",
+          network: import.meta.env.VITE_TARGET_NETWORK,
+        }
+      };
 
-        const signed = await walletApi?.signData(stakeAddress, payloadHex);
+      const payloadStr = JSON.stringify(payload);
 
-        return await getVoteReceipt(signed, payloadStr);
-      } catch (error) {
-        console.error(error);
-      }
+      const payloadHex = await toHex(payloadStr);
+
+      const signed = await walletApi?.signData(stakeAddress, payloadHex);
+
+      const response = await getVoteReceipt(signed, payloadStr);
+
+      const resPayload: { votes: number[] } = JSON.parse(response.payload);
+
+      setVotes(resPayload.votes);
+    } catch (error) {
+      console.error(error);
     }
-
-    const votes = getVotes();
-    console.log(votes);
-  }, [stakeAddress]);
+  }
 
   useEffect(() => {
     setFilteredCandidates(candidates);
@@ -217,16 +236,15 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
             chosenFilters={chosenFilters}
             chosenFiltersLength={chosenFilters.flat().length}
           />
-          {isVoteActive && !isEnabled && (
-            <Button
-              sx={{ borderRadius: 0 }}
-              onClick={() => openModal({ type: "chooseWallet" })}
-            >
-              Connect wallet to vote
-            </Button>
-          )}
-          {isVoteActive && isEnabled && (
+          {isVoteActive && !votes.length && (
             <Box sx={{ display: 'flex', gap: '16px', alignItems: 'center'}}>
+              {isEnabled && (
+                <Button
+                  onClick={fetchVoteReceipt}
+                >
+                  Check your vote
+                </Button>
+              )}
               <Chip
                 label={`${selectedCandidates.length}/7 votes`}
                 sx={{
@@ -241,6 +259,32 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
                 sx={{ minWidth: '162px'}}
               >
                 {selectedCandidates.length === 0 ? 'Vote' : 'Submit your vote'}
+              </Button>
+            </Box>
+          )}
+          {isVoteActive && isEnabled && !!votes.length && (
+            <Box sx={{ display: 'flex', gap: '16px', alignItems: 'center'}}>
+              <Box
+                sx={{
+                  height: '33px',
+                  padding: '0 12px',
+                  borderRadius: '100px',
+                  backgroundColor: '#EDEBFF',
+                  display: 'inline-flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+              >
+                <Typography component="span" variant="body2">Your vote has been cast. </Typography>
+                <Link variant="body2">Read more</Link>
+              </Box>
+              <Button
+                variant="text"
+                onClick={() => {}}
+                sx={{ minWidth: '162px'}}
+              >
+                {'Recast your vote'}
               </Button>
             </Box>
           )}
@@ -271,6 +315,8 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
             onCandidateDeselect={onCandidateDeselect}
             selected={selectedCandidates.includes(candidate.candidate.id)}
             disableSelect={selectedCandidates.length > import.meta.env.VITE_MAX_VOTES - 1}
+            voteCast={votes.length > 0}
+            voted={votes.includes(candidate.candidate.id)}
           />
         ))}
       </Box>

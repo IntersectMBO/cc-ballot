@@ -8,30 +8,27 @@ import {useModal} from "@context";
 
 type VoteCLIModalState = {
   id: string;
-  slot: number;
   timestamp: number;
   votes: number[];
-  votingPower: number;
-  walletId: string;
 }
 
 export const VoteCLIModal = forwardRef<HTMLDivElement>((_, ref) => {
   const { state, closeModal } = useModal<VoteCLIModalState>();
 
-  const aa = `{
+  const payload = `{
     "action": "cast",
-    "slot": ${state?.slot},
+    "slot": "<insert Cardano slot number of the moment of your vote>",
     "data": {
       "event": "TEST_CC_VOTE",
       "category": "CC_CATEGORY_TEST_144E",
       "proposal": "37d5f23a-c7f2-426e-8e23-4778d09c9459",
       "id": "${state?.id}",
-      "votedAt": ${state?.slot},
-      "votingPower": ${state?.votingPower},
+      "votedAt": "<insert Cardano slot number of the moment of your vote>",
+      "votingPower": "<insert your wallet voting power here>",
       "timestamp": ${state?.timestamp},
-      "walletId": "${state?.walletId}",
+      "walletId": ""<insert your wallet id>"",
       "walletType": "CARDANO",
-      "network": "PREPROD",
+      "network": ${import.meta.env.VITE_TARGET_NETWORK},
       "votes": ${JSON.stringify(state?.votes)},
     }
   }`;
@@ -52,7 +49,7 @@ export const VoteCLIModal = forwardRef<HTMLDivElement>((_, ref) => {
       <Box sx={{ padding: '16px 0' }}>
         <CopyBlock
           language={'JavaScript'}
-          text={aa}
+          text={payload}
           showLineNumbers={true}
           theme={dracula}
         />

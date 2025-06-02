@@ -34,6 +34,8 @@ type CandidatesListItemProps = {
   onCandidateDeselect: (id: number) => void;
   selected: boolean;
   disableSelect: boolean;
+  voteCast: boolean;
+  voted: boolean;
 };
 
 export const CandidatesListItem = (props: CandidatesListItemProps) => {
@@ -146,7 +148,7 @@ export const CandidatesListItem = (props: CandidatesListItemProps) => {
             <Button variant="text" color="error" onClick={handleDelete}>Delete</Button>
           </>
         )}
-        {props.isVoteActive && !props.selected && (
+        {props.isVoteActive && !props.selected && !props.voteCast && (
           <Button
             disabled={props.disableSelect}
             onClick={() => props.onCandidateSelect(props.id)}
@@ -158,7 +160,7 @@ export const CandidatesListItem = (props: CandidatesListItemProps) => {
             Select candidate
           </Button>
         )}
-        {props.isVoteActive && props.selected && (
+        {props.isVoteActive && props.selected && !props.voteCast && (
           <Button
             variant="outlined"
             onClick={() => props.onCandidateDeselect(props.id)}
@@ -171,6 +173,16 @@ export const CandidatesListItem = (props: CandidatesListItemProps) => {
             startIcon={<CheckIcon />}
           >
             Candidate selected
+          </Button>
+        )}
+        {props.isVoteActive && props.voted && (
+          <Button
+            variant="text"
+            disabled={true}
+            onClick={() => null}
+            startIcon={<CheckIcon />}
+          >
+            You voted for this candidate
           </Button>
         )}
       </Box>
