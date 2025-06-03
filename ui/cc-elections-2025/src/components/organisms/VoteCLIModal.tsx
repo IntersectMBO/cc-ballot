@@ -16,7 +16,7 @@ export const VoteCLIModal = forwardRef<HTMLDivElement>((_, ref) => {
   const { state, closeModal } = useModal<VoteCLIModalState>();
 
   const payload = `{
-    "action": "cast",
+    "action": "cast_vote",
     "slot": "<insert Cardano slot number of the moment of your vote>",
     "data": {
       "event": "TEST_CC_VOTE",

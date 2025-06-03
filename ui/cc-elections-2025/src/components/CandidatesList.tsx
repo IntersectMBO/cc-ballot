@@ -119,7 +119,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
       const { slotNumber, stakeAddress, walletId, votingPower } = await getPayloadData(walletApiRef.current, addErrorAlert);
 
       const payload = {
-        action: "cast",
+        action: "cast_vote",
         slot: slotNumber,
         data: {
           event: "TEST_CC_VOTE",
@@ -244,11 +244,27 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
           {isVoteActive && (!votes.length || recastVote)  && (
             <Box sx={{ display: 'flex', gap: '16px', alignItems: 'center'}}>
               {isEnabled && (
-                <Button
-                  onClick={fetchVoteReceipt}
+                <Box
+                  sx={{
+                    height: '33px',
+                    padding: '0 12px',
+                    borderRadius: '100px',
+                    backgroundColor: '#EDEBFF',
+                    display: 'inline-flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '4px',
+                  }}
                 >
-                  Check your vote
-                </Button>
+                  <Typography component="span" variant="body2">Already voted?</Typography>
+                  <Link
+                    variant="body2"
+                    onClick={fetchVoteReceipt}
+                    sx={{ cursor: 'pointer' }}
+                  >
+                    Check your vote
+                  </Link>
+                </Box>
               )}
               <Chip
                 label={`${selectedCandidates.length}/7 votes`}
