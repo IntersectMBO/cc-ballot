@@ -184,9 +184,9 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
 
       const response = await getVoteReceipt(signed, payloadStr);
 
-      const resPayload: { votes: number[] } = JSON.parse(response.payload);
+      const resPayload: { data: { votes: number[] } } = JSON.parse(response.payload);
 
-      setVotes(resPayload.votes);
+      setVotes(resPayload.data.votes);
     } catch (error: any) {
       console.error(error);
       addErrorAlert(error.message);
