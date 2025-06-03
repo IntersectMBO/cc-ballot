@@ -116,7 +116,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     if (!walletApiRef.current) return;
 
     try {
-      const { slotNumber, stakeAddress, walletId, votingPower } = await getPayloadData(walletApiRef.current, addErrorAlert);
+      const { slotNumber, stakeAddress, walletId, votingPower } = await getPayloadData(walletApiRef.current, "TEST_CC_VOTE", "CARDANO", addErrorAlert);
 
       const payload = {
         action: "cast_vote",
@@ -160,7 +160,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     if (!walletApi) return;
 
     try {
-      const { slotNumber, stakeAddress, walletId } = await getPayloadData(walletApi, addErrorAlert);
+      const { slotNumber, stakeAddress, walletId } = await getPayloadData(walletApi,"TEST_CC_VOTE", "CARDANO", addErrorAlert);
 
       const payload = {
         action: "view_vote_receipt",

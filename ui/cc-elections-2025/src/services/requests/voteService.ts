@@ -13,6 +13,15 @@ export interface SignedWeb3Request {
   key?: string;
 }
 
+export interface Account {
+  walletType: string;
+  walletId: string;
+  epochNo: number;
+  votingPower: string;
+  votingPowerAsset: string;
+  network: string;
+}
+
 export interface AccountInfo {
   stake_address: string;
   status: string;
@@ -43,6 +52,16 @@ export const getSlotNumber = async () => {
       "accept": "application/json",
     }
   });
+
+  return response.data;
+}
+
+export const getAccount = async (
+  eventId: string,
+  walletType: string,
+  walletId: string,
+) => {
+  const response =  await axios.get<Account>(`${VOTING_LEDGER_FOLLOWER_APP_URL}/api/account/${eventId}/${walletType}/${walletId}`);
 
   return response.data;
 }
