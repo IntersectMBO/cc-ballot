@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import { v4 as uuidv4 } from "uuid";
 
 import { Button } from "@atoms";
-import {useCardano, useModal, useSnackbar} from "@context";
+import {useCardano, useModal} from "@context";
 import { geographicRepresentationList, getInitials, getPayloadData } from "@utils";
 import { CandidatesListItem } from "./CandidatesListItem/CandidatesListItem.tsx";
 import { Candidate } from "@models";
@@ -30,8 +30,6 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
 
   const { openModal, closeModal } = useModal();
 
-  const { addSuccessAlert, addErrorAlert } = useSnackbar();
-
   const [filteredCandidates, setFilteredCandidates] = useState<Candidate[]>(candidates);
   const [sortOpen, setSortOpen] = useState<boolean>(false);
   const [chosenSorting, setChosenSorting] = useState<string>("Random");
@@ -41,7 +39,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
 
   const [votes, setVotes] = useState<number[]>([]);
 
-  const [recastVote, setRecastVote] = useState<boolean>(false);
+  const [recastVote] = useState<boolean>(false);
 
   const [selectedCandidates, setSelectedCandidates] = useState<number[]>([]);
 
@@ -116,7 +114,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     if (!walletApiRef.current) return;
 
     try {
-      const { slotNumber, stakeAddress, walletId, votingPower } = await getPayloadData(walletApiRef.current, "TEST_CC_VOTE", "CARDANO", addErrorAlert);
+      const { slotNumber, stakeAddress, walletId, votingPower } = await getPayloadData(walletApiRef.current, "TEST_CC_VOTE", "CARDANO", openModal);
 
       const payload = {
         action: "cast_vote",
@@ -144,15 +142,51 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
 
       const response = await submitVote(signed, payloadStr);
 
-      if (response.ok) {
+      if (response.status === 200) {
         setVotes(selectedCandidates);
         setSelectedCandidates([]);
-        addSuccessAlert('You voted successfully!');
+        openModal({
+          type: "statusModal",
+          state: {
+            status: "success",
+            title: 'Great!',
+            message: 'You voted successfully.',
+            dataTestId: "success-modal",
+          },
+        });
       } else {
-        addErrorAlert('Voting failure.');
+        openModal({
+          type: "statusModal",
+          state: {
+            status: "warning",
+            title: 'Error',
+            message: 'Voting failure.',
+            dataTestId: "error-modal",
+          },
+        });
       }
     } catch (error: any) {
-      addErrorAlert(error.message);
+      if (error.response && error.response.data && error.response.data.detail) {
+        openModal({
+          type: "statusModal",
+          state: {
+            status: "warning",
+            title: "Request error",
+            message: error.response.data.detail,
+            dataTestId: "error-modal",
+          },
+        });
+      } else {
+        openModal({
+          type: "statusModal",
+          state: {
+            status: "warning",
+            title: 'Error',
+            message: error.message,
+            dataTestId: "error-modal",
+          },
+        });
+      }
     }
   }
 
@@ -160,7 +194,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     if (!walletApi) return;
 
     try {
-      const { slotNumber, stakeAddress, walletId } = await getPayloadData(walletApi,"TEST_CC_VOTE", "CARDANO", addErrorAlert);
+      const { slotNumber, stakeAddress, walletId } = await getPayloadData(walletApi,"TEST_CC_VOTE", "CARDANO", openModal);
 
       const payload = {
         action: "view_vote_receipt",
@@ -188,8 +222,27 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
 
       setVotes(resPayload.data.votes);
     } catch (error: any) {
-      console.error(error);
-      addErrorAlert(error.message);
+      if (error.response && error.response.data && error.response.data.detail) {
+        openModal({
+          type: "statusModal",
+          state: {
+            status: "warning",
+            title: "Request error",
+            message: error.response.data.detail,
+            dataTestId: "error-modal",
+          },
+        });
+      } else {
+        openModal({
+          type: "statusModal",
+          state: {
+            status: "warning",
+            title: 'Error',
+            message: error.message,
+            dataTestId: "error-modal",
+          },
+        });
+      }
     }
   }
 
@@ -314,13 +367,13 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
                   Read more
                 </Link>
               </Box>
-              <Button
-                variant="text"
-                onClick={() => setRecastVote(true)}
-                sx={{ minWidth: '162px'}}
-              >
-                {'Recast your vote'}
-              </Button>
+              {/*<Button*/}
+              {/*  variant="text"*/}
+              {/*  onClick={() => setRecastVote(true)}*/}
+              {/*  sx={{ minWidth: '162px'}}*/}
+              {/*>*/}
+              {/*  {'Recast your vote'}*/}
+              {/*</Button>*/}
             </Box>
           )}
         </Box>
