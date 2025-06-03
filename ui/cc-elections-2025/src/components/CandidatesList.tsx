@@ -145,7 +145,9 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
       const response = await submitVote(signed, payloadStr);
 
       if (response.ok) {
-        addSuccessAlert('You voted successfully!')
+        setVotes(selectedCandidates);
+        setSelectedCandidates([]);
+        addSuccessAlert('You voted successfully!');
       } else {
         addErrorAlert('Voting failure.');
       }
