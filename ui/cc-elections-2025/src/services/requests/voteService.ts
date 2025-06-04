@@ -81,6 +81,7 @@ export const getAccount = async (
 export const submitVote = async (
   signed: SignedWeb3Request,
   payloadStr: string,
+  walletType: string,
 ) => {
   const response =  await axios.post(`${VOTING_APP_URL}/api/vote/candidate/cast`, undefined, {
     headers: {
@@ -88,7 +89,7 @@ export const submitVote = async (
       "X-Ballot-Signature": signed.signature,
       "X-Ballot-Payload": payloadStr,
       "X-Ballot-Public-Key": signed.key,
-      "X-Ballot-Wallet-Type": "CARDANO",
+      "X-Ballot-Wallet-Type": walletType,
     }
   });
 
@@ -106,6 +107,7 @@ export const getAccountInfo = async (
 export const getVoteReceipt = async (
   signed: SignedWeb3Request,
   payloadStr: string,
+  walletType: string,
 ) => {
   const response = await axios.get<VoteReceipt>(`${VOTING_APP_URL}/api/vote/candidate/receipt`, {
     headers: {
@@ -113,7 +115,7 @@ export const getVoteReceipt = async (
       "X-Ballot-Signature": signed.signature,
       "X-Ballot-Payload": payloadStr,
       "X-Ballot-Public-Key": signed.key,
-      "X-Ballot-Wallet-Type": "CARDANO",
+      "X-Ballot-Wallet-Type": walletType,
     }
   });
 

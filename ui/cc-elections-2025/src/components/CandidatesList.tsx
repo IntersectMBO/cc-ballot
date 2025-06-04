@@ -20,6 +20,12 @@ type CandidatesListProps = {
 };
 
 export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: CandidatesListProps) => {
+  const EVENT: string = import.meta.env.VITE_EVENT;
+  const CATEGORY: string  = import.meta.env.VITE_CATEGORY;
+  const PROPOSAL: string  = import.meta.env.VITE_PROPOSAL;
+  const WALLET_TYPE: string  = import.meta.env.VITE_WALLET_TYPE;
+  const TARGET_NETWORK: string  = import.meta.env.VITE_TARGET_NETWORK;
+
   const { isEnabled, walletApi } = useCardano();
 
   const walletApiRef = useRef(walletApi);
@@ -115,7 +121,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     if (!walletApiRef.current) return;
 
     try {
-      const { slotNumber, stakeAddress, walletId, votingPower } = await getPayloadData(walletApiRef.current, "TEST_CC_VOTE", "CARDANO", openModal);
+      const { slotNumber, stakeAddress, walletId, votingPower } = await getPayloadData(walletApiRef.current, EVENT, WALLET_TYPE, openModal);
 
       const id = uuidv4();
 
@@ -123,16 +129,16 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
         action: "cast_vote",
         slot: slotNumber,
         data: {
-          event: "TEST_CC_VOTE",
-          category: "CC_CATEGORY_TEST_144E",
-          proposal: "37d5f23a-c7f2-426e-8e23-4778d09c9459",
+          event: EVENT,
+          category: CATEGORY,
+          proposal: PROPOSAL,
           id: id,
           votedAt: slotNumber,
           votingPower: votingPower,
           timestamp: Math.floor(Date.now() / 1000),
           walletId: walletId,
-          walletType: "CARDANO",
-          network: import.meta.env.VITE_TARGET_NETWORK,
+          walletType: WALLET_TYPE,
+          network: TARGET_NETWORK,
           votes: selectedCandidates
         },
       }
@@ -143,16 +149,16 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
 
       const signed: SignedWeb3Request = await walletApiRef.current?.signData(stakeAddress, payloadHex);
 
-      const response = await submitVote(signed, payloadStr);
+      const response = await submitVote(signed, payloadStr, WALLET_TYPE);
 
       const receipt: VoteReceipt = {
         id: id,
-        event: "TEST_CC_VOTE",
-        category: "CC_CATEGORY_TEST_144E",
-        proposal: "37d5f23a-c7f2-426e-8e23-4778d09c9459",
+        event: EVENT,
+        category: CATEGORY,
+        proposal: PROPOSAL,
         votingPower: votingPower.toString(),
         walletId: walletId,
-        walletType: "CARDANO",
+        walletType: WALLET_TYPE,
         signature: signed.signature,
         payload: payloadStr,
         publicKey: signed.key ? signed.key : '',
@@ -212,19 +218,19 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     if (!walletApi) return;
 
     try {
-      const { slotNumber, stakeAddress, walletId } = await getPayloadData(walletApi,"TEST_CC_VOTE", "CARDANO", openModal);
+      const { slotNumber, stakeAddress, walletId } = await getPayloadData(walletApi, EVENT, WALLET_TYPE, openModal);
 
       const payload = {
         action: "view_vote_receipt",
         slot: slotNumber,
         data: {
-          event: "TEST_CC_VOTE",
-          category: "CC_CATEGORY_TEST_144E",
-          proposal: "37d5f23a-c7f2-426e-8e23-4778d09c9459",
+          event: EVENT,
+          category: CATEGORY,
+          proposal: PROPOSAL,
           timestamp: Math.floor(Date.now() / 1000),
           walletId,
-          walletType: "CARDANO",
-          network: import.meta.env.VITE_TARGET_NETWORK,
+          walletType: WALLET_TYPE,
+          network: TARGET_NETWORK,
         }
       };
 
@@ -234,7 +240,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
 
       const signed = await walletApi?.signData(stakeAddress, payloadHex);
 
-      const response = await getVoteReceipt(signed, payloadStr);
+      const response = await getVoteReceipt(signed, payloadStr, WALLET_TYPE);
       setVoteReceipts(response);
 
       const resPayload: { data: { votes: number[] } } = JSON.parse(response.payload);
