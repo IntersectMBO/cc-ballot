@@ -1,5 +1,5 @@
 import {CardanoApiWallet} from "@models";
-import {getAccount, getSlotNumber} from "@/services/requests/voteService.ts";
+import {getAccount, getSlotNumber} from "@services";
 import {Address} from "@emurgo/cardano-serialization-lib-asmjs";
 import {Buffer} from "buffer";
 import { ModalState, Optional } from "@context";

@@ -39,7 +39,19 @@ export interface AccountInfo {
 }
 
 export interface VoteReceipt {
+  id: string;
+  event: string;
+  category: string;
+  votingPower: string;
+  walletId: string;
+  walletType: string;
+  proposal: string;
+  signature: string;
   payload: string;
+  publicKey: string;
+  status?: string;
+  finalityScore?: string | null;
+  votedAtSlot: string;
 }
 
 const VOTING_LEDGER_FOLLOWER_APP_URL = import.meta.env.VITE_VOTING_LEDGER_FOLLOWER_APP_URL;

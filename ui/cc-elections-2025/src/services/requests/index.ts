@@ -12,3 +12,4 @@ export * from "./postIndividual";
 export * from "./putCompanies";
 export * from "./putConsortia";
 export * from "./putIndividual";
+export * from "./voteService";

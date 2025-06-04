@@ -11,7 +11,7 @@ import { geographicRepresentationList, getInitials, getPayloadData } from "@util
 import { CandidatesListItem } from "./CandidatesListItem/CandidatesListItem.tsx";
 import { Candidate } from "@models";
 import { DataActionsBar } from "@/components/molecules";
-import {getVoteReceipt, submitVote} from "@/services/requests/voteService.ts";
+import {getVoteReceipt, SignedWeb3Request, submitVote, VoteReceipt} from "@services";
 
 type CandidatesListProps = {
   candidates: Candidate[];
@@ -38,6 +38,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
   const [chosenFilters, setChosenFilters] = useState<string[][]>([[],[],[]]);
 
   const [votes, setVotes] = useState<number[]>([]);
+  const [voteReceipts, setVoteReceipts] = useState<VoteReceipt | null>(null);
 
   const [recastVote] = useState<boolean>(false);
 
@@ -116,6 +117,8 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     try {
       const { slotNumber, stakeAddress, walletId, votingPower } = await getPayloadData(walletApiRef.current, "TEST_CC_VOTE", "CARDANO", openModal);
 
+      const id = uuidv4();
+
       const payload = {
         action: "cast_vote",
         slot: slotNumber,
@@ -123,7 +126,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
           event: "TEST_CC_VOTE",
           category: "CC_CATEGORY_TEST_144E",
           proposal: "37d5f23a-c7f2-426e-8e23-4778d09c9459",
-          id: uuidv4(),
+          id: id,
           votedAt: slotNumber,
           votingPower: votingPower,
           timestamp: Math.floor(Date.now() / 1000),
@@ -138,12 +141,27 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
 
       const payloadHex = await toHex(payloadStr);
 
-      const signed = await walletApiRef.current?.signData(stakeAddress, payloadHex);
+      const signed: SignedWeb3Request = await walletApiRef.current?.signData(stakeAddress, payloadHex);
 
       const response = await submitVote(signed, payloadStr);
 
+      const receipt: VoteReceipt = {
+        id: id,
+        event: "TEST_CC_VOTE",
+        category: "CC_CATEGORY_TEST_144E",
+        proposal: "37d5f23a-c7f2-426e-8e23-4778d09c9459",
+        votingPower: votingPower.toString(),
+        walletId: walletId,
+        walletType: "CARDANO",
+        signature: signed.signature,
+        payload: payloadStr,
+        publicKey: signed.key ? signed.key : '',
+        votedAtSlot: slotNumber.toString(),
+      }
+
       if (response.status === 200) {
         setVotes(selectedCandidates);
+        setVoteReceipts(receipt);
         setSelectedCandidates([]);
         openModal({
           type: "statusModal",
@@ -217,6 +235,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
       const signed = await walletApi?.signData(stakeAddress, payloadHex);
 
       const response = await getVoteReceipt(signed, payloadStr);
+      setVoteReceipts(response);
 
       const resPayload: { data: { votes: number[] } } = JSON.parse(response.payload);
 
@@ -358,8 +377,8 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
                   onClick={() => openModal({
                     type: "textModal",
                     state: {
-                      title: 'Read more',
-                      text: 'Suspendisse eleifend pretium est, vitae eleifend quam sagittis ac. Etiam cursus mi enim, in auctor magna interdum blandit. Ut iaculis tristique leo, nec placerat dui. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Mauris egestas magna a felis pulvinar sodales. Maecenas eu nisi ut purus suscipit aliquam et in ligula. Nulla a augue lorem. Nunc eu gravida justo. Mauris urna dolor, vulputate id aliquet id, iaculis quis magna. Suspendisse sit amet nisi egestas, sodales nulla non, pharetra mauris.'
+                      title: 'Your vote details',
+                      response: voteReceipts,
                     }
                   })}
                   sx={{ cursor: 'pointer' }}
