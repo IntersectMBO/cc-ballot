@@ -19,16 +19,16 @@ export const VoteCLIModal = forwardRef<HTMLDivElement>((_, ref) => {
     "action": "cast_vote",
     "slot": "<insert Cardano slot number of the moment of your vote>",
     "data": {
-      "event": "TEST_CC_VOTE",
-      "category": "CC_CATEGORY_TEST_144E",
-      "proposal": "37d5f23a-c7f2-426e-8e23-4778d09c9459",
+      "event": "${import.meta.env.VITE_EVENT}",
+      "category": "${import.meta.env.VITE_CATEGORY}",
+      "proposal": "${import.meta.env.VITE_PROPOSAL}",
       "id": "${state?.id}",
       "votedAt": "<insert Cardano slot number of the moment of your vote>",
       "votingPower": "<insert your wallet voting power here>",
       "timestamp": ${state?.timestamp},
-      "walletId": ""<insert your wallet id>"",
-      "walletType": "CARDANO",
-      "network": ${import.meta.env.VITE_TARGET_NETWORK},
+      "walletId": "<insert your wallet id>",
+      "walletType": "${import.meta.env.VITE_WALLET_TYPE}",
+      "network": "${import.meta.env.VITE_TARGET_NETWORK}",
       "votes": ${JSON.stringify(state?.votes)},
     }
   }`;
