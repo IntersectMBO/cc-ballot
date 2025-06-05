@@ -24,7 +24,7 @@ import static org.cardano.foundation.voting.utils.MoreUUID.shortUUID;
 @RequiredArgsConstructor
 public class CCElectionPreProdCommands {
 
-    private final static String EVENT_NAME = "TEST_VOTE";
+    private final static String EVENT_NAME = "RYANS_TEST_VOTE";
 
     private final L1SubmissionService l1SubmissionService;
 
@@ -38,18 +38,18 @@ public class CCElectionPreProdCommands {
 
         var createEventCommand = CreateEventCommand.builder()
                 .id(EVENT_NAME)
-                .startEpoch(Optional.of(218))
-                .endEpoch(Optional.of(219))
+                .startEpoch(Optional.of(221))
+                .endEpoch(Optional.of(222))
                 .votingPowerAsset(Optional.of(ADA))
-                .organisers("TEST ORGANISER")
+                .organisers("RYAN")
                 .votingEventType(STAKE_BASED)
                 .schemaVersion(V1)
                 .allowVoteChanging(true)
                 .highLevelEventResultsWhileVoting(true)
                 .highLevelCategoryResultsWhileVoting(true)
                 .categoryResultsWhileVoting(false)
-                .proposalsRevealEpoch(Optional.of(220))
-                .snapshotEpoch(Optional.of(217))
+                .proposalsRevealEpoch(Optional.of(222))
+                .snapshotEpoch(Optional.of(220))
                 .build();
 
         l1SubmissionService.submitEvent(createEventCommand);
@@ -63,13 +63,32 @@ public class CCElectionPreProdCommands {
             return "This command can only be run on a PRE-PROD network!";
         }
 
-        Proposal n1 = Proposal.builder()
-                .id(UUID.randomUUID().toString())
-                .name("Option 1")
-                .build();
+        // Proposal n1 = Proposal.builder()
+        //         .id(UUID.randomUUID().toString())
+        //         .name("Option 1")
+        //         .build();
 
-
-        List<Proposal> allProposals = List.of(n1);
+        List<Proposal> allProposals = List.of(
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 1").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 2").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 3").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 4").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 5").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 6").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 7").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 8").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 9").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 10").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 11").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 12").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 13").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 14").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 15").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 16").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 17").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 18").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 19").build()
+        );
 
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
                 .id("CATEGORY_TEST1" + "_" + shortUUID(4))
