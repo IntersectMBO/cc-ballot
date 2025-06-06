@@ -24,7 +24,7 @@ import static org.cardano.foundation.voting.utils.MoreUUID.shortUUID;
 @RequiredArgsConstructor
 public class CCElectionPreProdCommands {
 
-    private final static String EVENT_NAME = "TEST_VOTE";
+    private final static String EVENT_NAME = "RYANS_TEST_VOTE";
 
     private final L1SubmissionService l1SubmissionService;
 
