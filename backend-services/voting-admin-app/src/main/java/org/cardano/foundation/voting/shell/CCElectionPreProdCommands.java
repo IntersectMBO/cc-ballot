@@ -18,6 +18,7 @@ import static org.cardano.foundation.voting.domain.SchemaVersion.V1;
 import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
 import static org.cardano.foundation.voting.domain.VotingPowerAsset.ADA;
 import static org.cardano.foundation.voting.utils.MoreUUID.shortUUID;
+import static org.cardano.foundation.voting.domain.VotingEventType.USER_BASED;
 
 @ShellComponent
 @Slf4j
@@ -36,10 +37,13 @@ public class CCElectionPreProdCommands {
             return "This command can only be run on PRE-PROD network!";
         }
 
+            long startSlot = 128318;
+            long endSlot = startSlot + 1000000; // 1000000 slots later
+
         var createEventCommand = CreateEventCommand.builder()
                 .id(EVENT_NAME)
-                .startEpoch(Optional.of(92966539))
-                .endEpoch(Optional.of(95966539))
+                .startSlot(Optional.of(startSlot))
+                .endSlot(Optional.of(endSlot))
                 .votingPowerAsset(Optional.empty())
                 .organisers("RYAN")
                 .votingEventType(USER_BASED)
@@ -48,7 +52,7 @@ public class CCElectionPreProdCommands {
                 .highLevelEventResultsWhileVoting(true)
                 .highLevelCategoryResultsWhileVoting(true)
                 .categoryResultsWhileVoting(false)
-                .proposalsRevealEpoch(Optional.of(221))
+                .proposalsRevealSlot(Optional.of(endSlot + 1))
                 .build();
 
         l1SubmissionService.submitEvent(createEventCommand);
