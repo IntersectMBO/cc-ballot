@@ -36,9 +36,10 @@ public class CCElectionPreProdCommands {
         if (network != PREPROD) {
             return "This command can only be run on PRE-PROD network!";
         }
+        log.info("Creating My Voting Event on PRE-PROD network...");
 
-            long startSlot = 128318;
-            long endSlot = startSlot + 1000000; // 1000000 slots later
+        long startSlot = 139544;
+        long endSlot = startSlot + 1000000;
 
         var createEventCommand = CreateEventCommand.builder()
                 .id(EVENT_NAME)
