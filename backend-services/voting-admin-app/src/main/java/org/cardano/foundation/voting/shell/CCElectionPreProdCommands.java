@@ -18,13 +18,14 @@ import static org.cardano.foundation.voting.domain.SchemaVersion.V1;
 import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
 import static org.cardano.foundation.voting.domain.VotingPowerAsset.ADA;
 import static org.cardano.foundation.voting.utils.MoreUUID.shortUUID;
+import static org.cardano.foundation.voting.domain.VotingEventType.USER_BASED;
 
 @ShellComponent
 @Slf4j
 @RequiredArgsConstructor
 public class CCElectionPreProdCommands {
 
-    private final static String EVENT_NAME = "TEST_VOTE";
+    private final static String EVENT_NAME = "DREP_TEST_VOTE";
 
     private final L1SubmissionService l1SubmissionService;
 
@@ -35,21 +36,24 @@ public class CCElectionPreProdCommands {
         if (network != PREPROD) {
             return "This command can only be run on PRE-PROD network!";
         }
+        log.info("Creating My Voting Event on PRE-PROD network...");
+
+        long startSlot = 139544;
+        long endSlot = startSlot + 1000000;
 
         var createEventCommand = CreateEventCommand.builder()
                 .id(EVENT_NAME)
-                .startEpoch(Optional.of(218))
-                .endEpoch(Optional.of(219))
-                .votingPowerAsset(Optional.of(ADA))
-                .organisers("TEST ORGANISER")
-                .votingEventType(STAKE_BASED)
+                .startSlot(Optional.of(startSlot))
+                .endSlot(Optional.of(endSlot))
+                .votingPowerAsset(Optional.empty())
+                .organisers("RYAN")
+                .votingEventType(USER_BASED)
                 .schemaVersion(V1)
                 .allowVoteChanging(true)
                 .highLevelEventResultsWhileVoting(true)
                 .highLevelCategoryResultsWhileVoting(true)
                 .categoryResultsWhileVoting(false)
-                .proposalsRevealEpoch(Optional.of(220))
-                .snapshotEpoch(Optional.of(217))
+                .proposalsRevealSlot(Optional.of(endSlot + 1))
                 .build();
 
         l1SubmissionService.submitEvent(createEventCommand);
@@ -63,16 +67,30 @@ public class CCElectionPreProdCommands {
             return "This command can only be run on a PRE-PROD network!";
         }
 
-        Proposal n1 = Proposal.builder()
-                .id(UUID.randomUUID().toString())
-                .name("Option 1")
-                .build();
-
-
-        List<Proposal> allProposals = List.of(n1);
+        List<Proposal> allProposals = List.of(
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 1").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 2").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 3").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 4").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 5").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 6").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 7").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 8").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 9").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 10").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 11").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 12").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 13").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 14").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 15").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 16").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 17").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 18").build(),
+                Proposal.builder().id(UUID.randomUUID().toString()).name("Candidate 19").build()
+        );
 
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
-                .id("CATEGORY_TEST1" + "_" + shortUUID(4))
+                .id("DREP_VOTE_CATEGORY" + "_" + shortUUID(4))
                 .event(event)
                 .gdprProtection(true)
                 .schemaVersion(V1)
