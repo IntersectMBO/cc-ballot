@@ -123,8 +123,8 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     try {
       const { slotNumber, stakeAddress, walletId, delegated_drep } = await getPayloadData(walletApiRef.current, openModal);
 
-      if (delegated_drep === null) {
-        throw new Error("Delegated drep is null");
+      if (delegated_drep === null || !(/^drep1[a-z0-9]*/.test(delegated_drep))) {
+        throw new Error("Delegated drep is not valid");
       }
 
       const id = uuidv4();
