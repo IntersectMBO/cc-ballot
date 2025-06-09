@@ -15,8 +15,7 @@ import java.util.UUID;
 
 import static org.cardano.foundation.voting.domain.CardanoNetwork.PREPROD;
 import static org.cardano.foundation.voting.domain.SchemaVersion.V1;
-import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
-import static org.cardano.foundation.voting.domain.VotingPowerAsset.ADA;
+import static org.cardano.foundation.voting.domain.VotingEventType.USER_BASED;
 import static org.cardano.foundation.voting.utils.MoreUUID.shortUUID;
 
 @ShellComponent
@@ -24,7 +23,7 @@ import static org.cardano.foundation.voting.utils.MoreUUID.shortUUID;
 @RequiredArgsConstructor
 public class CCElectionPreProdCommands {
 
-    private final static String EVENT_NAME = "RYANS_TEST_VOTE";
+    private final static String EVENT_NAME = "2025_06_09_TEST_VOTE";
 
     private final L1SubmissionService l1SubmissionService;
 
@@ -38,18 +37,17 @@ public class CCElectionPreProdCommands {
 
         var createEventCommand = CreateEventCommand.builder()
                 .id(EVENT_NAME)
-                .startEpoch(Optional.of(218))
-                .endEpoch(Optional.of(219))
-                .votingPowerAsset(Optional.of(ADA))
+                .startSlot(Optional.of(93787979L))
+                .endSlot(Optional.of(98778727L))
+                .votingPowerAsset(Optional.empty())
                 .organisers("TEST ORGANISER")
-                .votingEventType(STAKE_BASED)
+                .votingEventType(USER_BASED)
                 .schemaVersion(V1)
                 .allowVoteChanging(true)
                 .highLevelEventResultsWhileVoting(true)
                 .highLevelCategoryResultsWhileVoting(true)
-                .categoryResultsWhileVoting(false)
-                .proposalsRevealEpoch(Optional.of(220))
-                .snapshotEpoch(Optional.of(217))
+                .categoryResultsWhileVoting(true)
+                .proposalsRevealSlot(Optional.of(98878727L))
                 .build();
 
         l1SubmissionService.submitEvent(createEventCommand);
@@ -67,7 +65,6 @@ public class CCElectionPreProdCommands {
                 .id(UUID.randomUUID().toString())
                 .name("Option 1")
                 .build();
-
 
         List<Proposal> allProposals = List.of(n1);
 

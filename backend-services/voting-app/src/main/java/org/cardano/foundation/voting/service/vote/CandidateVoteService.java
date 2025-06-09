@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
+import org.cardano.foundation.voting.client.KoiosIntegrationClient;
 import org.cardano.foundation.voting.client.UserVerificationClient;
 import org.cardano.foundation.voting.domain.CandidatePayload;
 import org.cardano.foundation.voting.domain.VoteReceipt;
@@ -50,6 +51,7 @@ public class CandidateVoteService {
     private final MerkleProofSerdeService merkleProofSerdeService;
     private final ChainFollowerClient chainFollowerClient;
     private final UserVerificationClient userVerificationClient;
+    private final KoiosIntegrationClient koiosIntegrationClient;
     private final JsonService jsonService;
 
     @Transactional
@@ -93,6 +95,27 @@ public class CandidateVoteService {
                     .withTitle("CHAIN_FOLLOWER_NOT_SYNCED")
                     .withDetail("Chain follower service not fully synced, please try again later!")
                     .withStatus(INTERNAL_SERVER_ERROR)
+                    .build());
+        }
+
+        val isDrepE = koiosIntegrationClient.isDRep(details.getWalletId());
+        if (isDrepE.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("ERROR_GETTING_DREP_STATUS")
+                    .withDetail("Unable to get DREP status from koios-integration service, reason: koios-integration service not available")
+                    .withStatus(INTERNAL_SERVER_ERROR)
+                    .build()
+            );
+        }
+        val isDRep = isDrepE.get();
+
+        if (!isDRep) {
+            log.warn("User is not DRep, id:{}", eventId);
+
+            return Either.left(Problem.builder()
+                    .withTitle("USER_IS_NOT_DREP")
+                    .withDetail("User is not DRep, id:" + eventId)
+                    .withStatus(BAD_REQUEST)
                     .build());
         }
 

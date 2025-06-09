@@ -14,10 +14,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.cardano.foundation.voting.domain.CardanoNetwork.MAIN;
-import static org.cardano.foundation.voting.domain.CardanoNetwork.PREPROD;
 import static org.cardano.foundation.voting.domain.SchemaVersion.V1;
-import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
-import static org.cardano.foundation.voting.domain.VotingPowerAsset.ADA;
+import static org.cardano.foundation.voting.domain.VotingEventType.USER_BASED;
 import static org.cardano.foundation.voting.utils.MoreUUID.shortUUID;
 
 @ShellComponent
@@ -39,18 +37,17 @@ public class CCElectionProdCommands {
 
         var createEventCommand = CreateEventCommand.builder()
                 .id(EVENT_NAME)
-                .startEpoch(Optional.of(218))
-                .endEpoch(Optional.of(223))
-                .votingPowerAsset(Optional.of(ADA))
+                .startSlot(Optional.of(93787979L))
+                .endSlot(Optional.of(98778727L))
+                .votingPowerAsset(Optional.empty())
                 .organisers("IntersectMBO")
-                .votingEventType(STAKE_BASED)
+                .votingEventType(USER_BASED)
                 .schemaVersion(V1)
                 .allowVoteChanging(true)
                 .highLevelEventResultsWhileVoting(true)
                 .highLevelCategoryResultsWhileVoting(true)
                 .categoryResultsWhileVoting(false)
-                .proposalsRevealEpoch(Optional.of(219))
-                .snapshotEpoch(Optional.of(217))
+                .proposalsRevealSlot(Optional.of(98878727L))
                 .build();
 
         l1SubmissionService.submitEvent(createEventCommand);
@@ -60,7 +57,7 @@ public class CCElectionProdCommands {
 
     @ShellMethod(key = "create_my_voting_category1-prod", value = "Create a my voting category1 on Mainnet.")
     public String create1Category1(@ShellOption String event) {
-        if (network != PREPROD) {
+        if (network != MAIN) {
             return "This command can only be run on a MAINNET network!";
         }
 
@@ -68,7 +65,6 @@ public class CCElectionProdCommands {
                 .id(UUID.randomUUID().toString())
                 .name("Option 1")
                 .build();
-
 
         List<Proposal> allProposals = List.of(n1);
 
