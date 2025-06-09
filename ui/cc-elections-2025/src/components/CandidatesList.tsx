@@ -163,30 +163,20 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
         votedAtSlot: slotNumber.toString(),
       }
 
-      if (response.status === 200) {
-        setVotes(selectedCandidates);
-        setVoteReceipts(receipt);
-        setSelectedCandidates([]);
-        openModal({
-          type: "statusModal",
-          state: {
-            status: "success",
-            title: 'Great!',
-            message: 'You voted successfully.',
-            dataTestId: "success-modal",
-          },
-        });
-      } else {
-        openModal({
-          type: "statusModal",
-          state: {
-            status: "warning",
-            title: 'Error',
-            message: 'Voting failure.',
-            dataTestId: "error-modal",
-          },
-        });
-      }
+      console.log('response', response);
+
+      setVotes(selectedCandidates);
+      setVoteReceipts(receipt);
+      setSelectedCandidates([]);
+      openModal({
+        type: "statusModal",
+        state: {
+          status: "success",
+          title: 'Great!',
+          message: 'You voted successfully.',
+          dataTestId: "success-modal",
+        },
+      });
     } catch (error: any) {
       if (error.response && error.response.data && error.response.data.detail) {
         openModal({
