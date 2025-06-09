@@ -97,28 +97,30 @@ public class CandidateVoteService {
         }
 
         // check which is specific for the USER_BASED event type
-        if (event.votingEventType() == USER_BASED) {
-            val userVerifiedE = userVerificationClient.isVerified(eventId, walletType, details.getWalletId());
-            if (userVerifiedE.isEmpty()) {
-                return Either.left(Problem.builder()
-                        .withTitle("ERROR_GETTING_USER_VERIFICATION_STATUS")
-                        .withDetail("Unable to get user verification status from user-verification service, reason: user verification service not available")
-                        .withStatus(INTERNAL_SERVER_ERROR)
-                        .build()
-                );
-            }
-            val userVerifiedResponse = userVerifiedE.get();
 
-            if (userVerifiedResponse.isNotYetVerified()) {
-                log.warn("User is not verified, id:{}", eventId);
-
-                return Either.left(Problem.builder()
-                        .withTitle("USER_IS_NOT_VERIFIED")
-                        .withDetail("User is not verified, id:" + eventId)
-                        .withStatus(BAD_REQUEST)
-                        .build());
-            }
-        }
+        // disable user verification for CC elections 2025
+//        if (event.votingEventType() == USER_BASED) {
+//            val userVerifiedE = userVerificationClient.isVerified(eventId, walletType, details.getWalletId());
+//            if (userVerifiedE.isEmpty()) {
+//                return Either.left(Problem.builder()
+//                        .withTitle("ERROR_GETTING_USER_VERIFICATION_STATUS")
+//                        .withDetail("Unable to get user verification status from user-verification service, reason: user verification service not available")
+//                        .withStatus(INTERNAL_SERVER_ERROR)
+//                        .build()
+//                );
+//            }
+//            val userVerifiedResponse = userVerifiedE.get();
+//
+//            if (userVerifiedResponse.isNotYetVerified()) {
+//                log.warn("User is not verified, id:{}", eventId);
+//
+//                return Either.left(Problem.builder()
+//                        .withTitle("USER_IS_NOT_VERIFIED")
+//                        .withDetail("User is not verified, id:" + eventId)
+//                        .withStatus(BAD_REQUEST)
+//                        .build());
+//            }
+//        }
 
         val categoryId = castVote.getCategory();
         val categoryM = event.categoryDetailsById(categoryId);
