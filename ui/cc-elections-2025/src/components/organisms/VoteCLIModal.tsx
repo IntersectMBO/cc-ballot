@@ -42,7 +42,7 @@ export const VoteCLIModal = forwardRef<HTMLDivElement>((_, ref) => {
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px'}}>
         <Typography variant="h1">Vote using a Command-Line Interface</Typography>
         <Typography variant="body1">
-          Copy the following vote metadata and use it as a payload to submit a transaction using CLI tool
+          Copy the following vote metadata and use it as a payload to submit a transaction using <Link variant="body1" target="_blank" rel="noopener" href="https://github.com/IntersectMBO/cc-ballot/tree/cc-elections-2025/cli/cc-ballot-cli">CLI tool</Link>
         </Typography>
       </Box>
       <Box sx={{ padding: '16px 0' }}>
