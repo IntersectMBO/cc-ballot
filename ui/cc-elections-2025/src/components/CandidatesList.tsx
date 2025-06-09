@@ -121,7 +121,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     if (!walletApiRef.current) return;
 
     try {
-      const { slotNumber, stakeAddress, walletId, votingPower } = await getPayloadData(walletApiRef.current, EVENT, WALLET_TYPE, openModal);
+      const { slotNumber, stakeAddress, walletId } = await getPayloadData(walletApiRef.current, openModal);
 
       const id = uuidv4();
 
@@ -134,7 +134,6 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
           proposal: PROPOSAL,
           id: id,
           votedAt: slotNumber,
-          votingPower: votingPower,
           timestamp: Math.floor(Date.now() / 1000),
           walletId: walletId,
           walletType: WALLET_TYPE,
@@ -156,7 +155,6 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
         event: EVENT,
         category: CATEGORY,
         proposal: PROPOSAL,
-        votingPower: votingPower.toString(),
         walletId: walletId,
         walletType: WALLET_TYPE,
         signature: signed.signature,
@@ -218,7 +216,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     if (!walletApi) return;
 
     try {
-      const { slotNumber, stakeAddress, walletId } = await getPayloadData(walletApi, EVENT, WALLET_TYPE, openModal);
+      const { slotNumber, stakeAddress, walletId } = await getPayloadData(walletApi, openModal);
 
       const payload = {
         action: "view_vote_receipt",

@@ -42,7 +42,6 @@ export interface VoteReceipt {
   id: string;
   event: string;
   category: string;
-  votingPower: string;
   walletId: string;
   walletType: string;
   proposal: string;
