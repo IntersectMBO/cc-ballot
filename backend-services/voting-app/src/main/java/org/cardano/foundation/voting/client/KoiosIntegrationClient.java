@@ -29,7 +29,7 @@ public class KoiosIntegrationClient {
             val isVerifiedResponse = restTemplate.getForObject(url, KoiosAccountInfoResponse.class);
 
             return Either.right(isVerifiedResponse != null && isVerifiedResponse.getDelegated_drep() != null
-                    && isVerifiedResponse.getDeposit() != null && Long.parseLong(isVerifiedResponse.getDeposit()) >= 0);
+                    && isVerifiedResponse.getDelegated_drep().startsWith("drep1"));
         } catch (HttpClientErrorException e) {
             return Either.left(Problem.builder()
                     .withTitle("VERIFICATION_ERROR")
