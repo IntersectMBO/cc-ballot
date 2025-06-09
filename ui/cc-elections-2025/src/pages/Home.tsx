@@ -110,9 +110,6 @@ export const Home = ({ applyEndTime, isEditActive, isVoteActive }: HomeProps) =>
                 </Box>
               )}
               <Box>
-                <Typography variant="body2">Guide for applicants can be found <Link variant="body2" target="_blank" rel="noopener" href="https://docs.intersectmbo.org/cardano/cardano-governance/cardano-constitution/2025-constitutional-committee-elections/guide-for-applicants">here</Link>.</Typography>
-              </Box>
-              <Box>
                 <Typography variant="body2">Guide for voting can be found <Link variant="body2" target="_blank" rel="noopener" href="https://docs.intersectmbo.org/cardano/cardano-governance/cardano-constitution/2025-constitutional-committee-elections/guide-for-voting">here</Link>.</Typography>
               </Box>
             </Box>
