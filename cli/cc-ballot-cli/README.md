@@ -150,6 +150,59 @@ cc-ballot-cli view_vote_receipt <payload.json> <signature> <publicKey>
 cc-ballot-cli get_results
 ```
 
+Here's a suggested section for your README on how to obtain a **signature** and **public key**, written in the same style as the rest of your documentation:
+
+---
+
+## 🔐 How to Obtain Signature & Public Key
+
+To interact with `cc-ballot-cli`, you need a **digital signature** and your **public key** to verify your identity when casting or validating a vote.
+
+### ✍️ 1. Sign Your Payload
+
+Use a supported Cardano wallet (e.g., [Eternl](https://eternl.io), [Yoroi](https://yoroi-wallet.com), or [Nami](https://namiwallet.io)) to **sign the vote payload** (`payload.json`).
+
+#### ✅ Steps:
+
+1. Open your wallet.
+2. Navigate to the "Sign Data" or "Sign Message" section.
+3. Paste the full contents of your `payload.json` as the message to sign.
+4. Click **Sign**.
+5. Copy the **signature** string returned by the wallet.
+
+> 💡 **Tip**: The payload must exactly match the vote format expected by the CLI, or the signature will be invalid.
+
+---
+
+### 🔑 2. Retrieve Your Public Key
+
+Depending on your wallet, you may be able to export or view your **public key** (not your wallet address).
+
+#### 🔎 Methods:
+
+* **Nami Wallet** (Advanced Users):
+
+   * Open browser developer console while Nami is unlocked.
+   * Run:
+
+     ```js
+     await window.cardano.nami.getPubKey()
+     ```
+   * Copy the resulting hex string.
+
+* **Cardano-CLI** (Advanced CLI Users):
+  If you're using your own keys:
+
+  ```bash
+  cardano-cli key verification-key --signing-key-file payment.skey --verification-key-file payment.vkey
+  ```
+
+* **Hardware Wallets**:
+  Use the companion app (e.g., Ledger Live) to extract your extended public key, then truncate or format as needed.
+
+> ⚠️ **Do not share your private key.** Only the public key and the signature are required for voting.
+
+
 ---
 
 ## ⚙️ Configuration

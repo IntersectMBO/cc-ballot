@@ -37,7 +37,7 @@ public class CCElectionPreProdCommands {
 
         var createEventCommand = CreateEventCommand.builder()
                 .id(EVENT_NAME)
-                .startSlot(Optional.of(93787979L))
+                .startSlot(Optional.of(93808548L))
                 .endSlot(Optional.of(98778727L))
                 .votingPowerAsset(Optional.empty())
                 .organisers("TEST ORGANISER")
