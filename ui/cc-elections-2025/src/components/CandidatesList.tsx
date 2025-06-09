@@ -121,7 +121,11 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     if (!walletApiRef.current) return;
 
     try {
-      const { slotNumber, stakeAddress, walletId } = await getPayloadData(walletApiRef.current, openModal);
+      const { slotNumber, stakeAddress, walletId, delegated_drep } = await getPayloadData(walletApiRef.current, openModal);
+
+      if (delegated_drep === null) {
+        throw new Error("Delegated drep is null");
+      }
 
       const id = uuidv4();
 
@@ -148,7 +152,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
 
       const signed: SignedWeb3Request = await walletApiRef.current?.signData(stakeAddress, payloadHex);
 
-      const response = await submitVote(signed, payloadStr, WALLET_TYPE);
+      await submitVote(signed, payloadStr, WALLET_TYPE);
 
       const receipt: VoteReceipt = {
         id: id,
@@ -162,8 +166,6 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
         publicKey: signed.key ? signed.key : '',
         votedAtSlot: slotNumber.toString(),
       }
-
-      console.log('response', response);
 
       setVotes(selectedCandidates);
       setVoteReceipts(receipt);

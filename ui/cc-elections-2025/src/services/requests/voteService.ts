@@ -26,7 +26,7 @@ export interface AccountInfo {
   stake_address: string;
   status: string;
   delegated_pool: string;
-  delegated_drep: string;
+  delegated_drep: string | null;
   total_balance: string;
   utxo: string;
   rewards: string;
