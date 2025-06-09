@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import { Button } from "@atoms";
 import {useCardano, useModal} from "@context";
-import { geographicRepresentationList, getInitials, getPayloadData } from "@utils";
+import { geographicRepresentationList, getInitials, getPayloadData, shuffle } from "@utils";
 import { CandidatesListItem } from "./CandidatesListItem/CandidatesListItem.tsx";
 import { Candidate } from "@models";
 import { DataActionsBar } from "@/components/molecules";
@@ -36,7 +36,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
 
   const { openModal, closeModal } = useModal();
 
-  const [filteredCandidates, setFilteredCandidates] = useState<Candidate[]>(candidates);
+  const [filteredCandidates, setFilteredCandidates] = useState<Candidate[]>([]);
   const [sortOpen, setSortOpen] = useState<boolean>(false);
   const [chosenSorting, setChosenSorting] = useState<string>("Random");
   const [searchText, setSearchText] = useState<string>("");
@@ -262,7 +262,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
   }
 
   useEffect(() => {
-    setFilteredCandidates(candidates);
+    setFilteredCandidates(shuffle(candidates));
   }, [candidates]);
 
   useEffect(() => {
@@ -282,7 +282,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     }
 
     if (chosenSorting === "Random") {
-      setFilteredCandidates(candidatesTemp);
+      setFilteredCandidates(shuffle(candidatesTemp));
     } else if (chosenSorting === "Name") {
       setFilteredCandidates(candidatesTemp.sort((a, b) => a.candidate.name.localeCompare(b.candidate.name)));
     }

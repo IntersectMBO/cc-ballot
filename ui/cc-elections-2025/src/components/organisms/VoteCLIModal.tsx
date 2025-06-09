@@ -3,9 +3,8 @@ import { CopyBlock, dracula } from "react-code-blocks";
 
 import { ModalWrapper } from "@atoms";
 import { Button } from "@atoms";
-import { Box, Typography } from "@mui/material";
+import { Box, Link, Typography } from "@mui/material";
 import {useModal} from "@context";
-import Link from "@mui/material/Link";
 
 type VoteCLIModalState = {
   id: string;
