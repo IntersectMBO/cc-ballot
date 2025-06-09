@@ -54,15 +54,13 @@ export const Home = ({ applyEndTime, isEditActive, isVoteActive }: HomeProps) =>
                 <Typography variant="caption">CONTEXT</Typography>
                 <Box sx={{ paddingBottom: '16px' }}>
                   <Typography variant="body1" color="#506288">
-                    This vote is to allow the Cardano community to elect a Constitutional Committee(CC) and then submit a governance action.
+                    This vote is to allow DReps to elect a Constitutional Committee(CC) and then submit a governance action. 
 
-                    The Interim Constitutional Committee term expires on 1st September 2025.
+                    The Interim Constitutional Committee term expires on 1st September 2025. 
 
-                    The Constitutional Committee plays a vital role in shaping the future of the Cardano ecosystem by interpreting and upholding the Cardano Constitution.
-
+                    The Constitutional Committee plays a vital role in shaping the future of the Cardano ecosystem by interpreting and upholding the Cardano Constitution. 
+                    
                     Anyone committed to contributing to the governance of Cardano can apply to become a Constitutional Committee member, including individuals, companies, and consortia.
-
-                    Any Ada holder can participate in the vote (as long as they have staked their Ada before the end of epoch 562 on Sunday, 8th June 9:45 PM UTC, as the snapshot will be taken at the beginning of epoch 563).
                   </Typography>
                 </Box>
               </Box>
@@ -112,7 +110,10 @@ export const Home = ({ applyEndTime, isEditActive, isVoteActive }: HomeProps) =>
                 </Box>
               )}
               <Box>
-                <Typography variant="body2">Guides can be found <Link variant="body2" target="_blank" rel="noopener" href="https://docs.intersectmbo.org/cardano/cardano-governance/cardano-constitution/2025-constitutional-committee-elections/guide-for-applicants">here</Link>.</Typography>
+                <Typography variant="body2">Guide for applicants can be found <Link variant="body2" target="_blank" rel="noopener" href="https://docs.intersectmbo.org/cardano/cardano-governance/cardano-constitution/2025-constitutional-committee-elections/guide-for-applicants">here</Link>.</Typography>
+              </Box>
+              <Box>
+                <Typography variant="body2">Guide for voting can be found <Link variant="body2" target="_blank" rel="noopener" href="https://docs.intersectmbo.org/cardano/cardano-governance/cardano-constitution/2025-constitutional-committee-elections/guide-for-voting">here</Link>.</Typography>
               </Box>
             </Box>
             <Box aria-busy={isAllCandidatesLoading}>
