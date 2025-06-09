@@ -150,58 +150,97 @@ cc-ballot-cli view_vote_receipt <payload.json> <signature> <publicKey>
 cc-ballot-cli get_results
 ```
 
-Here's a suggested section for your README on how to obtain a **signature** and **public key**, written in the same style as the rest of your documentation:
-
 ---
 
 ## 🔐 How to Obtain Signature & Public Key
 
-To interact with `cc-ballot-cli`, you need a **digital signature** and your **public key** to verify your identity when casting or validating a vote.
+To interact with `cc-ballot-cli`, you need a **digital signature** and your **public key** to verify your identity when casting or validating a vote. You can obtain both using either:
 
-### ✍️ 1. Sign Your Payload
-
-Use a supported Cardano wallet (e.g., [Eternl](https://eternl.io), [Yoroi](https://yoroi-wallet.com), or [Nami](https://namiwallet.io)) to **sign the vote payload** (`payload.json`).
-
-#### ✅ Steps:
-
-1. Open your wallet.
-2. Navigate to the "Sign Data" or "Sign Message" section.
-3. Paste the full contents of your `payload.json` as the message to sign.
-4. Click **Sign**.
-5. Copy the **signature** string returned by the wallet.
-
-> 💡 **Tip**: The payload must exactly match the vote format expected by the CLI, or the signature will be invalid.
+* A supported Cardano wallet (e.g., Eternl, Yoroi, Nami) — see steps below
+* Or the `cardano-signer` CLI tool
 
 ---
 
-### 🔑 2. Retrieve Your Public Key
+### ✍️ 1. Using a Cardano Wallet (Eternl, Yoroi, Nami)
 
-Depending on your wallet, you may be able to export or view your **public key** (not your wallet address).
+1. Open your wallet and navigate to the **Sign Data** or **Sign Message** section.
+2. Paste the full contents of your `payload.json` as the message to sign.
+3. Click **Sign** and copy the returned **signature** string.
+   👉 **Tip**: The payload must exactly match the expected structure, or the signature will be invalid.
 
-#### 🔎 Methods:
+---
 
-* **Nami Wallet** (Advanced Users):
+### 🛠️ 2. Another Option: Using `cardano-signer` CLI Tool
 
-   * Open browser developer console while Nami is unlocked.
-   * Run:
+The open‑source [`cardano-signer`](https://github.com/gitmachtl/cardano-signer) tool can generate both a signature and a public key directly from your secret key ([github.com][1], [github.com][2]).
 
-     ```js
-     await window.cardano.nami.getPubKey()
-     ```
-   * Copy the resulting hex string.
+#### 📥 Install `cardano-signer`
 
-* **Cardano-CLI** (Advanced CLI Users):
-  If you're using your own keys:
+```bash
+# If you have Rust/Cargo installed:
+:contentReference[oaicite:10]{index=10}
 
-  ```bash
-  cardano-cli key verification-key --signing-key-file payment.skey --verification-key-file payment.vkey
+# Or use Docker:
+:contentReference[oaicite:11]{index=11}
+```
+
+#### ⚙️ Sign the Payload
+
+```bash
+cardano-signer sign \
+  --data-file payload.json \
+  --secret-key payment.skey \
+  --json
+```
+
+The output will include both your `"signature"` and `"publicKey"` in JSON format.
+
+#### 🔐 Verify the Signature (Optional)
+
+To verify your signature:
+
+```bash
+cardano-signer verify \
+  --data-file payload.json \
+  --signature "<your-signature>" \
+  --public-key "<your-publicKey>"
+```
+
+It will return `true` or `false`, with exit codes 0 or 1 accordingly ([github.com][1]).
+
+---
+
+### 🔑 3. Retrieve Your Public Key
+
+#### From Wallet CLI or Browser
+
+* **Nami** (advanced users):
+
+  ```js
+  await window.cardano.nami.getPubKey()
   ```
 
-* **Hardware Wallets**:
-  Use the companion app (e.g., Ledger Live) to extract your extended public key, then truncate or format as needed.
+* **Cardano‑CLI**:
 
-> ⚠️ **Do not share your private key.** Only the public key and the signature are required for voting.
+  ```bash
+  cardano-cli key verification-key \
+    --signing-key-file payment.skey \
+    --verification-key-file payment.vkey
+  ```
 
+* **Hardware Wallets**: Export via companion apps (e.g., Ledger Live).
+
+#### Or Use `cardano-signer`
+
+The above `cardano-signer sign` command already outputs the public key in hex — no extra steps required.
+
+---
+
+> ⚠️ **Security Reminder**
+> Never share your **private key** (`.skey`). Only the **public key** and the **signature** are needed for voting.
+
+[1]: https://github.com/gitmachtl/cardano-signer "gitmachtl/cardano-signer - GitHub"
+[2]: https://github.com/cardano-foundation/cardano-verify-datasignature "cardano-foundation/cardano-verify-datasignature - GitHub"
 
 ---
 
