@@ -550,7 +550,7 @@ public class CandidateVoteService {
             return Either.left(
                     Problem.builder()
                             .withTitle("VOTE_NOT_FOUND")
-                            .withDetail("Not voted yet for stakeKey:" + walletId)
+                            .withDetail("Not voted yet for DRep key:" + walletId)
                             .withStatus(NOT_FOUND)
                             .build()
             );

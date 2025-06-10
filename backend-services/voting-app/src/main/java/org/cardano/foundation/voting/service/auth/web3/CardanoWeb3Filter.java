@@ -302,15 +302,14 @@ public class CardanoWeb3Filter extends OncePerRequestFilter {
 
         if (!walletId.equals(envelopeWalletId)) {
             val problem = Problem.builder()
-                    .withTitle("STAKE_ADDRESS_MISMATCH")
-                    .withDetail("Stake address mismatch, CIP-93 signed address:" + walletId + ", however request is with address:" + envelopeWalletId)
+                    .withTitle("DREP_ADDRESS_MISMATCH")
+                    .withDetail("DRep address mismatch, CIP-93 signed address:" + walletId + ", however request is with address:" + envelopeWalletId)
                     .withStatus(BAD_REQUEST)
                     .build();
 
             sendBackProblem(objectMapper, res, problem);
             return;
         }
-
 
         val eventDetailsE = chainFollowerClient.getEventDetails(eventId);
         if (eventDetailsE.isEmpty()) {
