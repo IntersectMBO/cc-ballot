@@ -163,7 +163,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
 
       const payloadHex = await toHex(payloadStr);
 
-      const signed: SignedWeb3Request = await walletApiRef.current?.signData(delegated_drep, payloadHex);
+      const signed: SignedWeb3Request = await walletApiRef.current?.signData(`${TARGET_NETWORK === 'PREPROD' ? 'e0' : 'e1'}${toHex(delegated_drep)}`, payloadHex);
 
       await submitVote(signed, payloadStr, WALLET_TYPE);
 
@@ -245,7 +245,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
 
       const payloadHex = await toHex(payloadStr);
 
-      const signed = await walletApi?.signData(delegated_drep, payloadHex);
+      const signed = await walletApi?.signData(`${TARGET_NETWORK === 'PREPROD' ? 'e0' : 'e1'}${toHex(delegated_drep)}`, payloadHex);
 
       const response = await getVoteReceipt(signed, payloadStr, WALLET_TYPE);
       setVoteReceipts(response);
