@@ -141,7 +141,7 @@ export const CandidatesListItem = (props: CandidatesListItemProps) => {
           {props.bio.length > 140 ? `${props.bio.substring(0, 140)}...` : props.bio}
         </Typography>
       </Box>
-      <Box sx={{ paddingBottom: '20px', paddingRight: '24px', paddingLeft: '24px', display: 'flex', justifyContent: 'space-between' }}>
+      <Box sx={{ paddingBottom: '20px', paddingRight: '24px', paddingLeft: '24px', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
         <Button variant="text" onClick={handleClick}>Read more</Button>
         {isEnabled && props.isEditActive && address === props.walletAddress && (
           <>

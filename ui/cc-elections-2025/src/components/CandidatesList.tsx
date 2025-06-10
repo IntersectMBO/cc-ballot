@@ -121,7 +121,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     if (!walletApiRef.current) return;
 
     try {
-      const { slotNumber, stakeAddress, walletId, delegated_drep } = await getPayloadData(walletApiRef.current, openModal);
+      const { slotNumber, walletId, delegated_drep } = await getPayloadData(walletApiRef.current, openModal);
 
       if (delegated_drep === null || !(/^drep1[a-z0-9]*/.test(delegated_drep))) {
         throw new Error("Delegated drep is not valid");
@@ -156,7 +156,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
 
       const payloadHex = await toHex(payloadStr);
 
-      const signed: SignedWeb3Request = await walletApiRef.current?.signData(stakeAddress, payloadHex);
+      const signed: SignedWeb3Request = await walletApiRef.current?.signData(delegated_drep, payloadHex);
 
       await submitVote(signed, payloadStr, WALLET_TYPE);
 
@@ -214,7 +214,11 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     if (!walletApi) return;
 
     try {
-      const { slotNumber, stakeAddress, walletId } = await getPayloadData(walletApi, openModal);
+      const { slotNumber, walletId, delegated_drep } = await getPayloadData(walletApi, openModal);
+
+      if (delegated_drep === null || !(/^drep1[a-z0-9]*/.test(delegated_drep))) {
+        throw new Error("Delegated drep is not valid");
+      }
 
       const payload = {
         action: "view_vote_receipt",
@@ -234,7 +238,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
 
       const payloadHex = await toHex(payloadStr);
 
-      const signed = await walletApi?.signData(stakeAddress, payloadHex);
+      const signed = await walletApi?.signData(delegated_drep, payloadHex);
 
       const response = await getVoteReceipt(signed, payloadStr, WALLET_TYPE);
       setVoteReceipts(response);
@@ -298,7 +302,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     <Box>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '40px 0 24px' }}>
         <Typography variant="h2">Candidates List</Typography>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
           <DataActionsBar
             chosenSorting={chosenSorting}
             closeSorts={() => setSortOpen(false)}
@@ -318,7 +322,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
             chosenFiltersLength={chosenFilters.flat().length}
           />
           {isVoteActive && (!votes.length || recastVote)  && (
-            <Box sx={{ display: 'flex', gap: '16px', alignItems: 'center'}}>
+            <Box sx={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
               {isEnabled && (
                 <Box
                   sx={{

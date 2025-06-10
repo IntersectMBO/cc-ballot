@@ -59,7 +59,7 @@ export const DataActionsBar: FC<DataActionsBarProps> = ({ ...props }) => {
         id="search"
         name="search"
         type="text"
-        sx={{ width: '322px', backgroundColor: 'white', padding: '11px 12px' }}
+        sx={{ width: { xxs: '200px', md: '260px', xl: '322px'}, backgroundColor: 'white', padding: '11px 12px' }}
         placeholder="Search ..."
         value={searchText}
         onChange={(event) => setSearchText(event.target.value)}
