@@ -121,7 +121,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     if (!walletApiRef.current) return;
 
     try {
-      const { slotNumber, walletId, delegated_drep } = await getPayloadData(walletApiRef.current, openModal);
+      const { slotNumber, delegated_drep } = await getPayloadData(walletApiRef.current, openModal);
 
       if (delegated_drep === null || !(/^drep1[a-z0-9]*/.test(delegated_drep))) {
         throw new Error("Delegated drep is not valid");
@@ -145,7 +145,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
           id: id,
           votedAt: slotNumber,
           timestamp: Math.floor(Date.now() / 1000),
-          walletId: walletId,
+          walletId: delegated_drep,
           walletType: WALLET_TYPE,
           network: TARGET_NETWORK,
           votes: selectedCandidates
@@ -165,7 +165,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
         event: EVENT,
         category: CATEGORY,
         proposal: PROPOSAL,
-        walletId: walletId,
+        walletId: delegated_drep,
         walletType: WALLET_TYPE,
         signature: signed.signature,
         payload: payloadStr,
@@ -214,7 +214,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     if (!walletApi) return;
 
     try {
-      const { slotNumber, walletId, delegated_drep } = await getPayloadData(walletApi, openModal);
+      const { slotNumber, delegated_drep } = await getPayloadData(walletApi, openModal);
 
       if (delegated_drep === null || !(/^drep1[a-z0-9]*/.test(delegated_drep))) {
         throw new Error("Delegated drep is not valid");
@@ -228,7 +228,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
           category: CATEGORY,
           proposal: PROPOSAL,
           timestamp: Math.floor(Date.now() / 1000),
-          walletId,
+          walletId: delegated_drep,
           walletType: WALLET_TYPE,
           network: TARGET_NETWORK,
         }

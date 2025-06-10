@@ -19,7 +19,7 @@ export const VotingOptionsModal = forwardRef<HTMLDivElement>((_, ref) => {
       dataTestId={ "voting-modal"}
       hideCloseButton={true}
       ref={ref}
-      sx={{ padding: '32px 24px', minWidth: '800px' }}
+      sx={{ padding: '32px 24px', minWidth: { xs: 'auto', md: 'auto', lg: '800px' } }}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '0 16px'}}>
         <Typography variant="h1">Select how you vote</Typography>
@@ -28,14 +28,14 @@ export const VotingOptionsModal = forwardRef<HTMLDivElement>((_, ref) => {
         </Typography>
       </Box>
       <Box>
-        <Box sx={{ display: 'flex', padding: '24px 0', gap: '12px' }}>
+        <Box sx={{ display: 'flex', padding: '24px 0', gap: '12px', flexDirection: { xs: 'column', md: 'row' }}}>
           <Box sx={{
             borderColor: '#D9DEE8',
             borderStyle: "solid",
             borderWidth: '1px',
             borderRadius: '16px',
             padding: '20px 24px',
-            width: '50%',
+            width: { xs: 'auto', md: '50%' },
             display: 'flex',
             flexDirection: 'column',
             gap: '16px',
