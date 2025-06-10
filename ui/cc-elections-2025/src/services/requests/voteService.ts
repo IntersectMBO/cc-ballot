@@ -113,8 +113,9 @@ export const getAccountInfo = async (
 
 export const getDrepInfo = async (
   drepId: string,
+  targetNetwork: string,
 )=> {
-  const response =  await axios.get<DRepInfo>(`https://be.gov.tools/drep/info/${drepId}`);
+  const response =  await axios.get<DRepInfo>(`https://be${targetNetwork === 'PREPROD' ? '.pre-prod' : ''}.gov.tools/drep/info/${drepId}`);
 
   return response.data;
 }

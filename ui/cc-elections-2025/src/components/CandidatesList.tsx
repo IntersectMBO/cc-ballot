@@ -26,7 +26,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
   const WALLET_TYPE: string  = import.meta.env.VITE_WALLET_TYPE;
   const TARGET_NETWORK: string  = import.meta.env.VITE_TARGET_NETWORK;
 
-  const { isEnabled, walletApi } = useCardano();
+  const { isEnabled, walletApi, dRepID } = useCardano();
 
   const walletApiRef = useRef(walletApi);
 
@@ -127,7 +127,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
         throw new Error("Delegated drep is not valid");
       }
 
-      const isRegisteredAsDRep = (await getDrepInfo(toHex(delegated_drep))).isRegisteredAsDRep;
+      const isRegisteredAsDRep = (await getDrepInfo(toHex(dRepID), TARGET_NETWORK)).isRegisteredAsDRep;
 
       if (!isRegisteredAsDRep) {
         throw new Error("Wallet is not registered as a DRep");
