@@ -38,6 +38,14 @@ export interface AccountInfo {
   proposal_refund: string;
 }
 
+export interface DRepInfo {
+  isScriptBased: boolean;
+  isRegisteredAsDRep: boolean;
+  wasRegisteredAsDRep: boolean;
+  isRegisteredAsSoleVoter: boolean;
+  wasRegisteredAsSoleVoter: boolean;
+}
+
 export interface VoteReceipt {
   id: string;
   event: string;
@@ -98,7 +106,15 @@ export const submitVote = async (
 export const getAccountInfo = async (
   walletId: string,
 ) => {
-  const response =  await axios.get<AccountInfo>(`${ACCOUNT_INFO_URL}/api/account-info?stakeAddress=${walletId}`)
+  const response =  await axios.get<AccountInfo>(`${ACCOUNT_INFO_URL}/api/account-info?stakeAddress=${walletId}`);
+
+  return response.data;
+}
+
+export const getDrepInfo = async (
+  drepId: string,
+)=> {
+  const response =  await axios.get<DRepInfo>(`https://be.gov.tools/drep/info/${drepId}`);
 
   return response.data;
 }

@@ -11,7 +11,7 @@ import { geographicRepresentationList, getInitials, getPayloadData, shuffle } fr
 import { CandidatesListItem } from "./CandidatesListItem/CandidatesListItem.tsx";
 import { Candidate } from "@models";
 import { DataActionsBar } from "@/components/molecules";
-import {getVoteReceipt, SignedWeb3Request, submitVote, VoteReceipt} from "@services";
+import {getVoteReceipt, getDrepInfo, SignedWeb3Request, submitVote, VoteReceipt} from "@services";
 
 type CandidatesListProps = {
   candidates: Candidate[];
@@ -125,6 +125,12 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
 
       if (delegated_drep === null || !(/^drep1[a-z0-9]*/.test(delegated_drep))) {
         throw new Error("Delegated drep is not valid");
+      }
+
+      const isRegisteredAsDRep = (await getDrepInfo(toHex(delegated_drep))).isRegisteredAsDRep;
+
+      if (!isRegisteredAsDRep) {
+        throw new Error("Wallet is not registered as a DRep");
       }
 
       const id = uuidv4();
