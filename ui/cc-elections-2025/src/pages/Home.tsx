@@ -75,13 +75,13 @@ export const Home = ({ applyEndTime, isEditActive }: HomeProps) => {
                 <Box sx={{ width: '267px', padding: '12px 0' }}>
                   <Typography variant="caption">VOTING PERIOD</Typography>
                   <Typography variant="body1">
-                    June 10, 2025 6:00 PM (UTC) - June 30, 2025 6:00 PM (UTC)
+                    June 12, 2025 12:00 PM (UTC) - July 2, 2025 12:00 PM (UTC)
                   </Typography>
                 </Box>
                 <Box sx={{ width: '267px', padding: '12px 0' }}>
                   <Typography variant="caption">RESULTS SHOWN</Typography>
                   <Typography variant="body1">
-                    July 4, 2025 6:00 PM (UTC)
+                    July 6, 2025 12:00 PM (UTC)
                   </Typography>
                 </Box>
               </Box>
