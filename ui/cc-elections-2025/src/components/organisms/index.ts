@@ -5,4 +5,5 @@ export * from './Footer';
 export * from './StatusModal';
 export * from './TextModal';
 export * from './VoteCLIModal';
+export * from './VoteConfirmModal';
 export * from './VotingOptionsModal';

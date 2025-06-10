@@ -54,12 +54,12 @@ export const Home = ({ applyEndTime, isEditActive, isVoteActive }: HomeProps) =>
                 <Typography variant="caption">CONTEXT</Typography>
                 <Box sx={{ paddingBottom: '16px' }}>
                   <Typography variant="body1" color="#506288">
-                    This vote is to allow DReps to elect a Constitutional Committee(CC) and then submit a governance action. 
+                    This vote is to allow DReps to elect a Constitutional Committee(CC) and then submit a governance action.
 
-                    The Interim Constitutional Committee term expires on 1st September 2025. 
+                    The Interim Constitutional Committee term expires on 1st September 2025.
 
-                    The Constitutional Committee plays a vital role in shaping the future of the Cardano ecosystem by interpreting and upholding the Cardano Constitution. 
-                    
+                    The Constitutional Committee plays a vital role in shaping the future of the Cardano ecosystem by interpreting and upholding the Cardano Constitution.
+
                     Anyone committed to contributing to the governance of Cardano can apply to become a Constitutional Committee member, including individuals, companies, and consortia.
                   </Typography>
                 </Box>
@@ -112,6 +112,15 @@ export const Home = ({ applyEndTime, isEditActive, isVoteActive }: HomeProps) =>
               <Box>
                 <Typography variant="body2">Guide for voting can be found <Link variant="body2" target="_blank" rel="noopener" href="https://docs.intersectmbo.org/cardano/cardano-governance/cardano-constitution/2025-constitutional-committee-elections/guide-for-voting">here</Link>.</Typography>
               </Box>
+            </Box>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px', backgroundColor: 'white', borderRadius: '16px', padding: '20px 24px 32px 24px', boxShadow: '0px 20px 25px -5px #212A3D14', marginTop: '16px' }}>
+              <Box>
+                <Typography variant="h2">Voting</Typography>
+              </Box>
+              <Typography variant="body1">1. Review all candidates carefully</Typography>
+              <Typography variant="body1">2. Make your selection</Typography>
+              <Typography variant="body1">3. Confirm and submit your vote by signing with your wallet</Typography>
+              <Typography variant="body1">IMPORTANT: Please take the right time before making your decision. Once your vote is submitted it can NOT be changed.</Typography>
             </Box>
             <Box aria-busy={isAllCandidatesLoading}>
               {!allCandidates || isAllCandidatesLoading ? (

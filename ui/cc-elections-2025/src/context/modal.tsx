@@ -7,6 +7,7 @@ import {
   StatusModal,
   TextModal,
   VoteCLIModal,
+  VoteConfirmModal,
   VotingOptionsModal
 } from "@organisms";
 import { basicReducer, callAll, BasicReducer } from "@utils";
@@ -32,6 +33,7 @@ export type ModalType =
   | "voteContext"
   | "voteOptions"
   | "voteCLIModal"
+  | "voteConfirmModal"
   | "candidateDetailsModal"
   | "textModal";
 
@@ -50,6 +52,9 @@ const modals: Record<ModalType, ContextModal> = {
   },
   voteCLIModal: {
     component: <VoteCLIModal />,
+  },
+  voteConfirmModal: {
+    component: <VoteConfirmModal />,
   },
   candidateDetailsModal: {
     component: <CandidateDetailsModal />,

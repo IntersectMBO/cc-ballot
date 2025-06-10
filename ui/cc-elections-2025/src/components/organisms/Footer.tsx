@@ -22,6 +22,7 @@ export const Footer = () => {
               display: 'flex',
               gap: '16px',
               alignItems: 'center',
+              flexWrap: 'wrap',
             }}>
               <Box sx={{ padding: '14px 16px' }}>
                 <Link

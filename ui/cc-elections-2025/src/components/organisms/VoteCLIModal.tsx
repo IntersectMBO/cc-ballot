@@ -37,7 +37,7 @@ export const VoteCLIModal = forwardRef<HTMLDivElement>((_, ref) => {
       dataTestId={ "voting-modal"}
       hideCloseButton={true}
       ref={ref}
-      sx={{ padding: '32px 40px', minWidth: '800px' }}
+      sx={{ padding: { md: '32px 40px' }, minWidth: { lg: '800px' } }}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px'}}>
         <Typography variant="h1">Vote using a Command-Line Interface</Typography>
@@ -51,6 +51,11 @@ export const VoteCLIModal = forwardRef<HTMLDivElement>((_, ref) => {
           text={payload}
           showLineNumbers={true}
           theme={dracula}
+          customStyle={{
+            whiteSpace: "pre-wrap",
+            wordBreak: "break-word",
+            overflowX: "auto",
+          }}
         />
       </Box>
       <Box sx={{ padding: '0 16px' }}>

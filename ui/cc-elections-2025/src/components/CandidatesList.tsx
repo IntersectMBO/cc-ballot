@@ -86,32 +86,39 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
 
   const openVoteModal = () => {
     openModal({
-      type: "voteOptions",
+      type: "voteConfirmModal",
       state: {
-        onLightWalletSelect: () => {
-          if (isEnabled){
-            vote();
-            closeModal();
-          } else {
-            openModal({
-              type: "chooseWallet", state: {
-                onWalletSelect: () => {
-                  vote();
-                }
-              }
-            });
-          }
-        },
-        onCLISelect: () => {
+        onConfirm: () => {
           openModal({
-            type: "voteCLIModal",
+            type: "voteOptions",
             state: {
-              id: uuidv4(),
-              timestamp: Math.floor(Date.now() / 1000),
-              votes: selectedCandidates,
+              onLightWalletSelect: () => {
+                if (isEnabled){
+                  vote();
+                  closeModal();
+                } else {
+                  openModal({
+                    type: "chooseWallet", state: {
+                      onWalletSelect: () => {
+                        vote();
+                      }
+                    }
+                  });
+                }
+              },
+              onCLISelect: () => {
+                openModal({
+                  type: "voteCLIModal",
+                  state: {
+                    id: uuidv4(),
+                    timestamp: Math.floor(Date.now() / 1000),
+                    votes: selectedCandidates,
+                  }
+                });
+              },
             }
           });
-        },
+        }
       }
     });
   }
