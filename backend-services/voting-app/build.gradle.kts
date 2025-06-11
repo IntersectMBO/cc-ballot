@@ -84,6 +84,9 @@ dependencies {
 
     implementation("me.paulschwarz:spring-dotenv:4.0.0")
 
+    // https://mvnrepository.com/artifact/net.i2p.crypto/eddsa
+    implementation("net.i2p.crypto:eddsa:0.3.0")
+
     // spring-boot overridden dependencies:
     runtimeOnly("com.h2database:h2:2.2.224") // GraalVM compatibility
 }

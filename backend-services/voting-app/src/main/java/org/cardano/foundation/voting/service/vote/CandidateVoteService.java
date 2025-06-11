@@ -98,18 +98,7 @@ public class CandidateVoteService {
                     .build());
         }
 
-        val isDrepE = koiosIntegrationClient.isDRep(details.getWalletId());
-        if (isDrepE.isEmpty()) {
-            return Either.left(Problem.builder()
-                    .withTitle("ERROR_GETTING_DREP_STATUS")
-                    .withDetail("Unable to get DREP status from koios-integration service, reason: koios-integration service not available")
-                    .withStatus(INTERNAL_SERVER_ERROR)
-                    .build()
-            );
-        }
-        val isDRep = isDrepE.get();
-
-        if (!isDRep) {
+        if (!details.getWalletId().startsWith("drep")) {
             log.warn("User is not DRep, id:{}", eventId);
 
             return Either.left(Problem.builder()
