@@ -208,7 +208,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
           state: {
             status: "warning",
             title: 'Error',
-            message: error.message,
+            message: error.message ? error.message : error.info,
             dataTestId: "error-modal",
           },
         });
@@ -265,7 +265,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
           state: {
             status: "warning",
             title: 'Error',
-            message: error.message,
+            message: error.message ? error.message : error.info,
             dataTestId: "error-modal",
           },
         });
