@@ -166,7 +166,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
 
       const payloadHex = await toHex(payloadStr);
 
-      const signed: SignedWeb3Request = await walletApiRef.current?.signData(dRepID, payloadHex);
+      const signed: SignedWeb3Request = await walletApiRef.current?.cip95.signData(dRepID, payloadHex);
 
       await submitVote(signed, payloadStr, WALLET_TYPE);
 
