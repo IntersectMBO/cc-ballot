@@ -182,18 +182,20 @@ public class CustomCip30VerificationResult {
         return address;
     }
 
-    public Optional<String> getAddress(AddressFormat format) {
+    public Optional<String> getAddress(AddressFormat format, boolean isDRep) {
         return switch (format) {
             case HEX -> address.map(HexUtil::encodeHexString);
             case TEXT -> address.flatMap(addr -> {
-                try {
-                    return Optional.of(AddressUtil.bytesToAddress(addr));
-                } catch (AddressRuntimeException e) {
+                if (isDRep) {
                     byte[] full = new byte[1 + addr.length];
                     full[0] = 0x22;
                     System.arraycopy(addr, 0, full, 1, addr.length);
 
                     return Optional.of(Bech32.encode(full, "drep"));
+                }
+
+                try {
+                    return Optional.of(AddressUtil.bytesToAddress(addr));
                 } catch (AddressExcepion e) {
                     logger.error("Error converting address to text", e);
                     return Optional.empty();

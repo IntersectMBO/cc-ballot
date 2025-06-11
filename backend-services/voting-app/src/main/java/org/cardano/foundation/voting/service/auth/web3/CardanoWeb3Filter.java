@@ -108,7 +108,7 @@ public class CardanoWeb3Filter extends OncePerRequestFilter {
             return;
         }
 
-        val maybeAddress = cipVerificationResult.getAddress(AddressFormat.TEXT);
+        val maybeAddress = cipVerificationResult.getAddress(AddressFormat.TEXT, true);
 
         if (maybeAddress.isEmpty()) {
             val problem = Problem.builder()
