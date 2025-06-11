@@ -134,9 +134,12 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
         throw new Error("Delegated drep is not valid");
       }
 
-      const isRegisteredAsDRep = (await getDrepInfo(dRepID, TARGET_NETWORK)).isRegisteredAsDRep;
+      const dRepInfo = await getDrepInfo(dRepID, TARGET_NETWORK);
 
-      if (!isRegisteredAsDRep) {
+      const isRegisteredAsDRep = dRepInfo.isRegisteredAsDRep;
+      const isRegisteredAsSoleVoter = dRepInfo.isRegisteredAsSoleVoter;
+
+      if (!isRegisteredAsDRep && !isRegisteredAsSoleVoter) {
         throw new Error("Wallet is not registered as a DRep");
       }
 
