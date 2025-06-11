@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState} from "react";
+import { PublicKey } from "@emurgo/cardano-serialization-lib-asmjs";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import Link from "@mui/material/Link";
@@ -26,7 +27,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
   const WALLET_TYPE: string  = import.meta.env.VITE_WALLET_TYPE;
   const TARGET_NETWORK: string  = import.meta.env.VITE_TARGET_NETWORK;
 
-  const { isEnabled, walletApi, dRepID } = useCardano();
+  const { isEnabled, walletApi, dRepID, pubDRepKey } = useCardano();
 
   const walletApiRef = useRef(walletApi);
 
@@ -224,11 +225,10 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     if (!walletApi) return;
 
     try {
-      const { slotNumber, delegated_drep } = await getPayloadData(walletApi, openModal);
+      const { slotNumber } = await getPayloadData(walletApi, openModal);
 
-      if (delegated_drep === null || !(/^drep1[a-z0-9]*/.test(delegated_drep))) {
-        throw new Error("Delegated drep is not valid");
-      }
+      const cip105dRepID = (PublicKey.from_hex(pubDRepKey)).hash();
+      const walletId = cip105dRepID.to_bech32('drep');
 
       const payload = {
         action: "view_vote_receipt",
@@ -238,7 +238,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
           category: CATEGORY,
           proposal: PROPOSAL,
           timestamp: Math.floor(Date.now() / 1000),
-          walletId: delegated_drep,
+          walletId,
           walletType: WALLET_TYPE,
           network: TARGET_NETWORK,
         }
@@ -248,7 +248,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
 
       const payloadHex = await toHex(payloadStr);
 
-      const signed = await walletApi?.signData(dRepID, payloadHex);
+      const signed = await walletApi?.cip95.signData(dRepID, payloadHex);
 
       const response = await getVoteReceipt(signed, payloadStr, WALLET_TYPE);
       setVoteReceipts(response);
