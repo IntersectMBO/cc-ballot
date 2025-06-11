@@ -139,20 +139,43 @@ public class CardanoWeb3Filter extends OncePerRequestFilter {
             val cipBodyHash = cipVerificationResult.getMessage(MessageFormat.HEX);
             val payload = payloadM.orElseThrow();
 
-            val payloadHash = encodeHexString(blake2bHash224(decodeHexString(payload)));
+            try {
+                val payloadHash = encodeHexString(blake2bHash224(decodeHexString(payload)));
 
-            if (!cipBodyHash.equals(payloadHash)) {
-                val problem = Problem.builder()
-                        .withTitle("CIP_30_HASH_MISMATCH")
-                        .withDetail("Signed hash does not match our precalculated hash!")
-                        .withStatus(BAD_REQUEST)
-                        .build();
+                if (!cipBodyHash.equals(payloadHash)) {
+                    val problem = Problem.builder()
+                            .withTitle("CIP_30_HASH_MISMATCH")
+                            .withDetail("Signed hash does not match our precalculated hash!")
+                            .withStatus(BAD_REQUEST)
+                            .build();
 
-                sendBackProblem(objectMapper, res, problem);
-                return;
+                    sendBackProblem(objectMapper, res, problem);
+                    return;
+                }
+
+                cipBody = new String(decodeHexString(payload)); // flip cipBody to be payload for further processing
+            } catch (IllegalArgumentException e) {
+                log.info("cipVerificationResult said the payload was hashed but it wasn't!");
+
+                StringBuilder hexString = new StringBuilder();
+
+                for (char c : payload.toCharArray()) {
+                    hexString.append(String.format("%02x", (int) c));
+                }
+                val payloadHash = encodeHexString(blake2bHash224(decodeHexString(hexString.toString())));
+
+                if (!cipBodyHash.equals(payloadHash)) {
+                    val problem = Problem.builder()
+                            .withTitle("CIP_30_HASH_MISMATCH")
+                            .withDetail("Signed hash does not match our precalculated hash!")
+                            .withStatus(BAD_REQUEST)
+                            .build();
+
+                    sendBackProblem(objectMapper, res, problem);
+                    return;
+                }
+                cipBody = payload;
             }
-
-            cipBody = new String(decodeHexString(payload)); // flip cipBody to be payload for further processing
         }
 
         val cip93EnvelopeE = jsonService.decodeGenericCIP93(cipBody);
