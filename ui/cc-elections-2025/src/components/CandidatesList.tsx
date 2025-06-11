@@ -140,6 +140,8 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
         throw new Error("Wallet is not registered as a DRep");
       }
 
+      console.log("DRep ID:", dRepID);
+
       const id = uuidv4();
 
       const payload = {
