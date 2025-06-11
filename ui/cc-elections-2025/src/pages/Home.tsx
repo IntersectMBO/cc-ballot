@@ -117,9 +117,10 @@ export const Home = ({ applyEndTime, isEditActive, isVoteActive }: HomeProps) =>
               <Box>
                 <Typography variant="h2">Voting</Typography>
               </Box>
-              <Typography variant="body1">1. Review all candidates carefully</Typography>
-              <Typography variant="body1">2. Make your selection</Typography>
-              <Typography variant="body1">3. Confirm and submit your vote by signing with your wallet</Typography>
+              <Typography variant="body1">1. You need to be a registered DRep to participate in this vote</Typography>
+              <Typography variant="body1">2. Review all candidates carefully</Typography>
+              <Typography variant="body1">3. Make your selection</Typography>
+              <Typography variant="body1">4. Confirm and submit your vote by signing with your wallet</Typography>
               <Typography variant="body1">IMPORTANT: Please take the right time before making your decision. Once your vote is submitted it can NOT be changed.</Typography>
             </Box>
             <Box aria-busy={isAllCandidatesLoading}>
