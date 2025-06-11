@@ -4,10 +4,13 @@ import co.nstant.in.cbor.CborDecoder;
 import co.nstant.in.cbor.CborException;
 import co.nstant.in.cbor.model.*;
 import com.bloxbean.cardano.client.address.Address;
+import com.bloxbean.cardano.client.address.AddressType;
 import com.bloxbean.cardano.client.cip.cip8.COSEKey;
 import com.bloxbean.cardano.client.crypto.Blake2bUtil;
 import com.bloxbean.cardano.client.exception.AddressRuntimeException;
+import com.bloxbean.cardano.client.governance.DRepId;
 import com.bloxbean.cardano.client.util.HexUtil;
+import lombok.NonNull;
 import net.i2p.crypto.eddsa.EdDSAEngine;
 import net.i2p.crypto.eddsa.EdDSAPublicKey;
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
@@ -27,6 +30,7 @@ import static co.nstant.in.cbor.model.MajorType.ARRAY;
 import static co.nstant.in.cbor.model.MajorType.MAP;
 import static com.bloxbean.cardano.client.address.AddressProvider.verifyAddress;
 import static com.bloxbean.cardano.client.common.cbor.CborSerializationUtil.serialize;
+import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash224;
 import static net.i2p.crypto.eddsa.EdDSAEngine.ONE_SHOT_MODE;
 import static net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable.ED_25519;
 import static org.cardanofoundation.cip30.ValidationError.CIP8_FORMAT_ERROR;
@@ -180,17 +184,16 @@ public final class CustomCIP30Verifier {
                     ed25519PublicKeyBytes
             );
 
-            var pubKey1 = Optional.ofNullable(deserializeCardanoAddressFromHeaderMap(protectedHeaderMap));
+            var pubKey1 = Optional.ofNullable(deserializeED25519PublicKey(coseKey, protectedHeaderMap));
             var pubKey2 = Optional.ofNullable(getED25519PublicKeyFromCoseKey(coseKey));
 
             var isAddressVerified = true;
             if (pubKey1.isPresent() && pubKey2.isPresent()) {
-                try {
-                    Address addr = new Address(pubKey1.get());
-                    isAddressVerified = verifyAddress(addr, pubKey2.get());
-                } catch (Exception e) {
-                    // Likely not a valid Cardano address (e.g., a raw DRep key), skip address verification
-                    logger.warn("Skipping address verification: invalid address format. Possibly a DRep key.");
+                var drepId1 = DRepId.fromVerificationKeyBytes(pubKey1.get());
+                var drepId2 = DRepId.fromVerificationKeyBytes(pubKey2.get());
+
+                if (!drepId1.equals(drepId2)) {
+                    isAddressVerified = false;
                 }
             }
 
@@ -201,7 +204,7 @@ public final class CustomCIP30Verifier {
                 b.valid();
             }
 
-            Optional.ofNullable(deserializeCardanoAddressFromHeaderMap(protectedHeaderMap)).ifPresent(b::address);
+            Optional.ofNullable(deserializeED25519PublicKey(coseKey, protectedHeaderMap)).ifPresent(b::address);
             Optional.ofNullable(messageByteString.getBytes()).map(b::message);
             b.ed25519PublicKey(ed25519PublicKeyBytes);
             b.ed25519Signature(ed25519SignatureByteString.getBytes());

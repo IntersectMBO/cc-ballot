@@ -4,6 +4,7 @@ import com.bloxbean.cardano.client.address.util.AddressUtil;
 import com.bloxbean.cardano.client.crypto.Bech32;
 import com.bloxbean.cardano.client.exception.AddressExcepion;
 import com.bloxbean.cardano.client.exception.AddressRuntimeException;
+import com.bloxbean.cardano.client.governance.DRepId;
 import com.bloxbean.cardano.client.util.HexUtil;
 import org.cardanofoundation.cip30.AddressFormat;
 import org.cardanofoundation.cip30.CIP30Verifier;
@@ -187,11 +188,7 @@ public class CustomCip30VerificationResult {
             case HEX -> address.map(HexUtil::encodeHexString);
             case TEXT -> address.flatMap(addr -> {
                 if (isDRep) {
-                    byte[] full = new byte[1 + addr.length];
-                    full[0] = 0x22;
-                    System.arraycopy(addr, 0, full, 1, addr.length);
-
-                    return Optional.of(Bech32.encode(full, "drep"));
+                    return Optional.of(DRepId.fromVerificationKeyBytes(addr));
                 }
 
                 try {

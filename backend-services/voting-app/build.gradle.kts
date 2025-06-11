@@ -71,6 +71,8 @@ dependencies {
 
 	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0")
 
+    implementation("com.bloxbean.cardano:cardano-client-governance:0.6.4")
+
     implementation("io.blockfrost:blockfrost-java:0.1.3")
 
     implementation("io.vavr:vavr:0.10.4")
