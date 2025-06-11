@@ -188,7 +188,7 @@ public final class CustomCIP30Verifier {
                 try {
                     Address addr = new Address(pubKey1.get());
                     isAddressVerified = verifyAddress(addr, pubKey2.get());
-                } catch (AddressRuntimeException e) {
+                } catch (Exception e) {
                     // Likely not a valid Cardano address (e.g., a raw DRep key), skip address verification
                     logger.warn("Skipping address verification: invalid address format. Possibly a DRep key.");
                 }
