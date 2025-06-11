@@ -155,7 +155,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
           id: id,
           votedAt: slotNumber,
           timestamp: Math.floor(Date.now() / 1000),
-          walletId: delegated_drep,
+          walletId: dRepID,
           walletType: WALLET_TYPE,
           network: TARGET_NETWORK,
           votes: selectedCandidates
