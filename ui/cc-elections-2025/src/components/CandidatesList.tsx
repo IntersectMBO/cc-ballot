@@ -156,8 +156,8 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
           walletType: WALLET_TYPE,
           network: TARGET_NETWORK,
           votes: selectedCandidates
-        },
-      }
+        }
+      };
 
       const payloadStr = JSON.stringify(payload);
 
@@ -177,8 +177,8 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
         signature: signed.signature,
         payload: payloadStr,
         publicKey: signed.key ? signed.key : '',
-        votedAtSlot: slotNumber.toString(),
-      }
+        votedAtSlot: slotNumber.toString()
+      };
 
       setVotes(selectedCandidates);
       setVoteReceipts(receipt);

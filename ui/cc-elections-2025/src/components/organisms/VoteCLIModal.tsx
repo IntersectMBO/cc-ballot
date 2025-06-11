@@ -28,7 +28,7 @@ export const VoteCLIModal = forwardRef<HTMLDivElement>((_, ref) => {
       "walletId": "<insert your wallet id>",
       "walletType": "${import.meta.env.VITE_WALLET_TYPE}",
       "network": "${import.meta.env.VITE_TARGET_NETWORK}",
-      "votes": ${JSON.stringify(state?.votes)},
+      "votes": ${JSON.stringify(state?.votes)}
     }
   }`;
 
