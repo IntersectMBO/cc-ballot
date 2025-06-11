@@ -129,11 +129,10 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     if (!walletApiRef.current) return;
 
     try {
-      const { slotNumber, delegated_drep } = await getPayloadData(walletApiRef.current, openModal);
+      const { slotNumber } = await getPayloadData(walletApiRef.current, openModal);
 
-      if (delegated_drep === null || !(/^drep1[a-z0-9]*/.test(delegated_drep))) {
-        throw new Error("Delegated drep is not valid");
-      }
+      const cip105dRepID = (PublicKey.from_hex(pubDRepKey)).hash();
+      const walletId = cip105dRepID.to_bech32('drep');
 
       const dRepInfo = await getDrepInfo(dRepID, TARGET_NETWORK);
 
@@ -156,7 +155,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
           id: id,
           votedAt: slotNumber,
           timestamp: Math.floor(Date.now() / 1000),
-          walletId: delegated_drep,
+          walletId,
           walletType: WALLET_TYPE,
           network: TARGET_NETWORK,
           votes: selectedCandidates
@@ -176,7 +175,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
         event: EVENT,
         category: CATEGORY,
         proposal: PROPOSAL,
-        walletId: delegated_drep,
+        walletId,
         walletType: WALLET_TYPE,
         signature: signed.signature,
         payload: payloadStr,
