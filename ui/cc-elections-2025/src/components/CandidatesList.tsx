@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState} from "react";
-import { PublicKey } from "@emurgo/cardano-serialization-lib-asmjs";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import Link from "@mui/material/Link";
@@ -129,10 +128,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     if (!walletApiRef.current) return;
 
     try {
-      const { slotNumber } = await getPayloadData(walletApiRef.current, openModal);
-
-      const cip105dRepID = (PublicKey.from_hex(pubDRepKey)).hash();
-      const walletId = cip105dRepID.to_bech32('drep');
+      const { slotNumber, walletId } = await getPayloadData(pubDRepKey, openModal);
 
       const dRepInfo = await getDrepInfo(dRepID, TARGET_NETWORK);
 
@@ -224,10 +220,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     if (!walletApi) return;
 
     try {
-      const { slotNumber } = await getPayloadData(walletApi, openModal);
-
-      const cip105dRepID = (PublicKey.from_hex(pubDRepKey)).hash();
-      const walletId = cip105dRepID.to_bech32('drep');
+      const { slotNumber, walletId } = await getPayloadData(pubDRepKey, openModal);
 
       const payload = {
         action: "view_vote_receipt",
@@ -401,13 +394,6 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
                   Read more
                 </Link>
               </Box>
-              {/*<Button*/}
-              {/*  variant="text"*/}
-              {/*  onClick={() => setRecastVote(true)}*/}
-              {/*  sx={{ minWidth: '162px'}}*/}
-              {/*>*/}
-              {/*  {'Recast your vote'}*/}
-              {/*</Button>*/}
             </Box>
           )}
         </Box>
