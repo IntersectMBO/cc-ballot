@@ -16,7 +16,9 @@ A cross-platform command-line tool to interact with a blockchain-based voting AP
 
 ### 💾 Quick Setup (Linux/macOS)
 
-1. **Download** the latest release `.zip` from [releases page](https://github.com/IntersectMBO/cc-ballot/releases).
+1. **Java 17+** is required on the client machine.
+
+2. **Download** the latest release `.zip` from [releases page](https://github.com/IntersectMBO/cc-ballot/releases).
 
 2. **Extract** it:
 
@@ -35,6 +37,121 @@ A cross-platform command-line tool to interact with a blockchain-based voting AP
    ```bash
    cc-ballot-cli cast_vote payload.json SIGNATURE PUBKEY
    ```
+   
+---
+
+## 🖥️ CLI Usage
+
+---
+
+## 🗳️ How to Vote (for DReps Only)
+
+> ⚠️ **Only DReps can vote using this CLI. You must sign the vote with your official DRep signing key.**
+
+Follow these 4 simple steps to cast your vote in the **2025 Constitutional Committee elections**:
+
+---
+
+### ✅ Step 1: Get Your Vote Payload
+
+1. Visit the official web app: **"2025 Constitutional Committee elections"**
+2. Download your personalized **payload.json** — it will look similar to this:
+
+```json
+{
+  "action": "cast_vote",
+  "slot": "<insert current Cardano slot>",
+  "data": {
+    "event": "2025_06_09_TEST_VOTE",
+    "category": "CATEGORY_TEST1_0306",
+    "proposal": "0f0904c4-80a5-4be8-bae8-42efce0f3097",
+    "id": "7df89449-0fbf-4a8a-b3eb-a9b547bf8e89",
+    "votedAt": "<insert current Cardano slot>",
+    "timestamp": 1749722588,
+    "walletId": "<your DRep ID here>",
+    "walletType": "CARDANO",
+    "network": "PREPROD",
+    "votes": [2, 5, 15]
+  }
+}
+```
+
+Replace:
+
+* `<insert current Cardano slot>` with the actual slot number at the time of voting.
+* `<your DRep ID here>` with your **DRep ID** (this is your wallet ID as a DRep).
+
+---
+
+### ✍️ Step 2: Sign the Payload
+
+You need to **sign the payload** using your DRep signing key.
+
+You can use any tool that supports Cardano data signing:
+
+#### Option A – `cardano-cli`
+
+```bash
+cardano-cli transaction sign-data \
+  --tx-body-file payload.json \
+  --signing-key-file drep.skey \
+  --out-file signature.json
+```
+
+#### Option B – `cardano-signer`
+
+```bash
+cardano-signer sign \
+  --data-file payload.json \
+  --secret-key drep.skey \
+  --json
+```
+
+This will give you:
+
+* a **signature**
+* your **public key** (used for verification)
+
+---
+
+### 🚀 Step 3: Cast the Vote
+
+Run the CLI command with your payload file, signature, and public key:
+
+```bash
+cc-ballot-cli cast_vote payload.json <signature> <publicKey>
+```
+
+For example:
+
+```bash
+cc-ballot-cli cast_vote payload.json "abc123signature" "abcdef123456pubkey"
+```
+
+✅ If successful, your vote is recorded, and you'll receive a vote receipt.
+
+---
+
+### 🔎 Step 4 (Optional): View Your Vote Receipt
+
+To retrieve and verify your submitted vote:
+
+```bash
+cc-ballot-cli view_vote_receipt payload.json <signature> <publicKey>
+```
+
+---
+
+## 🧠 Summary
+
+| Step | Action                                                    |
+| ---- | --------------------------------------------------------- |
+| 1️⃣  | Get `payload.json` from the elections web app             |
+| 2️⃣  | Insert your **DRep ID** and Cardano slot into the payload |
+| 3️⃣  | Sign it using your **DRep key**                           |
+| 4️⃣  | Submit it using `cc-ballot-cli cast_vote`                 |
+
+> 🔐 **Reminder**: Never share your private key. Only the signature and public key are needed.
 
 ---
 
@@ -127,120 +244,6 @@ zip -r cc-ballot-cli.zip cc-ballot-cli/
 ```
 
 Upload `cc-ballot-cli.zip` to your preferred release channel (GitHub Releases, website, etc.).
-
----
-
-## 🖥️ CLI Usage
-
-### 🗳 Cast a Vote
-
-```bash
-cc-ballot-cli cast_vote <payload.json> <signature> <publicKey>
-```
-
-### 📃 View Vote Receipt
-
-```bash
-cc-ballot-cli view_vote_receipt <payload.json> <signature> <publicKey>
-```
-
-### 📊 Get Results
-
-```bash
-cc-ballot-cli get_results
-```
-
----
-
-## 🔐 How to Obtain Signature & Public Key
-
-To interact with `cc-ballot-cli`, you need a **digital signature** and your **public key** to verify your identity when casting or validating a vote. You can obtain both using either:
-
-* A supported Cardano wallet (e.g., Eternl, Yoroi, Nami) — see steps below
-* Or the `cardano-signer` CLI tool
-
----
-
-### ✍️ 1. Using a Cardano Wallet (Eternl, Yoroi, Nami)
-
-1. Open your wallet and navigate to the **Sign Data** or **Sign Message** section.
-2. Paste the full contents of your `payload.json` as the message to sign.
-3. Click **Sign** and copy the returned **signature** string.
-   👉 **Tip**: The payload must exactly match the expected structure, or the signature will be invalid.
-
----
-
-### 🛠️ 2. Another Option: Using `cardano-signer` CLI Tool
-
-The open‑source [`cardano-signer`](https://github.com/gitmachtl/cardano-signer) tool can generate both a signature and a public key directly from your secret key ([github.com][1], [github.com][2]).
-
-#### 📥 Install `cardano-signer`
-
-```bash
-# If you have Rust/Cargo installed:
-:contentReference[oaicite:10]{index=10}
-
-# Or use Docker:
-:contentReference[oaicite:11]{index=11}
-```
-
-#### ⚙️ Sign the Payload
-
-```bash
-cardano-signer sign \
-  --data-file payload.json \
-  --secret-key payment.skey \
-  --json
-```
-
-The output will include both your `"signature"` and `"publicKey"` in JSON format.
-
-#### 🔐 Verify the Signature (Optional)
-
-To verify your signature:
-
-```bash
-cardano-signer verify \
-  --data-file payload.json \
-  --signature "<your-signature>" \
-  --public-key "<your-publicKey>"
-```
-
-It will return `true` or `false`, with exit codes 0 or 1 accordingly ([github.com][1]).
-
----
-
-### 🔑 3. Retrieve Your Public Key
-
-#### From Wallet CLI or Browser
-
-* **Nami** (advanced users):
-
-  ```js
-  await window.cardano.nami.getPubKey()
-  ```
-
-* **Cardano‑CLI**:
-
-  ```bash
-  cardano-cli key verification-key \
-    --signing-key-file payment.skey \
-    --verification-key-file payment.vkey
-  ```
-
-* **Hardware Wallets**: Export via companion apps (e.g., Ledger Live).
-
-#### Or Use `cardano-signer`
-
-The above `cardano-signer sign` command already outputs the public key in hex — no extra steps required.
-
----
-
-> ⚠️ **Security Reminder**
-> Never share your **private key** (`.skey`). Only the **public key** and the **signature** are needed for voting.
-
-[1]: https://github.com/gitmachtl/cardano-signer "gitmachtl/cardano-signer - GitHub"
-[2]: https://github.com/cardano-foundation/cardano-verify-datasignature "cardano-foundation/cardano-verify-datasignature - GitHub"
 
 ---
 

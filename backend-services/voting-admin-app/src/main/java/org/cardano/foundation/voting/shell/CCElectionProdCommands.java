@@ -23,7 +23,7 @@ import static org.cardano.foundation.voting.utils.MoreUUID.shortUUID;
 @RequiredArgsConstructor
 public class CCElectionProdCommands {
 
-    private final static String EVENT_NAME = "CC-Elections";
+    private final static String EVENT_NAME = "CC-Elections-2025";
 
     private final L1SubmissionService l1SubmissionService;
 
@@ -69,7 +69,7 @@ public class CCElectionProdCommands {
         List<Proposal> allProposals = List.of(n1);
 
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
-                .id("CATEGORY_TEST1" + "_" + shortUUID(4))
+                .id("CATEGORY" + "_" + shortUUID(4))
                 .event(event)
                 .gdprProtection(true)
                 .schemaVersion(V1)
