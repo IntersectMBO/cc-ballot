@@ -25,7 +25,7 @@ export const VoteCLIModal = forwardRef<HTMLDivElement>((_, ref) => {
       "id": "${state?.id}",
       "votedAt": "<insert Cardano slot number of the moment of your vote>",
       "timestamp": ${state?.timestamp},
-      "walletId": "<insert your wallet id>",
+      "walletId": "<insert your DRep ID here>",
       "walletType": "${import.meta.env.VITE_WALLET_TYPE}",
       "network": "${import.meta.env.VITE_TARGET_NETWORK}",
       "votes": ${JSON.stringify(state?.votes)}
