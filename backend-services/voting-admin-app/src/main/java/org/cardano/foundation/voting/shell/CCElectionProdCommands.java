@@ -40,8 +40,8 @@ public class CCElectionProdCommands {
 
         var createEventCommand = CreateEventCommand.builder()
                 .id(EVENT_NAME)
-                .startSlot(Optional.of(158159984L))
-                .endSlot(Optional.of(158161284L))
+                .startSlot(Optional.of(158163309L))
+                .endSlot(Optional.of(159891309L))
                 .votingPowerAsset(Optional.empty())
                 .organisers("IntersectMBO")
                 .votingEventType(USER_BASED)
@@ -50,7 +50,7 @@ public class CCElectionProdCommands {
                 .highLevelEventResultsWhileVoting(true)
                 .highLevelCategoryResultsWhileVoting(true)
                 .categoryResultsWhileVoting(false)
-                .proposalsRevealSlot(Optional.of(158161300L))
+                .proposalsRevealSlot(Optional.of(160236909L))
                 .build();
 
         l1SubmissionService.submitEvent(createEventCommand);
