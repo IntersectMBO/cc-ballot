@@ -40,7 +40,7 @@ public class CCElectionProdCommands {
 
         var createEventCommand = CreateEventCommand.builder()
                 .id(EVENT_NAME)
-                .startSlot(Optional.of(158163309L))
+                .startSlot(Optional.of(158170509L))
                 .endSlot(Optional.of(159891309L))
                 .votingPowerAsset(Optional.empty())
                 .organisers("IntersectMBO")
