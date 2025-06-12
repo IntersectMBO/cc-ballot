@@ -8,24 +8,29 @@ import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.L1MerkleCommitment;
 import org.cardano.foundation.voting.domain.L1SubmissionData;
 import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
+import org.cardano.foundation.voting.domain.web3.CustomCIP30Verifier;
 import org.cardano.foundation.voting.repository.VoteRepository;
 import org.cardano.foundation.voting.service.json.JsonService;
 import org.cardano.foundation.voting.service.transaction_submit.L1SubmissionService;
 import org.cardano.foundation.voting.service.vote.VoteService;
-import org.cardanofoundation.cip30.CIP30Verifier;
+import org.cardanofoundation.cip30.MessageFormat;
 import org.cardanofoundation.merkle.MerkleTree;
 import org.cardanofoundation.merkle.ProofItem;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
+import org.zalando.problem.Problem;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash224;
+import static com.bloxbean.cardano.client.util.HexUtil.decodeHexString;
 import static com.bloxbean.cardano.client.util.HexUtil.encodeHexString;
 import static org.cardano.foundation.voting.domain.VoteSerialisations.VOTE_SERIALISER;
 import static org.cardano.foundation.voting.domain.VoteSerialisations.createSerialiserFunction;
 import static org.cardanofoundation.cip30.MessageFormat.TEXT;
+import static org.zalando.problem.Status.BAD_REQUEST;
 
 @Service
 @Slf4j
@@ -211,7 +216,7 @@ public class VoteCommitmentService {
                                          List<ProofItem> proofItems,
                                          String merkleRootHash,
                                          L1SubmissionData l1SubmissionData) {
-        val cip30Verifier = new CIP30Verifier(vote.getSignature(), vote.getPublicKey());
+        val cip30Verifier = new CustomCIP30Verifier(vote.getSignature(), vote.getPublicKey());
 
         val cip30VerificationResult = cip30Verifier.verify();
         if (!cip30VerificationResult.isValid()) {
@@ -221,7 +226,11 @@ public class VoteCommitmentService {
 
         val voteSignedJsonPayload = cip30VerificationResult.getMessage(TEXT);
 
-        val cip93EnvelopeE = jsonService.decodeCIP93VoteEnvelope(voteSignedJsonPayload);
+        var cip93EnvelopeE = jsonService.decodeCIP93VoteEnvelope(voteSignedJsonPayload);
+
+        if (cip93EnvelopeE.isEmpty()) {
+            cip93EnvelopeE = jsonService.decodeCIP93VoteEnvelope(vote.getPayload().get());
+        }
 
         if (cip93EnvelopeE.isEmpty()) {
             log.error("Invalid voteSignedJsonPayload for vote:{}", vote.getSignature());
