@@ -24,15 +24,15 @@ import static org.cardano.foundation.voting.utils.MoreUUID.shortUUID;
 @ShellComponent
 @Slf4j
 @RequiredArgsConstructor
-public class CCElectionProdCommands {
+public class CCElectionProdTestCommands {
 
-    private final static String EVENT_NAME = "CC-Elections-2025";
+    private final static String EVENT_NAME = "CC-Elections-2025_TEST";
 
     private final L1SubmissionService l1SubmissionService;
 
     private final CardanoNetwork network;
 
-    @ShellMethod(key = "create_prod_vote", value = "Create My Voting Event on a MAINNET network.")
+    @ShellMethod(key = "create_prod_test_vote", value = "Create My Voting Event on a MAINNET network.")
     public String createMyVotingEvent() {
         if (network != MAIN) {
             return "This command can only be run on MAINNET network!";
@@ -58,7 +58,7 @@ public class CCElectionProdCommands {
         return "Created My Event: " + createEventCommand;
     }
 
-    @ShellMethod(key = "create_my_voting_category1-prod", value = "Create a my voting category1 on Mainnet.")
+    @ShellMethod(key = "create_my_voting_category1-prod-test", value = "Create a my voting category1 on Mainnet.")
     public String create1Category1(@ShellOption String event) {
         if (network != MAIN) {
             return "This command can only be run on a MAINNET network!";
