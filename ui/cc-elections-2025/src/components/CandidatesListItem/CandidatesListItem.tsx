@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Chip from "@mui/material/Chip";
+import CheckIcon from '@mui/icons-material/Check';
 import Tooltip from "@mui/material/Tooltip";
 import Typography from '@mui/material/Typography';
 
-import { Button } from '@atoms';
+import { Button, VoteIcon } from '@atoms';
 import { ICONS } from "@consts";
 import { useDeleteCandidate } from "@hooks";
 import {useCardano, useModal} from "@context";
@@ -17,9 +18,25 @@ type CandidatesListItemProps = {
   initials: string;
   bio: string;
   candidateType: "individual" | "company" | "consortium";
+  publicContact: string;
+  drepId: string;
+  stakeId: string;
+  socialX: string;
+  socialLinkedin: string;
+  socialDiscord: string;
+  socialTelegram: string;
+  socialOther: string;
   verified: boolean;
   walletAddress: string;
   isEditActive: boolean;
+  isVoteActive: boolean;
+  onCandidateSelect: (id: number) => void;
+  onCandidateDeselect: (id: number) => void;
+  selected: boolean;
+  disableSelect: boolean;
+  voteCast: boolean;
+  voted: boolean;
+  recast: boolean;
 };
 
 export const CandidatesListItem = (props: CandidatesListItemProps) => {
@@ -29,7 +46,25 @@ export const CandidatesListItem = (props: CandidatesListItemProps) => {
   const deleteCandidate = useDeleteCandidate(props.candidateType);
 
   const handleClick = () => {
-    navigate(`/candidateDetails/${props.id}`);
+    openModal({
+      type: "candidateDetailsModal",
+      state: {
+        id: props.id,
+        name: props.name,
+        initials: props.initials,
+        candidateType: chipText(props.candidateType),
+        walletAddress: props.walletAddress,
+        publicContact: props.publicContact,
+        stakeId: props.stakeId,
+        drepId: props.drepId,
+        socialX: props.socialX,
+        socialLinkedin: props.socialLinkedin,
+        socialDiscord: props.socialDiscord,
+        socialTelegram: props.socialTelegram,
+        socialOther: props.socialOther,
+        verified: props.verified,
+      }
+    });
   };
 
   const handleEdit = () => {
@@ -106,13 +141,50 @@ export const CandidatesListItem = (props: CandidatesListItemProps) => {
           {props.bio.length > 140 ? `${props.bio.substring(0, 140)}...` : props.bio}
         </Typography>
       </Box>
-      <Box sx={{ paddingBottom: '20px', paddingRight: '24px', paddingLeft: '24px', display: 'flex', justifyContent: 'space-between' }}>
+      <Box sx={{ paddingBottom: '20px', paddingRight: '24px', paddingLeft: '24px', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
         <Button variant="text" onClick={handleClick}>Read more</Button>
         {isEnabled && props.isEditActive && address === props.walletAddress && (
           <>
             <Button variant="text" onClick={handleEdit}>Edit</Button>
             <Button variant="text" color="error" onClick={handleDelete}>Delete</Button>
           </>
+        )}
+        {props.isVoteActive && !props.selected && (!props.voteCast || props.recast) && (
+          <Button
+            disabled={props.disableSelect}
+            onClick={() => props.onCandidateSelect(props.id)}
+            sx={{
+              borderRadius: '12px',
+            }}
+            startIcon={<VoteIcon />}
+          >
+            Select candidate
+          </Button>
+        )}
+        {props.isVoteActive && props.selected && (!props.voteCast || props.recast) && (
+          <Button
+            variant="outlined"
+            onClick={() => props.onCandidateDeselect(props.id)}
+            sx={{
+              borderRadius: '12px',
+              borderColor: '#218230',
+              color: '#218230',
+              backgroundColor: '#EBFAED',
+            }}
+            startIcon={<CheckIcon />}
+          >
+            Candidate selected
+          </Button>
+        )}
+        {props.isVoteActive && props.voted && !props.recast && (
+          <Button
+            variant="text"
+            disabled={true}
+            onClick={() => null}
+            startIcon={<CheckIcon />}
+          >
+            You voted for this candidate
+          </Button>
         )}
       </Box>
     </Box>

@@ -15,10 +15,8 @@ import org.cardano.foundation.voting.domain.web3.WalletType;
 import org.cardano.foundation.voting.service.auth.LoginSystemDetector;
 import org.cardano.foundation.voting.service.expire.ExpirationService;
 import org.cardano.foundation.voting.service.json.JsonService;
-import org.cardano.foundation.voting.utils.Addresses;
 import org.cardano.foundation.voting.utils.Enums;
 import org.cardanofoundation.cip30.AddressFormat;
-import org.cardanofoundation.cip30.CIP30Verifier;
 import org.cardanofoundation.cip30.MessageFormat;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -94,7 +92,7 @@ public class CardanoWeb3Filter extends OncePerRequestFilter {
         val signature = signatureM.orElseThrow();
         val signedWeb3Request = new SignedCIP30(signature, Optional.ofNullable(publicKey));
 
-        val cip30Verifier = new CIP30Verifier(signedWeb3Request.getSignature(), signedWeb3Request.getPublicKey());
+        val cip30Verifier = new CustomCIP30Verifier(signedWeb3Request.getSignature(), signedWeb3Request.getPublicKey());
         val cipVerificationResult = cip30Verifier.verify();
 
         if (!cipVerificationResult.isValid()) {
@@ -110,7 +108,7 @@ public class CardanoWeb3Filter extends OncePerRequestFilter {
             return;
         }
 
-        val maybeAddress = cipVerificationResult.getAddress(AddressFormat.TEXT);
+        val maybeAddress = cipVerificationResult.getAddress(AddressFormat.TEXT, true);
 
         if (maybeAddress.isEmpty()) {
             val problem = Problem.builder()
@@ -141,20 +139,43 @@ public class CardanoWeb3Filter extends OncePerRequestFilter {
             val cipBodyHash = cipVerificationResult.getMessage(MessageFormat.HEX);
             val payload = payloadM.orElseThrow();
 
-            val payloadHash = encodeHexString(blake2bHash224(decodeHexString(payload)));
+            try {
+                val payloadHash = encodeHexString(blake2bHash224(decodeHexString(payload)));
 
-            if (!cipBodyHash.equals(payloadHash)) {
-                val problem = Problem.builder()
-                        .withTitle("CIP_30_HASH_MISMATCH")
-                        .withDetail("Signed hash does not match our precalculated hash!")
-                        .withStatus(BAD_REQUEST)
-                        .build();
+                if (!cipBodyHash.equals(payloadHash)) {
+                    val problem = Problem.builder()
+                            .withTitle("CIP_30_HASH_MISMATCH")
+                            .withDetail("Signed hash does not match our precalculated hash!")
+                            .withStatus(BAD_REQUEST)
+                            .build();
 
-                sendBackProblem(objectMapper, res, problem);
-                return;
+                    sendBackProblem(objectMapper, res, problem);
+                    return;
+                }
+
+                cipBody = new String(decodeHexString(payload)); // flip cipBody to be payload for further processing
+            } catch (IllegalArgumentException e) {
+                log.info("cipVerificationResult said the payload was hashed but it wasn't!");
+
+                StringBuilder hexString = new StringBuilder();
+
+                for (char c : payload.toCharArray()) {
+                    hexString.append(String.format("%02x", (int) c));
+                }
+                val payloadHash = encodeHexString(blake2bHash224(decodeHexString(hexString.toString())));
+
+                if (!cipBodyHash.equals(payloadHash)) {
+                    val problem = Problem.builder()
+                            .withTitle("CIP_30_HASH_MISMATCH")
+                            .withDetail("Signed hash does not match our precalculated hash!")
+                            .withStatus(BAD_REQUEST)
+                            .build();
+
+                    sendBackProblem(objectMapper, res, problem);
+                    return;
+                }
+                cipBody = payload;
             }
-
-            cipBody = new String(decodeHexString(payload)); // flip cipBody to be payload for further processing
         }
 
         val cip93EnvelopeE = jsonService.decodeGenericCIP93(cipBody);
@@ -292,25 +313,24 @@ public class CardanoWeb3Filter extends OncePerRequestFilter {
             return;
         }
 
-        val walletIdE = Addresses.checkWalletId(chainNetwork, CARDANO, walletId);
-        if (walletIdE.isEmpty()) {
-            val problem = walletIdE.getLeft();
-
-            sendBackProblem(objectMapper, res, problem);
-            return;
-        }
+//        val walletIdE = Addresses.checkWalletId(chainNetwork, CARDANO, walletId);
+//        if (walletIdE.isEmpty()) {
+//            val problem = walletIdE.getLeft();
+//
+//            sendBackProblem(objectMapper, res, problem);
+//            return;
+//        }
 
         if (!walletId.equals(envelopeWalletId)) {
             val problem = Problem.builder()
-                    .withTitle("STAKE_ADDRESS_MISMATCH")
-                    .withDetail("Stake address mismatch, CIP-93 signed address:" + walletId + ", however request is with address:" + envelopeWalletId)
+                    .withTitle("DREP_ADDRESS_MISMATCH")
+                    .withDetail("DRep address mismatch, CIP-93 signed address:" + walletId + ", however request is with address:" + envelopeWalletId)
                     .withStatus(BAD_REQUEST)
                     .build();
 
             sendBackProblem(objectMapper, res, problem);
             return;
         }
-
 
         val eventDetailsE = chainFollowerClient.getEventDetails(eventId);
         if (eventDetailsE.isEmpty()) {

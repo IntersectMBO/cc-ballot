@@ -35,6 +35,7 @@
 | | | Vote Commitment             | | [CIP-08](https://cips.cardano.org/cips/cip8/) - Message Signing |
 | | | Vote Verification           | |  Cardano Foundation - [cardano-connect-with-wallet](https://github.com/cardano-foundation/cardano-connect-with-wallet) |  
 | | | User Verification           | |  [Bloxbean Projects](https://github.com/bloxbean)  | 
+| | | Koios Integration Service   | |    | 
 | | | Hydra Tally                 | |  [Aiken](https://aiken-lang.org/) - A Modern Smart Contract Platform for Cardano  | 
 | | |                             | | [Hydra](https://hydra.family/head-protocol/) - Head Protocol|
 | | | Candidate App               | |  [CIP-93](https://cips.cardano.org/cips/cip93/) - Authenticated Web3 HTTP Requests  | 
@@ -62,6 +63,7 @@ from database constructs merkle tree and at periodic, configurable intervals sen
   - [voting-ledger-follower-app](backend-services/voting-ledger-follower-app) - Ledger Follower Application that is listening to the Cardano blockchain to fetch information about event data and user stake amounts in case of stake-based voting.
   - [voting-verification-app](backend-services/voting-verification-app) - Application to be used by the community / voters to independently verify and check vote proofs.
   - [keri-ballot-verifier](backend-services/keri-ballot-verifier) - A Python microservice to verify the votes from Cardano Ballot signed using KERI identifiers.
+  - [koios-integration-service](backend-services/koios-integration-service) - A lightweight service that exposes a single endpoint to retrieve staking account information from the Cardano blockchain via the [Koios REST API](https://api.koios.rest/).
   - [candidate-app](backend-services/candidate-app) - Spring Boot application for managing candidates.
 
 - [ui](ui) - Contains React applications for Cardano Ballopt event user interfaces:
@@ -164,6 +166,18 @@ cp .env.template .env
 # Run the service locally via:
 ./gradlew bootRun
 ```
+
+### Koios Integration Service
+```bash
+cd cf-cardano-ballot/backend-services/koios-integration-service
+./gradlew bootRun
+```
+
+This will launch voting-verification-app on port: 9096 by default.
+For a detailed description and interactive interface of the API, visit the Swagger UI documentation here:
+[http://localhost:9096/swagger-ui/index.html](http://localhost:9096/swagger-ui/index.html)
+
+Instructions on how to run the `Koios Integration Service` app can be found [here](./backend-services/koios-integration-service/README.md).
 
 ### User Verification App
 ```bash

@@ -11,6 +11,7 @@ import { LINKS } from "@/consts/links";
 
 type ChooseWalletModalState = {
   pathToNavigate?: To;
+  onWalletSelect?: () => void;
 };
 
 export const ChooseWalletModal = forwardRef<HTMLDivElement>((_, ref) => {
@@ -88,6 +89,7 @@ export const ChooseWalletModal = forwardRef<HTMLDivElement>((_, ref) => {
                 name={name}
                 cip95Available={cip95Available}
                 pathToNavigate={state?.pathToNavigate}
+                onWalletSelect={state?.onWalletSelect}
               />
             ))
           )}

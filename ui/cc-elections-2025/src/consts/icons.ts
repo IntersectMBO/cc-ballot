@@ -13,10 +13,12 @@ export const ICONS = {
   searchIcon: "/icons/Search.svg",
   selectArrowIcon: "/icons/SelectArrow.svg",
   sortDescendingIcon: "/icons/SortDescending.svg",
+  terminalIcon: "/icons/Terminal.svg",
   timerIcon: "/icons/Timer.svg",
   userIcon: "/icons/User.svg",
   userAddIcon: "/icons/UserAdd.svg",
   userGroupIcon: "/icons/UserGroup.svg",
   verifiedIcon: "/icons/Verified.svg",
+  walletIcon: "/icons/Wallet.svg",
   x_twitterIcon: "/icons/X-twitter.svg",
 };

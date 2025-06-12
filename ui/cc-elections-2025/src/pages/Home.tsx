@@ -23,7 +23,7 @@ type HomeProps = {
   isEditActive: boolean;
 }
 
-export const Home = ({ applyEndTime, isEditActive }: HomeProps) => {
+export const Home = ({ applyEndTime, isEditActive, isVoteActive }: HomeProps) => {
   const  navigate = useNavigate();
   const { openModal } = useModal();
   const { isEnabled } = useCardano();
@@ -43,7 +43,7 @@ export const Home = ({ applyEndTime, isEditActive }: HomeProps) => {
         <Box>
           <Box sx={{ padding: { xxs: '0 16px', md: '0 32px', xl: '0 64px'} }}>
             <Box sx={{ padding: '24px 0' }}>
-              <CCStepper activeStep={0} steps={steps} />
+              <CCStepper activeStep={isVoteActive ? 1 : 0} steps={steps} />
             </Box>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px', backgroundColor: 'white', borderRadius: '16px', padding: '20px 24px 32px 24px', boxShadow: '0px 20px 25px -5px #212A3D14' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
@@ -54,7 +54,6 @@ export const Home = ({ applyEndTime, isEditActive }: HomeProps) => {
                 <Typography variant="caption">CONTEXT</Typography>
                 <Box sx={{ paddingBottom: '16px' }}>
                   <Typography variant="body1" color="#506288">
-
                     This vote is to allow DReps to elect a Constitutional Committee(CC) and then submit a governance action. 
                     
                     The Interim Constitutional Committee term expires on 1st September 2025. 
@@ -111,8 +110,18 @@ export const Home = ({ applyEndTime, isEditActive }: HomeProps) => {
                 </Box>
               )}
               <Box>
-                <Typography variant="body2">Guides can be found <Link variant="body2" target="_blank" rel="noopener" href="https://docs.intersectmbo.org/cardano/cardano-governance/cardano-constitution/2025-constitutional-committee-elections/guide-for-applicants">here</Link>.</Typography>
+                <Typography variant="body2">Guide for voting can be found <Link variant="body2" target="_blank" rel="noopener" href="https://docs.intersectmbo.org/cardano/cardano-governance/cardano-constitution/2025-constitutional-committee-elections/guide-for-voting">here</Link>.</Typography>
               </Box>
+            </Box>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px', backgroundColor: 'white', borderRadius: '16px', padding: '20px 24px 32px 24px', boxShadow: '0px 20px 25px -5px #212A3D14', marginTop: '16px' }}>
+              <Box>
+                <Typography variant="h2">Voting</Typography>
+              </Box>
+              <Typography variant="body1">1. You need to be a registered DRep to participate in this vote</Typography>
+              <Typography variant="body1">2. Review all candidates carefully</Typography>
+              <Typography variant="body1">3. Make your selection</Typography>
+              <Typography variant="body1">4. Confirm and submit your vote by signing with your wallet</Typography>
+              <Typography variant="body1">IMPORTANT: Please take the right time before making your decision. Once your vote is submitted it can NOT be changed.</Typography>
             </Box>
             <Box aria-busy={isAllCandidatesLoading}>
               {!allCandidates || isAllCandidatesLoading ? (
@@ -132,6 +141,7 @@ export const Home = ({ applyEndTime, isEditActive }: HomeProps) => {
                 <CandidatesList
                   candidates={allCandidates}
                   isEditActive={isEditActive}
+                  isVoteActive={isVoteActive}
                 />
               )}
             </Box>

@@ -2,6 +2,7 @@ export * from './useDeleteCandidate';
 export * from './useGetAllCandidates';
 export * from './useGetIndividual';
 export * from './useGetIndividuals';
+export * from './useGetVoteReceipt';
 export * from './usePostCandidate';
 export * from './usePostIndividual';
 export * from './usePostConsortium';

@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import org.cardano.foundation.voting.domain.web3.CIP93Envelope;
 import org.cardano.foundation.voting.domain.web3.SignedCIP30;
-import org.cardanofoundation.cip30.Cip30VerificationResult;
 import org.cardanofoundation.cip30.MessageFormat;
 import org.zalando.problem.Problem;
 
@@ -18,7 +17,7 @@ public class CardanoWeb3Details implements Web3ConcreteDetails {
 
     private Web3CommonDetails web3CommonDetails;
 
-    private Cip30VerificationResult cip30VerificationResult;
+    private CustomCip30VerificationResult cip30VerificationResult;
     private CIP93Envelope<Map<String, Object>> envelope;
     private SignedCIP30 signedCIP30;
     private String payload;

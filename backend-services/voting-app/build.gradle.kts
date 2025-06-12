@@ -71,6 +71,8 @@ dependencies {
 
 	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0")
 
+    implementation("com.bloxbean.cardano:cardano-client-governance:0.6.4")
+
     implementation("io.blockfrost:blockfrost-java:0.1.3")
 
     implementation("io.vavr:vavr:0.10.4")
@@ -83,6 +85,9 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 
     implementation("me.paulschwarz:spring-dotenv:4.0.0")
+
+    // https://mvnrepository.com/artifact/net.i2p.crypto/eddsa
+    implementation("net.i2p.crypto:eddsa:0.3.0")
 
     // spring-boot overridden dependencies:
     runtimeOnly("com.h2database:h2:2.2.224") // GraalVM compatibility

@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
+import org.cardano.foundation.voting.client.KoiosIntegrationClient;
 import org.cardano.foundation.voting.client.UserVerificationClient;
 import org.cardano.foundation.voting.domain.CandidatePayload;
 import org.cardano.foundation.voting.domain.VoteReceipt;
@@ -42,7 +43,7 @@ import static org.zalando.problem.Status.*;
 @Slf4j
 @RequiredArgsConstructor
 public class CandidateVoteService {
-    private static final int MAX_VOTES = 5;
+    private static final int MAX_VOTES = 7;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final VoteRepository voteRepository;
@@ -50,6 +51,7 @@ public class CandidateVoteService {
     private final MerkleProofSerdeService merkleProofSerdeService;
     private final ChainFollowerClient chainFollowerClient;
     private final UserVerificationClient userVerificationClient;
+    private final KoiosIntegrationClient koiosIntegrationClient;
     private final JsonService jsonService;
 
     @Transactional
@@ -96,29 +98,41 @@ public class CandidateVoteService {
                     .build());
         }
 
-        // check which is specific for the USER_BASED event type
-        if (event.votingEventType() == USER_BASED) {
-            val userVerifiedE = userVerificationClient.isVerified(eventId, walletType, details.getWalletId());
-            if (userVerifiedE.isEmpty()) {
-                return Either.left(Problem.builder()
-                        .withTitle("ERROR_GETTING_USER_VERIFICATION_STATUS")
-                        .withDetail("Unable to get user verification status from user-verification service, reason: user verification service not available")
-                        .withStatus(INTERNAL_SERVER_ERROR)
-                        .build()
-                );
-            }
-            val userVerifiedResponse = userVerifiedE.get();
+        if (!details.getWalletId().startsWith("drep")) {
+            log.warn("User is not DRep, id:{}", eventId);
 
-            if (userVerifiedResponse.isNotYetVerified()) {
-                log.warn("User is not verified, id:{}", eventId);
-
-                return Either.left(Problem.builder()
-                        .withTitle("USER_IS_NOT_VERIFIED")
-                        .withDetail("User is not verified, id:" + eventId)
-                        .withStatus(BAD_REQUEST)
-                        .build());
-            }
+            return Either.left(Problem.builder()
+                    .withTitle("USER_IS_NOT_DREP")
+                    .withDetail("User is not DRep, id:" + eventId)
+                    .withStatus(BAD_REQUEST)
+                    .build());
         }
+
+        // check which is specific for the USER_BASED event type
+
+        // disable user verification for CC elections 2025
+//        if (event.votingEventType() == USER_BASED) {
+//            val userVerifiedE = userVerificationClient.isVerified(eventId, walletType, details.getWalletId());
+//            if (userVerifiedE.isEmpty()) {
+//                return Either.left(Problem.builder()
+//                        .withTitle("ERROR_GETTING_USER_VERIFICATION_STATUS")
+//                        .withDetail("Unable to get user verification status from user-verification service, reason: user verification service not available")
+//                        .withStatus(INTERNAL_SERVER_ERROR)
+//                        .build()
+//                );
+//            }
+//            val userVerifiedResponse = userVerifiedE.get();
+//
+//            if (userVerifiedResponse.isNotYetVerified()) {
+//                log.warn("User is not verified, id:{}", eventId);
+//
+//                return Either.left(Problem.builder()
+//                        .withTitle("USER_IS_NOT_VERIFIED")
+//                        .withDetail("User is not verified, id:" + eventId)
+//                        .withStatus(BAD_REQUEST)
+//                        .build());
+//            }
+//        }
 
         val categoryId = castVote.getCategory();
         val categoryM = event.categoryDetailsById(categoryId);
@@ -525,7 +539,7 @@ public class CandidateVoteService {
             return Either.left(
                     Problem.builder()
                             .withTitle("VOTE_NOT_FOUND")
-                            .withDetail("Not voted yet for stakeKey:" + walletId)
+                            .withDetail("Not voted yet for DRep key:" + walletId)
                             .withStatus(NOT_FOUND)
                             .build()
             );

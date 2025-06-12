@@ -12,6 +12,7 @@ export interface WalletOption {
   cip95Available: boolean;
   dataTestId?: string;
   pathToNavigate?: To;
+  onWalletSelect?: () => void;
 }
 
 export const WalletOptionButton: FC<WalletOption> = ({
@@ -19,7 +20,8 @@ export const WalletOptionButton: FC<WalletOption> = ({
   icon,
   label,
   name,
-  cip95Available
+  cip95Available,
+  onWalletSelect
 }) => {
   const { enable, isEnableLoading } = useCardano();
   const {
@@ -30,6 +32,10 @@ export const WalletOptionButton: FC<WalletOption> = ({
     if (isEnableLoading) return;
 
     const result = await enable(name);
+
+    if (onWalletSelect) {
+      onWalletSelect();
+    }
 
     if (result?.stakeKey) {
       return;
