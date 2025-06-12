@@ -16,7 +16,7 @@ A cross-platform command-line tool to interact with a blockchain-based voting AP
 
 ### 💾 Quick Setup (Linux/macOS)
 
-1. **Download** the latest release `.zip` from [releases page](#).
+1. **Download** the latest release `.zip` from [releases page](https://github.com/IntersectMBO/cc-ballot/releases).
 
 2. **Extract** it:
 
