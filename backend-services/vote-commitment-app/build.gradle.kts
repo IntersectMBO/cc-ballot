@@ -71,7 +71,12 @@ dependencies {
 	implementation("org.cardanofoundation:merkle-tree-java:0.0.7")
 	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.11")
 
+	implementation("com.bloxbean.cardano:cardano-client-governance:0.6.4")
+
 	implementation("me.paulschwarz:spring-dotenv:4.0.0")
+
+	// https://mvnrepository.com/artifact/net.i2p.crypto/eddsa
+	implementation("net.i2p.crypto:eddsa:0.3.0")
 
     // spring-boot overridden dependencies:
     runtimeOnly("com.h2database:h2:2.2.224") // GraalVM compatibility

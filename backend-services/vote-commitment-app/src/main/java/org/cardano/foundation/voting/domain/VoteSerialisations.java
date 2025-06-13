@@ -1,8 +1,8 @@
 package org.cardano.foundation.voting.domain;
 
 import lombok.val;
+import org.cardano.foundation.voting.domain.web3.CustomCIP30Verifier;
 import org.cardano.foundation.voting.repository.VoteRepository;
-import org.cardanofoundation.cip30.CIP30Verifier;
 
 import java.nio.ByteBuffer;
 import java.util.Optional;
@@ -17,7 +17,7 @@ public final class VoteSerialisations {
     public static Function<VoteRepository.CompactVote, byte[]> createSerialiserFunction() {
         return vote -> switch (vote.getWalletType()) {
             case CARDANO -> {
-                val cip30Verifier = new CIP30Verifier(vote.getSignature(), vote.getPublicKey());
+                val cip30Verifier = new CustomCIP30Verifier(vote.getSignature(), vote.getPublicKey());
                 val verificationResult = cip30Verifier.verify();
 
                 val bytes = Optional.ofNullable(verificationResult.getMessage()).orElse(new byte[0]);

@@ -89,23 +89,15 @@ You need to **sign the payload** using your DRep signing key.
 
 You can use any tool that supports Cardano data signing:
 
-#### Option A – `cardano-cli`
+#### Example Option – `cardano-signer`
 
 ```bash
-cardano-cli transaction sign-data \
-  --tx-body-file payload.json \
-  --signing-key-file drep.skey \
-  --out-file signature.json
+./cardano-signer sign --cip8 \
+--data '{"action":"cast_vote","data":{"event":"2025_06_09_TEST_VOTE","category":"CATEGORY_TEST1_0306","proposal":"0f0904c4-80a5-4be8-bae8-42efce0f3097","id":"00b63492-1354-4faf-9ac2-f8bb4fe49198","timestamp":1749726430,"votes":[4,7,5,8]}}' \
+--secret-key myDrep.drep.skey \
+--address myDrep.drep.id --json
 ```
 
-#### Option B – `cardano-signer`
-
-```bash
-cardano-signer sign \
-  --data-file payload.json \
-  --secret-key drep.skey \
-  --json
-```
 
 This will give you:
 
