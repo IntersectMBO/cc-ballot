@@ -16,10 +16,7 @@ import org.cardano.foundation.voting.domain.entity.Vote;
 import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
 import org.cardano.foundation.voting.domain.web3.*;
 import org.cardano.foundation.voting.repository.VoteRepository;
-import org.cardano.foundation.voting.service.auth.web3.CardanoWeb3Details;
-import org.cardano.foundation.voting.service.auth.web3.KeriWeb3Details;
-import org.cardano.foundation.voting.service.auth.web3.Web3AuthenticationToken;
-import org.cardano.foundation.voting.service.auth.web3.Web3ConcreteDetails;
+import org.cardano.foundation.voting.service.auth.web3.*;
 import org.cardano.foundation.voting.service.json.JsonService;
 import org.cardano.foundation.voting.service.merkle_tree.MerkleProofSerdeService;
 import org.cardano.foundation.voting.service.merkle_tree.VoteMerkleProofService;
@@ -516,6 +513,15 @@ public class CandidateVoteService {
         val categoryId = viewVoteReceiptEnvelope.getCategory();
 
         return actualVoteReceipt(event, categoryId, walletType, walletId);
+    }
+
+    public Either<Problem, Boolean> hasAlreadyVoted(String eventId, String categoryId, String dRepId, WalletType walletType) {
+        val existingVoteM = voteRepository.findByEventIdAndCategoryIdAndWalletTypeAndWalletId(eventId, categoryId, walletType, dRepId);
+        if (existingVoteM.isPresent()) {
+            return Either.right(true);
+        } else {
+            return Either.right(false);
+        }
     }
 
     private Either<Problem, VoteReceipt> actualVoteReceipt(ChainFollowerClient.EventDetailsResponse event,
