@@ -93,11 +93,11 @@ export const VoteCLIModal = forwardRef<HTMLDivElement>((_, ref) => {
         <Typography variant="h1">Vote using CLI and Cardano Signer</Typography>
         {step === 1 ? (
           <Typography variant="body1">
-            Provide your DRep Key below to generate the <Link variant="body1" target="_blank" rel="noopener" href="https://github.com/gitmachtl/cardano-signer">cardano-signer</Link> command to execute on your computer.
+            Provide your DRep ID below to get the <Link variant="body1" target="_blank" rel="noopener" href="https://github.com/gitmachtl/cardano-signer">cardano-signer</Link> command to execute on your computer.
           </Typography>
         ) : (
           <Typography variant="body1">
-            Copy the command, adjust it with your secret key, execute it on your computer using the <Link variant="body1" target="_blank" rel="noopener" href="https://github.com/gitmachtl/cardano-signer">cardano-signer</Link> tool, and paste the output below to cast the vote.
+            Copy the command, adjust it with your secret key, execute it on your computer using the <Link variant="body1" target="_blank" rel="noopener" href="https://github.com/gitmachtl/cardano-signer">cardano-signer</Link> tool, and paste the output below to cast your vote.
           </Typography>
         )}
       </Box>
