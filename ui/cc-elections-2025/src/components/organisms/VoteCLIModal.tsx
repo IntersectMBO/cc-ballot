@@ -1,5 +1,6 @@
 import {forwardRef, useState} from "react";
 import { CopyBlock, dracula } from "react-code-blocks";
+import { bech32 } from 'bech32';
 
 import { ModalWrapper } from "@atoms";
 import { Button } from "@atoms";
@@ -7,12 +8,13 @@ import { Box, Link, Typography } from "@mui/material";
 import {useModal} from "@context";
 import { Input } from "@/components/molecules/Field/Input";
 import { TextArea } from "@/components/molecules/Field/TextArea";
+import { getSlotNumber } from "@services";
 
 type VoteCLIModalState = {
   id: string;
   timestamp: number;
   votes: number[];
-  cliVote: (jsonStr: string, dRepId: string, id: string, timestamp: number) => void;
+  cliVote: (jsonStr: string, dRepId: string, id: string, timestamp: number, slotNumber: number) => void;
 }
 
 export const VoteCLIModal = forwardRef<HTMLDivElement>((_, ref) => {
@@ -28,11 +30,14 @@ export const VoteCLIModal = forwardRef<HTMLDivElement>((_, ref) => {
     json: '',
   });
   const [error, setError] = useState(errorInit);
+  const [slotNumber, setSlotNumber] = useState(0);
 
-  const command = `./cardano-signer sign --cip8 --data '{"action":"cast_vote",
+  const command = `./cardano-signer sign --cip8 --data '{"action":"cast_vote", "slot": ${slotNumber},
   "data": {"event":"${import.meta.env.VITE_EVENT}","category":"${import.meta.env.VITE_CATEGORY}",
   "proposal":"${import.meta.env.VITE_PROPOSAL}",
-  "id":"${state?.id}","timestamp":${state?.timestamp},
+  "id":"${state?.id}", "votedAt": ${slotNumber}, "timestamp":${state?.timestamp},
+  "walletId":"${data.dRepId}",
+  "walletType":"${import.meta.env.VITE_WALLET_TYPE}","network":"${import.meta.env.VITE_TARGET_NETWORK}"
   "votes":${JSON.stringify(state?.votes)}}}' --secret-key <PROVIDE YOUR SECRET KEY HERE> --address ${data.dRepId} --json`;
 
   const handleChange = (
@@ -41,15 +46,34 @@ export const VoteCLIModal = forwardRef<HTMLDivElement>((_, ref) => {
     setData(prevData => ({...prevData, [event.target.name]: event.target.value}));
   }
 
-  const isdrepId = (drepId: string) => {
-    return drepId.indexOf('drep') > -1;
+  const checkDrepId = (drepId: string) => {
+    try {
+      // 1. Decode Bech32
+      const decoded = bech32.decode(drepId);
+      if (decoded.prefix !== 'drep') {
+        return { valid: false, error: 'Invalid prefix: expected "drep"' };
+      }
+
+      // 2. Convert from 5-bit words to 8-bit bytes
+      const bytes = bech32.fromWords(decoded.words);
+
+      // 3. Check length: must be 28 bytes (Blake2b-224)
+      if (bytes.length !== 28) {
+        return { valid: false, error: `Invalid length: expected 28 bytes while got ${bytes.length}` };
+      }
+
+      return { valid: true };
+    } catch (err) {
+      return { valid: false, error: 'Invalid Bech32-encoded DRep ID.' };
+    }
   }
 
   const validate = () => {
     let err = false;
     setError(errorInit);
     if (step === 1) {
-      if (data.dRepId === '' && !isdrepId(data.dRepId)) {
+      const isValidDrepId = checkDrepId(data.dRepId);
+      if (data.dRepId === '' || !isValidDrepId.valid) {
         err = true;
         setError(prevError => ({...prevError, dRepId: true}));
       }
@@ -71,14 +95,21 @@ export const VoteCLIModal = forwardRef<HTMLDivElement>((_, ref) => {
     return err;
   }
 
+  const genereteSlot = async () => {
+    const slot = (await getSlotNumber())?.absoluteSlot;
+
+    setSlotNumber(slot);
+  }
+
   const onSubmit = async () => {
     const err = validate();
     if (err) return;
-    if (step === 2) {
-      state?.cliVote(data.json, data.dRepId, state?.id, state?.timestamp);
-    }
-    if (step !== 2) {
+    if (step === 1) {
+      await genereteSlot();
       setStep(prevVal => prevVal + 1);
+    }
+    if (step === 2) {
+      state?.cliVote(data.json, data.dRepId, state?.id, state?.timestamp, slotNumber);
     }
   }
 

@@ -16,8 +16,7 @@ import {
   SignedWeb3Request,
   submitVote,
   VoteReceipt,
-  hasAlreadyVoted,
-  getSlotNumber
+  getVotes,
 } from "@services";
 
 type CandidatesListProps = {
@@ -45,15 +44,18 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     const getReceipts = async () => {
       if (!dRepID) return;
 
-      const response = await hasAlreadyVoted(
-        EVENT,
-        CATEGORY,
-        WALLET_TYPE,
-        dRepID,
-      );
+      try {
+        const response = await getVotes(
+          EVENT,
+          CATEGORY,
+          WALLET_TYPE,
+          dRepID,
+        );
 
-      const resPayload: { data: { votes: number[] } } = JSON.parse(response.payload);
-      setVotes(resPayload.data.votes);
+        setVotes(response.data.votes);
+      } catch (e) {
+        console.log('no votes found');
+      }
     }
 
     getReceipts();
@@ -242,11 +244,9 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     }
   }
 
-  const voteCLI = async (jsonStr: string, drepId: string, id: string, timestamp: number) => {
+  const voteCLI = async (jsonStr: string, drepId: string, id: string, timestamp: number, slotNumber: number) => {
     try {
       const json = JSON.parse(jsonStr);
-
-      const slotNumber = (await getSlotNumber())?.absoluteSlot;
 
       const payload = {
         action: 'cast_vote',
@@ -271,9 +271,6 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
       };
 
       const payloadStr = JSON.stringify(payload);
-
-      console.log('signed', signed);
-      console.log('payload', payload);
 
       await submitVote(signed, payloadStr, import.meta.env.VITE_WALLET_TYPE);
 
