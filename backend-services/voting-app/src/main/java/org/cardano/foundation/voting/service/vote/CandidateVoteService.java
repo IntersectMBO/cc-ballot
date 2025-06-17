@@ -515,12 +515,39 @@ public class CandidateVoteService {
         return actualVoteReceipt(event, categoryId, walletType, walletId);
     }
 
-    public Either<Problem, Boolean> hasAlreadyVoted(String eventId, String categoryId, String dRepId, WalletType walletType) {
+    public Either<Problem, CandidatePayload> getVotes(String eventId, String categoryId, String dRepId, WalletType walletType) {
         val existingVoteM = voteRepository.findByEventIdAndCategoryIdAndWalletTypeAndWalletId(eventId, categoryId, walletType, dRepId);
         if (existingVoteM.isPresent()) {
-            return Either.right(true);
+            try {
+                var root = objectMapper.readTree(existingVoteM.get().getPayload().get());
+                var votesNode = root.path("data").path("votes");
+
+                List<Long> votes = new ArrayList<>();
+                for (var node : votesNode) {
+                    votes.add(node.asLong());
+                }
+                return Either.right(CandidatePayload.builder()
+                        .data(CandidatePayload.CandidatePayloadData.builder()
+                                .votes(votes)
+                                .build())
+                        .build());
+            } catch (Exception e) {
+                return Either.left(
+                        Problem.builder()
+                                .withTitle("PAYLOAD_PARSING_ERROR")
+                                .withDetail("There was an error during parsing vote payload:" + e.getMessage())
+                                .withStatus(INTERNAL_SERVER_ERROR)
+                                .build()
+                );
+            }
         } else {
-            return Either.right(false);
+            return Either.left(
+                    Problem.builder()
+                            .withTitle("VOTE_NOT_FOUND")
+                            .withDetail("Not voted yet for DRep key:" + dRepId)
+                            .withStatus(NOT_FOUND)
+                            .build()
+            );
         }
     }
 

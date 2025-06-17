@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.CandidatePayload;
 import org.cardano.foundation.voting.domain.VoteReceipt;
 import org.cardano.foundation.voting.domain.web3.WalletType;
 import org.cardano.foundation.voting.service.auth.web3.Web3AuthenticationToken;
@@ -131,14 +132,14 @@ public class VoteCandidateResource {
                         });
     }
 
-    @RequestMapping(value = "/hasAlreadyVoted", method = { HEAD, GET } , produces = "application/json")
-    @Timed(value = "resource.vote.candidate.hasAlreadyVoted", histogram = true)
-    @Operation(summary = "Checks if given dRep has already voted", description = "Allows users to check if they have already voted.",
+    @RequestMapping(value = "/getVotes", method = { HEAD, GET } , produces = "application/json")
+    @Timed(value = "resource.vote.candidate.getVotes", histogram = true)
+    @Operation(summary = "Return votes if already voted", description = "Allows users to get their votes if already voted.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Has already voted retrieved successfully.",
+                    @ApiResponse(responseCode = "200", description = "Votes retrieved successfully.",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = VoteReceipt.class)
+                                    schema = @Schema(implementation = CandidatePayload.class)
                             )
                     ),
                     @ApiResponse(responseCode = "400", description = "Bad request.",
@@ -150,17 +151,17 @@ public class VoteCandidateResource {
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )
-    public ResponseEntity<?> hasAlreadyVoted(
+    public ResponseEntity<?> getVotes(
             @RequestParam WalletType walletType,
             @RequestParam String dRepId,
             @RequestParam String eventId,
             @RequestParam String categoryId
     ) {
-        return voteService.hasAlreadyVoted(eventId, categoryId, dRepId, walletType)
+        return voteService.getVotes(eventId, categoryId, dRepId, walletType)
                 .fold(problem -> ResponseEntity
                                 .status(problem.getStatus().getStatusCode())
                                 .body(problem),
-                        hasAlreadyVoted -> {
+                        votes -> {
                             var cacheControl = CacheControl.maxAge(1, MINUTES)
                                     .noTransform()
                                     .mustRevalidate();
@@ -168,7 +169,7 @@ public class VoteCandidateResource {
                             return ResponseEntity
                                     .ok()
                                     .cacheControl(cacheControl)
-                                    .body(hasAlreadyVoted);
+                                    .body(votes);
                         });
     }
 
