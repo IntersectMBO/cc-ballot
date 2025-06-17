@@ -137,3 +137,14 @@ export const getVoteReceipt = async (
 
   return response.data;
 }
+
+export const hasAlreadyVoted = async (
+  eventId: string,
+  categoryId: string,
+  walletType: string,
+  dRepId: string,
+) => {
+  const response = await axios.get<VoteReceipt>(`${VOTING_APP_URL}/api/vote/candidate/hasAlreadyVoted?walletType=${walletType}&dRepId=${dRepId}&eventId=${eventId}&categoryId=${categoryId}`, {});
+
+  return response.data;
+}

@@ -11,7 +11,14 @@ import { geographicRepresentationList, getInitials, getPayloadData, shuffle } fr
 import { CandidatesListItem } from "./CandidatesListItem/CandidatesListItem.tsx";
 import { Candidate } from "@models";
 import { DataActionsBar } from "@/components/molecules";
-import {getVoteReceipt, getDrepInfo, SignedWeb3Request, submitVote, VoteReceipt} from "@services";
+import {
+  getDrepInfo,
+  SignedWeb3Request,
+  submitVote,
+  VoteReceipt,
+  hasAlreadyVoted,
+  getSlotNumber
+} from "@services";
 
 type CandidatesListProps = {
   candidates: Candidate[];
@@ -33,6 +40,24 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
   useEffect(() => {
     walletApiRef.current = walletApi;
   }, [walletApi]);
+
+  useEffect(() => {
+    const getReceipts = async () => {
+      if (!dRepID) return;
+
+      const response = await hasAlreadyVoted(
+        EVENT,
+        CATEGORY,
+        WALLET_TYPE,
+        dRepID,
+      );
+
+      const resPayload: { data: { votes: number[] } } = JSON.parse(response.payload);
+      setVotes(resPayload.data.votes);
+    }
+
+    getReceipts();
+  }, [dRepID]);
 
   const { openModal, closeModal } = useModal();
 
@@ -113,6 +138,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
                     id: uuidv4(),
                     timestamp: Math.floor(Date.now() / 1000),
                     votes: selectedCandidates,
+                    cliVote: voteCLI,
                   }
                 });
               },
@@ -216,38 +242,66 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     }
   }
 
-  const fetchVoteReceipt = async () => {
-    if (!walletApi) return;
-
+  const voteCLI = async (jsonStr: string, drepId: string, id: string, timestamp: number) => {
     try {
-      const { slotNumber, walletId } = await getPayloadData(pubDRepKey, openModal);
+      const json = JSON.parse(jsonStr);
+
+      const slotNumber = (await getSlotNumber())?.absoluteSlot;
 
       const payload = {
-        action: "view_vote_receipt",
+        action: 'cast_vote',
         slot: slotNumber,
         data: {
-          event: EVENT,
-          category: CATEGORY,
-          proposal: PROPOSAL,
-          timestamp: Math.floor(Date.now() / 1000),
-          walletId,
-          walletType: WALLET_TYPE,
-          network: TARGET_NETWORK,
+          event: import.meta.env.VITE_EVENT,
+          category: import.meta.env.VITE_CATEGORY,
+          proposal: import.meta.env.VITE_PROPOSAL,
+          id: id,
+          votedAt: slotNumber,
+          timestamp: timestamp,
+          walletId: drepId,
+          walletType: import.meta.env.VITE_WALLET_TYPE,
+          network: import.meta.env.VITE_TARGET_NETWORK,
+          votes: selectedCandidates,
         }
+      };
+
+      const signed: SignedWeb3Request = {
+        key: json.COSE_Key_hex,
+        signature: json.COSE_Sign1_hex,
       };
 
       const payloadStr = JSON.stringify(payload);
 
-      const payloadHex = await toHex(payloadStr);
+      console.log('signed', signed);
+      console.log('payload', payload);
 
-      const signed = await walletApi?.cip95.signData(dRepID, payloadHex);
+      await submitVote(signed, payloadStr, import.meta.env.VITE_WALLET_TYPE);
 
-      const response = await getVoteReceipt(signed, payloadStr, WALLET_TYPE);
-      setVoteReceipts(response);
+      const receipt: VoteReceipt = {
+        id: id,
+        event: EVENT,
+        category: CATEGORY,
+        proposal: PROPOSAL,
+        walletId: drepId,
+        walletType: WALLET_TYPE,
+        signature: signed.signature,
+        payload: payloadStr,
+        publicKey: signed.key ? signed.key : '',
+        votedAtSlot: slotNumber.toString()
+      };
 
-      const resPayload: { data: { votes: number[] } } = JSON.parse(response.payload);
-
-      setVotes(resPayload.data.votes);
+      setVotes(selectedCandidates);
+      setVoteReceipts(receipt);
+      setSelectedCandidates([]);
+      openModal({
+        type: "statusModal",
+        state: {
+          status: "success",
+          title: 'Great!',
+          message: 'You voted successfully.',
+          dataTestId: "success-modal",
+        },
+      });
     } catch (error: any) {
       if (error.response && error.response.data && error.response.data.detail) {
         openModal({
@@ -325,29 +379,6 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
           />
           {isVoteActive && (!votes.length || recastVote)  && (
             <Box sx={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
-              {isEnabled && (
-                <Box
-                  sx={{
-                    height: '33px',
-                    padding: '0 12px',
-                    borderRadius: '100px',
-                    backgroundColor: '#EDEBFF',
-                    display: 'inline-flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    gap: '4px',
-                  }}
-                >
-                  <Typography component="span" variant="body2">Already voted?</Typography>
-                  <Link
-                    variant="body2"
-                    onClick={fetchVoteReceipt}
-                    sx={{ cursor: 'pointer' }}
-                  >
-                    Check your vote
-                  </Link>
-                </Box>
-              )}
               <Chip
                 label={`${selectedCandidates.length}/7 votes`}
                 sx={{
