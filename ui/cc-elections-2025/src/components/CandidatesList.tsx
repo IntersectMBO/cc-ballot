@@ -42,14 +42,16 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
 
   useEffect(() => {
     const getReceipts = async () => {
-      if (!dRepID) return;
+      if (!pubDRepKey) return;
+
+      const { walletId } = await getPayloadData(pubDRepKey, openModal);
 
       try {
         const response = await getVotes(
           EVENT,
           CATEGORY,
           WALLET_TYPE,
-          dRepID,
+          walletId,
         );
 
         setVotes(response.data.votes);
@@ -59,7 +61,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     }
 
     getReceipts();
-  }, [dRepID]);
+  }, [pubDRepKey]);
 
   const { openModal, closeModal } = useModal();
 
