@@ -37,7 +37,7 @@ export const VoteCLIModal = forwardRef<HTMLDivElement>((_, ref) => {
   "proposal":"${import.meta.env.VITE_PROPOSAL}",
   "id":"${state?.id}", "votedAt": ${slotNumber}, "timestamp":${state?.timestamp},
   "walletId":"${data.dRepId}",
-  "walletType":"${import.meta.env.VITE_WALLET_TYPE}","network":"${import.meta.env.VITE_TARGET_NETWORK}"
+  "walletType":"${import.meta.env.VITE_WALLET_TYPE}","network":"${import.meta.env.VITE_TARGET_NETWORK}",
   "votes":${JSON.stringify(state?.votes)}}}' --secret-key <PROVIDE YOUR SECRET KEY HERE> --address ${data.dRepId} --json`;
 
   const handleChange = (
