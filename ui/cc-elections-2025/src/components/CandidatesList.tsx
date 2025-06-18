@@ -15,8 +15,8 @@ import {
   getDrepInfo,
   SignedWeb3Request,
   submitVote,
-  VoteReceipt,
   getVotes,
+  getVoteReceipt,
 } from "@services";
 
 type CandidatesListProps = {
@@ -45,7 +45,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
   }, [walletApi]);
 
   useEffect(() => {
-    const getReceipts = async () => {
+    const fetchVotes = async () => {
       if (!pubDRepKey) return;
 
       const { walletId } = await getPayloadData(pubDRepKey, openModal);
@@ -64,7 +64,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
       }
     }
     if (!pubDRepKeyRef.current && pubDRepKey || votes.length === 0) {
-      getReceipts();
+      fetchVotes();
     }
     pubDRepKeyRef.current = pubDRepKey;
   }, [pubDRepKey]);
@@ -79,7 +79,6 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
   const [chosenFilters, setChosenFilters] = useState<string[][]>([[],[],[]]);
 
   const [votes, setVotes] = useState<number[]>([]);
-  const [voteReceipts, setVoteReceipts] = useState<VoteReceipt | null>(null);
 
   const [recastVote] = useState<boolean>(false);
 
@@ -159,6 +158,65 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     });
   }
 
+  const fetchVoteRecipt = async () => {
+    if (!walletApiRef.current) return;
+
+    const { slotNumber, walletId } = await getPayloadData(pubDRepKey, openModal);
+
+    try {
+      const payload = {
+        action: "view_vote_receipt",
+        slot: slotNumber,
+        data: {
+          event: EVENT,
+          category: CATEGORY,
+          proposal: PROPOSAL,
+          timestamp: Math.floor(Date.now() / 1000),
+          walletId,
+          walletType: WALLET_TYPE,
+          network: TARGET_NETWORK,
+        }
+      };
+
+      const payloadStr = JSON.stringify(payload);
+      const payloadHex = await toHex(payloadStr);
+
+      const signed = await walletApiRef.current?.cip95.signData(dRepID, payloadHex);
+
+      const voteReceipt = await getVoteReceipt(signed, payloadStr, WALLET_TYPE);
+
+      openModal({
+        type: "textModal",
+        state: {
+          title: 'Your vote details',
+          response: voteReceipt,
+        }
+      });
+    } catch (error: any) {
+      if (error.response && error.response.data && error.response.data.detail) {
+        openModal({
+          type: "statusModal",
+          state: {
+            status: "warning",
+            title: "Request error",
+            message: error.response.data.detail,
+            dataTestId: "error-modal",
+          },
+        });
+      } else {
+        openModal({
+          type: "statusModal",
+          state: {
+            status: "warning",
+            title: 'Error',
+            message: error.message ? error.message : error.info,
+            dataTestId: "error-modal",
+          },
+        });
+      }
+    }
+  }
+
   const vote = async () => {
 
     if (!walletApiRef.current) return;
@@ -202,21 +260,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
 
       await submitVote(signed, payloadStr, WALLET_TYPE);
 
-      const receipt: VoteReceipt = {
-        id: id,
-        event: EVENT,
-        category: CATEGORY,
-        proposal: PROPOSAL,
-        walletId,
-        walletType: WALLET_TYPE,
-        signature: signed.signature,
-        payload: payloadStr,
-        publicKey: signed.key ? signed.key : '',
-        votedAtSlot: slotNumber.toString()
-      };
-
       setVotes(selectedCandidates);
-      setVoteReceipts(receipt);
       setSelectedCandidates([]);
       openModal({
         type: "statusModal",
@@ -282,21 +326,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
 
       await submitVote(signed, payloadStr, import.meta.env.VITE_WALLET_TYPE);
 
-      const receipt: VoteReceipt = {
-        id: id,
-        event: EVENT,
-        category: CATEGORY,
-        proposal: PROPOSAL,
-        walletId: drepId,
-        walletType: WALLET_TYPE,
-        signature: signed.signature,
-        payload: payloadStr,
-        publicKey: signed.key ? signed.key : '',
-        votedAtSlot: slotNumber.toString()
-      };
-
       setVotes(selectedCandidates);
-      setVoteReceipts(receipt);
       setSelectedCandidates([]);
       openModal({
         type: "statusModal",
@@ -418,13 +448,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
                 <Typography component="span" variant="body2">Your vote has been cast. </Typography>
                 <Link
                   variant="body2"
-                  onClick={() => openModal({
-                    type: "textModal",
-                    state: {
-                      title: 'Your vote details',
-                      response: voteReceipts,
-                    }
-                  })}
+                  onClick={fetchVoteRecipt}
                   sx={{ cursor: 'pointer' }}
                 >
                   Read more
