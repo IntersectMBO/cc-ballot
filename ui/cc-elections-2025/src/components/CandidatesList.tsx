@@ -35,8 +35,12 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
   const { isEnabled, walletApi, dRepID, pubDRepKey } = useCardano();
 
   const walletApiRef = useRef(walletApi);
+  const pubDRepKeyRef = useRef(pubDRepKey);
 
   useEffect(() => {
+    if (walletApiRef.current && !walletApi) {
+      setVotes([]);
+    }
     walletApiRef.current = walletApi;
   }, [walletApi]);
 
@@ -59,8 +63,10 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
         console.log('no votes found');
       }
     }
-
-    getReceipts();
+    if (!pubDRepKeyRef.current && pubDRepKey) {
+      getReceipts();
+    }
+    pubDRepKeyRef.current = pubDRepKey;
   }, [pubDRepKey]);
 
   const { openModal, closeModal } = useModal();
