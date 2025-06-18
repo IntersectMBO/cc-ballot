@@ -63,7 +63,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
         console.log('no votes found');
       }
     }
-    if (!pubDRepKeyRef.current && pubDRepKey) {
+    if (!pubDRepKeyRef.current && pubDRepKey || votes.length === 0) {
       getReceipts();
     }
     pubDRepKeyRef.current = pubDRepKey;
