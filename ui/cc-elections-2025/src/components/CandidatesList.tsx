@@ -35,39 +35,38 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
   const { isEnabled, walletApi, dRepID, pubDRepKey } = useCardano();
 
   const walletApiRef = useRef(walletApi);
-  const pubDRepKeyRef = useRef(pubDRepKey);
 
   useEffect(() => {
     if (walletApiRef.current && !walletApi) {
       setVotes([]);
     }
-    walletApiRef.current = walletApi;
-  }, [walletApi]);
 
-  useEffect(() => {
     const fetchVotes = async () => {
-      if (!pubDRepKey) return;
+      if (pubDRepKey) {
+        const {walletId} = await getPayloadData(pubDRepKey, openModal);
 
-      const { walletId } = await getPayloadData(pubDRepKey, openModal);
+        try {
+          const response = await getVotes(
+            EVENT,
+            CATEGORY,
+            WALLET_TYPE,
+            walletId,
+          );
 
-      try {
-        const response = await getVotes(
-          EVENT,
-          CATEGORY,
-          WALLET_TYPE,
-          walletId,
-        );
-
-        setVotes(response.data.votes);
-      } catch (e) {
-        console.log('no votes found');
+          setVotes(response.data.votes);
+        } catch (e) {
+          console.log('no votes found');
+        }
       }
     }
-    if (!pubDRepKeyRef.current && pubDRepKey || votes.length === 0) {
+
+
+    if (!walletApiRef.current && walletApi || walletApi && votes.length === 0) {
       fetchVotes();
     }
-    pubDRepKeyRef.current = pubDRepKey;
-  }, [pubDRepKey]);
+
+    walletApiRef.current = walletApi;
+  }, [walletApi, pubDRepKey]);
 
   const { openModal, closeModal } = useModal();
 
