@@ -23,5 +23,6 @@ public class CandidatePayload {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class CandidatePayloadData {
         private List<Long> votes;
+        private String walletId;
     }
 }

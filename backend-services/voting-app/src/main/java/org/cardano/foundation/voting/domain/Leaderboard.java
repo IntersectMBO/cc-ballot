@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.cardano.foundation.voting.domain.entity.Vote;
 
 import java.util.List;
 import java.util.Map;
@@ -25,9 +26,9 @@ public class Leaderboard {
     @Builder
     @Getter
     public static class ByCandidatesInCategoryStats {
-
         private String category;
-        private Map<String, Votes> candidates;
+        private Map<String, Votes> candidatesResults;
+        private List<Vote> allVotes;
 
     }
 
@@ -59,5 +60,4 @@ public class Leaderboard {
         private long votes;
         private String votingPower;
     }
-
 }

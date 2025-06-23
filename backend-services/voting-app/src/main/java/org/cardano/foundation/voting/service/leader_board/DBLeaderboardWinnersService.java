@@ -1,12 +1,13 @@
 package org.cardano.foundation.voting.service.leader_board;
 
+import com.bloxbean.cardano.client.crypto.Bech32;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vavr.control.Either;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
+import org.cardano.foundation.voting.client.GovToolsClient;
 import org.cardano.foundation.voting.domain.CandidatePayload;
 import org.cardano.foundation.voting.domain.Leaderboard;
-import org.cardano.foundation.voting.domain.entity.Vote;
 import org.cardano.foundation.voting.repository.VoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,6 +31,9 @@ public class DBLeaderboardWinnersService extends AbstractWinnersService implemen
 
     @Autowired
     private VoteRepository voteRepository;
+
+    @Autowired
+    private GovToolsClient govToolsClient;
 
     @Override
     @Transactional(readOnly = true)
@@ -249,10 +253,14 @@ public class DBLeaderboardWinnersService extends AbstractWinnersService implemen
 
         Map<String, Leaderboard.Votes> votes = new HashMap<>();
 
-        allVotes.stream().map(Vote::getPayload).forEach(e -> {
+        allVotes.stream().forEach(vote -> {
             try {
-                var payload = objectMapper.readValue(e.get(), CandidatePayload.class);
+                var payload = objectMapper.readValue(vote.getPayload().get(), CandidatePayload.class);
                 var options = payload.getData().getVotes();
+                var walletId = payload.getData().getWalletId();
+                var hexDrepId = bytesToHex(Bech32.decode(walletId).data);
+                var votingPower = govToolsClient.getDRepVotingPower(hexDrepId);
+                vote.setVotingPower(Optional.of(votingPower.get()));
 
                 for (var option : options) {
                     var candidateVotes = votes.get(option.toString());
@@ -260,6 +268,7 @@ public class DBLeaderboardWinnersService extends AbstractWinnersService implemen
                         candidateVotes = Leaderboard.Votes.builder().votes(0L).votingPower("0").build();
                     }
                     candidateVotes.setVotes(candidateVotes.getVotes() + 1);
+                    candidateVotes.setVotingPower(Long.toString(Long.parseLong(candidateVotes.getVotingPower()) + votingPower.get()));
                     votes.put(option.toString(), candidateVotes);
                 }
 
@@ -270,7 +279,17 @@ public class DBLeaderboardWinnersService extends AbstractWinnersService implemen
 
         return Either.right(Optional.of(Leaderboard.ByCandidatesInCategoryStats.builder()
                 .category(categoryDetails.id())
-                .candidates(votes)
+                .candidatesResults(votes)
+                .allVotes(allVotes)
                 .build()));
     }
+
+    private static String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder(bytes.length * 2);
+        for (byte b : bytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
+
 }
