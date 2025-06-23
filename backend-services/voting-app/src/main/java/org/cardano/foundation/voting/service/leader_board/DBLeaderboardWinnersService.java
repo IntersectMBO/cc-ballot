@@ -234,7 +234,7 @@ public class DBLeaderboardWinnersService extends AbstractWinnersService implemen
     public Either<Problem, Optional<Leaderboard.ByCandidatesInCategoryStats>> getCategoryLeaderboardCandidate(ChainFollowerClient.EventDetailsResponse eventDetails,
                                                                                                     ChainFollowerClient.CategoryDetailsResponse categoryDetails,
                                                                                                     boolean forceLeaderboard) {
-        var categoryLeaderboardAvailableE = isCategoryLeaderboardAvailable(eventDetails, forceLeaderboard);
+        var categoryLeaderboardAvailableE = isCategoryLeaderboardAvailableForCandidates(eventDetails, forceLeaderboard);
         if (categoryLeaderboardAvailableE.isEmpty()) {
             return Either.left(categoryLeaderboardAvailableE.getLeft());
         }
@@ -253,14 +253,14 @@ public class DBLeaderboardWinnersService extends AbstractWinnersService implemen
 
         Map<String, Leaderboard.Votes> votes = new HashMap<>();
 
-        allVotes.stream().forEach(vote -> {
+        allVotes.forEach(vote -> {
             try {
                 var payload = objectMapper.readValue(vote.getPayload().get(), CandidatePayload.class);
                 var options = payload.getData().getVotes();
                 var walletId = payload.getData().getWalletId();
                 var hexDrepId = bytesToHex(Bech32.decode(walletId).data);
-                var votingPower = govToolsClient.getDRepVotingPower(hexDrepId);
-                vote.setVotingPower(Optional.of(votingPower.get()));
+                var votingPower = vote.getVotingPower().isPresent() ? vote.getVotingPower().get() : govToolsClient.getDRepVotingPower(hexDrepId).get();
+                vote.setVotingPower(Optional.of(votingPower));
 
                 for (var option : options) {
                     var candidateVotes = votes.get(option.toString());
@@ -268,7 +268,7 @@ public class DBLeaderboardWinnersService extends AbstractWinnersService implemen
                         candidateVotes = Leaderboard.Votes.builder().votes(0L).votingPower("0").build();
                     }
                     candidateVotes.setVotes(candidateVotes.getVotes() + 1);
-                    candidateVotes.setVotingPower(Long.toString(Long.parseLong(candidateVotes.getVotingPower()) + votingPower.get()));
+                    candidateVotes.setVotingPower(Long.toString(Long.parseLong(candidateVotes.getVotingPower()) + votingPower));
                     votes.put(option.toString(), candidateVotes);
                 }
 
@@ -276,6 +276,8 @@ public class DBLeaderboardWinnersService extends AbstractWinnersService implemen
                 throw new RuntimeException(ex);
             }
         });
+
+        voteRepository.saveAllAndFlush(allVotes);
 
         return Either.right(Optional.of(Leaderboard.ByCandidatesInCategoryStats.builder()
                 .category(categoryDetails.id())
