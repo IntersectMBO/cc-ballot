@@ -253,7 +253,6 @@ public class DBLeaderboardWinnersService extends AbstractWinnersService implemen
             try {
                 var payload = objectMapper.readValue(e.get(), CandidatePayload.class);
                 var options = payload.getData().getVotes();
-                long votingPower = Optional.ofNullable(payload.getData().getVotingPower()).orElse(0L);
 
                 for (var option : options) {
                     var candidateVotes = votes.get(option.toString());
@@ -261,7 +260,6 @@ public class DBLeaderboardWinnersService extends AbstractWinnersService implemen
                         candidateVotes = Leaderboard.Votes.builder().votes(0L).votingPower("0").build();
                     }
                     candidateVotes.setVotes(candidateVotes.getVotes() + 1);
-                    candidateVotes.setVotingPower(Long.toString(Long.parseLong(candidateVotes.getVotingPower()) + votingPower));
                     votes.put(option.toString(), candidateVotes);
                 }
 

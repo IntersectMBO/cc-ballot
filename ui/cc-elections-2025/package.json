@@ -18,6 +18,7 @@
     "@sentry/react": "^7.77.0",
     "@types/react-select-country-list": "^2.2.3",
     "axios": "^1.4.0",
+    "bech32": "^2.0.0",
     "blakejs": "^1.2.1",
     "buffer": "^6.0.3",
     "react": "^19.0.0",

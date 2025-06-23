@@ -98,6 +98,7 @@ public class SpringSecurityConfiguration {
                     //.requestMatchers(new AntPathRequestMatcher("/api/vote/vote-changing-available/**", HEAD.name())).authenticated()
 
                     // without auth
+                    .requestMatchers(new AntPathRequestMatcher("/api/vote/candidate/getVotes", GET.name())).permitAll()
                     .requestMatchers(new AntPathRequestMatcher("/api/leaderboard/**", GET.name())).permitAll()
                     .requestMatchers(new AntPathRequestMatcher("/api/leaderboard/**", HEAD.name())).permitAll()
                     .requestMatchers(new AntPathRequestMatcher("/api/leaderboard/candidate/**", GET.name())).permitAll()

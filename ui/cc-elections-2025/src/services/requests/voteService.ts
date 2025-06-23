@@ -61,6 +61,12 @@ export interface VoteReceipt {
   votedAtSlot: string;
 }
 
+export interface Votes {
+  data: {
+    votes: number[];
+  }
+}
+
 const VOTING_LEDGER_FOLLOWER_APP_URL = import.meta.env.VITE_VOTING_LEDGER_FOLLOWER_APP_URL;
 const VOTING_APP_URL = import.meta.env.VITE_VOTING_APP_URL;
 const ACCOUNT_INFO_URL = import.meta.env.VITE_ACCOUNT_INFO_URL;
@@ -134,6 +140,17 @@ export const getVoteReceipt = async (
       "X-Ballot-Wallet-Type": walletType,
     }
   });
+
+  return response.data;
+}
+
+export const getVotes = async (
+  eventId: string,
+  categoryId: string,
+  walletType: string,
+  dRepId: string,
+) => {
+  const response = await axios.get<Votes>(`${VOTING_APP_URL}/api/vote/candidate/getVotes?walletType=${walletType}&dRepId=${dRepId}&eventId=${eventId}&categoryId=${categoryId}`, {});
 
   return response.data;
 }
