@@ -66,7 +66,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
     }
 
     walletApiRef.current = walletApi;
-  }, [walletApi, pubDRepKey]);
+  }, [walletApi]);
 
   const { openModal, closeModal } = useModal();
 
