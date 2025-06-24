@@ -191,7 +191,7 @@ public class DBLeaderboardWinnersService extends AbstractWinnersService implemen
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public Either<Problem, Optional<Leaderboard.ByCandidatesInCategoryStats>> getCategoryLeaderboardCandidate(String event,
                                                                                                              String category,
                                                                                                              boolean forceLeaderboard) {
