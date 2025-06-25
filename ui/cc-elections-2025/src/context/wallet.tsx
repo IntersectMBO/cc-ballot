@@ -262,6 +262,7 @@ const CardanoProvider = (props: Props) => {
     removeItemFromLocalStorage(`${WALLET_LS_KEY}_name`);
     removeItemFromLocalStorage(`${WALLET_LS_KEY}_stake_key`);
     setWalletApi(undefined);
+    setPubDRepKey("");
     setAddress(undefined);
     setStakeKey(undefined);
     setIsEnabled(false);
