@@ -63,8 +63,6 @@ public class VoteCandidateResource {
                     .body(problem);
         }
 
-
-
         return voteService.castVote(web3Auth)
                 .fold(problem -> {
                             log.warn("Vote cast failed, problem:{}", problem);
@@ -130,6 +128,36 @@ public class VoteCandidateResource {
                                     .cacheControl(cacheControl)
                                     .body(voteReceipt);
                         });
+    }
+
+    @RequestMapping(value = "/getAllVoteProofs", method = { HEAD, GET } , produces = "application/json")
+    @Timed(value = "resource.vote.candidate.getAllVoteProofs", histogram = true)
+    @Operation(summary = "Return all votes proofs", description = "Allows users to get all votes proofs for everyone who voted.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Votes proofs retrieved successfully.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = CandidatePayload.class)
+                            )
+                    ),
+                    @ApiResponse(responseCode = "400", description = "Bad request.",
+                            content = {
+                                    @Content(mediaType = "application/json",
+                                            schema = @Schema(implementation = Problem.class))
+                            }
+                    ),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            }
+    )
+    public ResponseEntity<?> getAllVoteProofs(@RequestParam String eventId) {
+        var cacheControl = CacheControl.maxAge(1, MINUTES)
+            .noTransform()
+            .mustRevalidate();
+
+        return ResponseEntity
+                .ok()
+                .cacheControl(cacheControl)
+                .body(voteService.getAllVoteProofs(eventId));
     }
 
     @RequestMapping(value = "/getVotes", method = { HEAD, GET } , produces = "application/json")

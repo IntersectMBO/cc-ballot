@@ -11,6 +11,7 @@ import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.client.KoiosIntegrationClient;
 import org.cardano.foundation.voting.client.UserVerificationClient;
 import org.cardano.foundation.voting.domain.CandidatePayload;
+import org.cardano.foundation.voting.domain.VoteMerkleProofForDRep;
 import org.cardano.foundation.voting.domain.VoteReceipt;
 import org.cardano.foundation.voting.domain.entity.Vote;
 import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
@@ -513,6 +514,15 @@ public class CandidateVoteService {
         val categoryId = viewVoteReceiptEnvelope.getCategory();
 
         return actualVoteReceipt(event, categoryId, walletType, walletId);
+    }
+
+    public List<VoteMerkleProofForDRep> getAllVoteProofs(String eventId) {
+        return voteMerkleProofService.findAllProofs(eventId).stream()
+                .map(e -> VoteMerkleProofForDRep.builder()
+                        .dRepId(voteRepository.findById(e.getVoteId()).orElseThrow().getWalletId())
+                        .proof(e)
+                        .build())
+                .toList();
     }
 
     public Either<Problem, CandidatePayload> getVotes(String eventId, String categoryId, String dRepId, WalletType walletType) {

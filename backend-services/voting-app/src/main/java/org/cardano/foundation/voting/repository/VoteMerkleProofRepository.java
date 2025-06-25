@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -14,6 +15,9 @@ public interface VoteMerkleProofRepository extends JpaRepository<VoteMerkleProof
 
     @Query("SELECT vmp FROM VoteMerkleProof vmp WHERE vmp.eventId = :eventId AND vmp.voteId = :voteId ORDER BY vmp.absoluteSlot, vmp.voteIdNumericHash DESC")
     Optional<VoteMerkleProof> findLatestProof(@Param("eventId") String eventId, @Param("voteId") String voteId);
+
+    @Query("SELECT vmp FROM VoteMerkleProof vmp WHERE vmp.eventId = :eventId ORDER BY vmp.absoluteSlot, vmp.voteIdNumericHash DESC")
+    List<VoteMerkleProof> findAllProofs(@Param("eventId") String eventId);
 
     @Query("UPDATE VoteMerkleProof vmp SET vmp.invalidated = true where vmp.absoluteSlot > :slot")
     @Modifying
