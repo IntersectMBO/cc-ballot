@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import {ICONS} from "@consts";
 import {Button} from "@atoms";
 import {useModal} from "@context";
-import { VoteReceipt } from "@services";
+import { Proof, VoteDetails } from "@services";
 
 
 type VoteResultsListItemProps = {
@@ -18,7 +18,8 @@ type VoteResultsListItemProps = {
   verified: boolean;
   votes: number;
   votingPower?: string;
-  votesDetails: VoteReceipt[];
+  votesDetails: VoteDetails[];
+  proofs?: Proof[];
 }
 
 export const VoteResultsListItem = (props: VoteResultsListItemProps) => {
@@ -34,6 +35,7 @@ export const VoteResultsListItem = (props: VoteResultsListItemProps) => {
       state: {
         title: 'Candidate voting results',
         response: props.votesDetails,
+        proofs: props.proofs,
       }
     });
   }

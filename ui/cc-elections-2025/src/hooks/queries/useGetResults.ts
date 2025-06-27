@@ -1,9 +1,9 @@
 import { useQuery } from "react-query";
 
-import {getAllCandidates, getResults, VoteReceipt} from "@services";
+import {getAllCandidates, getResults, getProofs, Proof, VoteDetails} from "@services";
 import {CandidateDetails} from "@models";
 
-type Result = CandidateDetails & { votes: number, votesDetails: VoteReceipt[] };
+type Result = CandidateDetails & { votes: number, votesDetails: VoteDetails[], proofs: Proof[] };
 
 type CombinedData = {
   topVotes: Result[];
@@ -15,18 +15,21 @@ export const useGetResults = (eventId: string, categoryId: string) => {
   const topVotesLength = 7;
 
   const {data, isLoading} = useQuery<CombinedData>('combinedData', async () => {
-    const [candidates, results] = await Promise.all([
+    const [candidates, results, proofs] = await Promise.all([
       getAllCandidates(),
-      getResults(eventId, categoryId)
+      getResults(eventId, categoryId),
+      getProofs(eventId),
     ]);
 
     const candidatesWithVotes = candidates.map(candidate => {
+      const votesDetails = results.allVotes.filter((vote) => JSON.parse(vote.payload).data.votes?.includes(candidate.candidate.id));
       return {
       ...candidate.candidate,
         votes: results.candidatesResults[candidate.candidate.id]
           ? results.candidatesResults[candidate.candidate.id].votes * Number(results.candidatesResults[candidate.candidate.id].votingPower)
           : 0,
-        votesDetails: results.allVotes.filter((vote) => JSON.parse(vote.payload).data.votes?.includes(candidate.candidate.id)),
+        votesDetails,
+        proofs: proofs.filter((proof) => votesDetails.some((detail) => detail.walletId === proof.drepId)),
       };
     });
 

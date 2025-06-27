@@ -191,3 +191,11 @@ export const getResults = async (
   return response.data;
 
 }
+
+export const getProofs = async (
+  eventId: string,
+) => {
+  const response = await axios.get<Proof[]>(`${VOTING_APP_URL}/api/vote/candidate/getAllVoteProofs?eventId=${eventId}`, {});
+
+  return response.data;
+}
