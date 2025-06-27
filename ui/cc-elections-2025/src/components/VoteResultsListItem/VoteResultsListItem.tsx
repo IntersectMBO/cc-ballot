@@ -32,7 +32,7 @@ export const VoteResultsListItem = (props: VoteResultsListItemProps) => {
     openModal({
       type: "textModal",
       state: {
-        title: 'Your vote details',
+        title: 'Candidate voting results',
         response: props.votesDetails,
       }
     });
