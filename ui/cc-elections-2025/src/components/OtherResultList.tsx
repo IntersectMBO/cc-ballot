@@ -35,9 +35,9 @@ export const OtherResultsList = (props: OtherResultsListProps) => {
       >
         <Box>
           <Typography variant="h2">
-            {`Other rankings (${props.results.length})`}
+            {`Other candidates (${props.results.length})`}
           </Typography>
-          <Typography variant="body2">This are the results of this election</Typography>
+          <Typography variant="body2">Candidates who didn't get enough votes to become CC members</Typography>
         </Box>
       </Box>
       <Box
