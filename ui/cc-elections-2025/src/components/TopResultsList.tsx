@@ -53,7 +53,16 @@ export const TopResultsList = (props: TopResultsListProps) => {
       >
         {props.results.map((item) => (
           <VoteResultsListItem
-            id={item.id} name={item.name} initials={getInitials(item.name)} candidateType={item.candidateType} verified={item.verified} votes={item.votes} votesDetails={item.votesDetails} proofs={item.proofs} />
+            key={item.id}
+            id={item.id}
+            name={item.name}
+            initials={getInitials(item.name)}
+            candidateType={item.candidateType}
+            verified={item.verified}
+            votes={item.votes}
+            votesDetails={item.votesDetails}
+            proofs={item.proofs}
+          />
         ))}
       </Box>
     </Box>

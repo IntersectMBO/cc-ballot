@@ -134,13 +134,26 @@ export const Home = ({ applyEndTime, isEditActive, isVoteActive, isPendingResult
               </Box>
             )}
             {isResultsActive && (
-              <Box>
-                {!isLoading && !!data?.topVotes?.length && (<>
-                  <TopResultsList results={data.topVotes} />
-                </>)}
-                {!isLoading && !!data?.restVotes?.length && (<>
-                  <OtherResultsList results={data.restVotes} />
-                </>)}
+              <Box aria-busy={isLoading}>
+                {!data || isLoading ? (
+                  <Box sx={{ padding: '40px 0 24px' }}>
+                    <Box
+                      sx={{
+                        alignItems: "center",
+                        display: "flex",
+                        flex: 1,
+                        justifyContent: "center",
+                      }}
+                    >
+                      <CircularProgress aria-label="Loading" color="secondary" />
+                    </Box>
+                  </Box>
+                ) : (
+                  <>
+                    {!!data.topVotes.length && <TopResultsList results={data.topVotes} />}
+                    {!!data.restVotes.length && <OtherResultsList results={data.restVotes} />}
+                  </>
+                )}
               </Box>
             )}
             {!isResultsActive && (
