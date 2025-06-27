@@ -183,8 +183,8 @@ export const getVotes = async (
 }
 
 export const getResults = async (
-  _eventId: string,
-  _categoryId: string,
+  eventId: string,
+  categoryId: string,
 ) => {
   const response = await axios.get<Results>(`${VOTING_APP_URL}/api/leaderboard/candidate/${eventId}/${categoryId}/results`, {});
 
