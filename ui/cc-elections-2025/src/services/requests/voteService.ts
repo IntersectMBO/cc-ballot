@@ -67,6 +67,33 @@ export interface Votes {
   }
 }
 
+export interface VoteDetails {
+  categoryId: string;
+  createdAt: string;
+  eventId: string;
+  id: string;
+  idNumericHash: number;
+  payload: string;
+  proposalId: string;
+  publicKey: string;
+  signature: string;
+  updatedAt: string;
+  votedAtSlot: number;
+  votingPower: number;
+  walletId: string;
+  walletType: string;
+}
+
+export interface Results {
+  category: string;
+  candidatesResults: { [key: string]: {
+      votes: number;
+      votingPower: string;
+    }
+  };
+  allVotes: VoteDetails[];
+}
+
 const VOTING_LEDGER_FOLLOWER_APP_URL = import.meta.env.VITE_VOTING_LEDGER_FOLLOWER_APP_URL;
 const VOTING_APP_URL = import.meta.env.VITE_VOTING_APP_URL;
 const ACCOUNT_INFO_URL = import.meta.env.VITE_ACCOUNT_INFO_URL;
@@ -153,4 +180,14 @@ export const getVotes = async (
   const response = await axios.get<Votes>(`${VOTING_APP_URL}/api/vote/candidate/getVotes?walletType=${walletType}&dRepId=${dRepId}&eventId=${eventId}&categoryId=${categoryId}`, {});
 
   return response.data;
+}
+
+export const getResults = async (
+  _eventId: string,
+  _categoryId: string,
+) => {
+  const response = await axios.get<Results>(`${VOTING_APP_URL}/api/leaderboard/candidate/${eventId}/${categoryId}/results`, {});
+
+  return response.data;
+
 }

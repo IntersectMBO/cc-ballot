@@ -177,6 +177,11 @@ export const theme = createTheme({
       fontWeight: 500,
       lineHeight: 1.3,
     },
+    h5: {
+      fontSize: "14px",
+      fontWeight: 500,
+      lineHeight: 1.3,
+    },
     body1: {
       fontSize: "16px",
       lineHeight: 1.5,
