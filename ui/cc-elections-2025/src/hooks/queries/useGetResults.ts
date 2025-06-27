@@ -1,9 +1,9 @@
 import { useQuery } from "react-query";
 
-import { getAllCandidates, getResults } from "@services";
+import {getAllCandidates, getResults, VoteReceipt} from "@services";
 import {CandidateDetails} from "@models";
 
-type Result = CandidateDetails & { votes: number };
+type Result = CandidateDetails & { votes: number, votesDetails: VoteReceipt[] };
 
 type CombinedData = {
   topVotes: Result[];
@@ -20,10 +20,15 @@ export const useGetResults = (eventId: string, categoryId: string) => {
       getResults(eventId, categoryId)
     ]);
 
-    const candidatesWithVotes = candidates.map(candidate => ({
+    const candidatesWithVotes = candidates.map(candidate => {
+      return {
       ...candidate.candidate,
-      votes: results.candidatesResults[candidate.candidate.id].votes * Number(results.candidatesResults[candidate.candidate.id].votingPower),
-    }));
+        votes: results.candidatesResults[candidate.candidate.id]
+          ? results.candidatesResults[candidate.candidate.id].votes * Number(results.candidatesResults[candidate.candidate.id].votingPower)
+          : 0,
+        votesDetails: results.allVotes.filter((vote) => JSON.parse(vote.payload).data.votes?.includes(candidate.candidate.id)),
+      };
+    });
 
     const sorted = [...candidatesWithVotes].sort((a, b) => b.votes - a.votes);
 

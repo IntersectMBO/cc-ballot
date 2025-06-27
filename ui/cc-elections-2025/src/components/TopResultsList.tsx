@@ -5,8 +5,9 @@ import { CandidateDetails } from "@models";
 import { getInitials } from "@utils";
 
 import { VoteResultsListItem } from "@/components/VoteResultsListItem/VoteResultsListItem.tsx";
+import { VoteReceipt } from "@services";
 
-type Result = CandidateDetails & { votes: number };
+type Result = CandidateDetails & { votes: number, votesDetails: VoteReceipt[] };
 
 type TopResultsListProps = {
   results: Result[];
@@ -52,7 +53,7 @@ export const TopResultsList = (props: TopResultsListProps) => {
       >
         {props.results.map((item) => (
           <VoteResultsListItem
-            id={item.id} name={item.name} initials={getInitials(item.name)} candidateType={item.candidateType} verified={item.verified} votes={item.votes} />
+            id={item.id} name={item.name} initials={getInitials(item.name)} candidateType={item.candidateType} verified={item.verified} votes={item.votes} votesDetails={item.votesDetails} />
         ))}
       </Box>
     </Box>

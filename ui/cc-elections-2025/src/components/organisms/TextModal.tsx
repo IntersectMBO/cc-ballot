@@ -8,7 +8,7 @@ import { VoteReceipt } from "@services";
 
 type TextModalState = {
   title: string;
-  response: VoteReceipt;
+  response: VoteReceipt | VoteReceipt[];
 }
 
 export const TextModal = forwardRef<HTMLDivElement>((_, ref) => {

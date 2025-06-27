@@ -3,8 +3,9 @@ import Typography from '@mui/material/Typography';
 import {VoteResultsListItem} from "@/components/VoteResultsListItem/VoteResultsListItem.tsx";
 import {CandidateDetails} from "@models";
 import {getInitials} from "@utils";
+import { VoteReceipt } from "@services";
 
-type Result = CandidateDetails & { votes: number };
+type Result = CandidateDetails & { votes: number, votesDetails: VoteReceipt[] };
 
 type OtherResultsListProps = {
   results: Result[];
@@ -46,7 +47,7 @@ export const OtherResultsList = (props: OtherResultsListProps) => {
       >
         {props.results.map((item) => (
           <VoteResultsListItem
-            id={item.id} name={item.name} initials={getInitials(item.name)} candidateType={item.candidateType} verified={item.verified} votes={item.votes} />
+            id={item.id} name={item.name} initials={getInitials(item.name)} candidateType={item.candidateType} verified={item.verified} votes={item.votes} votesDetails={item.votesDetails} />
         ))}
       </Box>
     </Box>

@@ -6,6 +6,8 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from '@mui/material/Typography';
 import {ICONS} from "@consts";
 import {Button} from "@atoms";
+import {useModal} from "@context";
+import { VoteReceipt } from "@services";
 
 
 type VoteResultsListItemProps = {
@@ -16,13 +18,25 @@ type VoteResultsListItemProps = {
   verified: boolean;
   votes: number;
   votingPower?: string;
+  votesDetails: VoteReceipt[];
 }
 
 export const VoteResultsListItem = (props: VoteResultsListItemProps) => {
+  const { openModal } = useModal();
 
   const chipText = (candidateType: "individual" | "company" | "consortium") => {
     return candidateType?.charAt(0).toUpperCase() + candidateType?.slice(1);
   };
+
+  const handleDetails = () => {
+    openModal({
+      type: "textModal",
+      state: {
+        title: 'Your vote details',
+        response: props.votesDetails,
+      }
+    });
+  }
 
   return (
     <Box
@@ -104,7 +118,7 @@ export const VoteResultsListItem = (props: VoteResultsListItemProps) => {
             {`${props.votes} votes`}
           </Typography>
         </Box>
-        <Button variant="text" onClick={() => null}>See details</Button>
+        <Button variant="text" onClick={handleDetails}>See details</Button>
       </Box>
     </Box>
   )
