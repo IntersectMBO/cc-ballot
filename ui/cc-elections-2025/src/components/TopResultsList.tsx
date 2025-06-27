@@ -43,7 +43,7 @@ export const TopResultsList = (props: TopResultsListProps) => {
         </Box>
         <Box>
           <Typography variant="h2">Voting results (Top 7)</Typography>
-          <Typography variant="body2">Top Constitutional Committee(CC) candidates</Typography>
+          <Typography variant="body2">Candidates who received enough votes to become CC members</Typography>
         </Box>
       </Box>
       <Box
