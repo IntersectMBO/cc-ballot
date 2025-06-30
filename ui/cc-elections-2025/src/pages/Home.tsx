@@ -141,9 +141,9 @@ export const Home = ({ applyEndTime, isEditActive, isVoteActive, isPendingResult
             {isPendingResultActive && (
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px', backgroundColor: 'white', borderRadius: '16px', padding: '20px 24px 32px 24px', boxShadow: '0px 20px 25px -5px #212A3D14', marginTop: '16px' }}>
                 <Box>
-                  <Typography variant="h2">Voting has ended.</Typography>
+                  <Typography variant="h2">Voting has ended</Typography>
                 </Box>
-                <Typography variant="body1">We are waiting for the results.</Typography>
+                <Typography variant="body1">Please wait for the results to be audited. Once the audit is completed, the results will be available.</Typography>
               </Box>
             )}
 
