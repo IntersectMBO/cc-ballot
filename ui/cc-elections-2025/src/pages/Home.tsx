@@ -42,7 +42,11 @@ export const Home = ({ applyEndTime, isEditActive, isVoteActive, isPendingResult
 
   const { allCandidates, isAllCandidatesLoading } = useGetAllCandidates();
 
-  const { data, isLoading } = useGetResults(EVENT, CATEGORY);
+  let results;
+
+  if (isResultsActive) {
+    results = useGetResults(EVENT, CATEGORY);
+  }
 
   return (
     <Box sx={{ backgroundColor: '#f2f4f8', minHeight: '100vh' }}>
@@ -133,9 +137,19 @@ export const Home = ({ applyEndTime, isEditActive, isVoteActive, isPendingResult
                 <Typography variant="body1">IMPORTANT: Please take the right time before making your decision. Once your vote is submitted it can NOT be changed.</Typography>
               </Box>
             )}
-            {isResultsActive && (
-              <Box aria-busy={isLoading}>
-                {!data || isLoading ? (
+
+            {isPendingResultActive && (
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px', backgroundColor: 'white', borderRadius: '16px', padding: '20px 24px 32px 24px', boxShadow: '0px 20px 25px -5px #212A3D14', marginTop: '16px' }}>
+                <Box>
+                  <Typography variant="h2">Voting has ended.</Typography>
+                </Box>
+                <Typography variant="body1">We are waiting for the results.</Typography>
+              </Box>
+            )}
+
+            {isResultsActive && results && (
+              <Box aria-busy={results.isLoading}>
+                {!results.data || results.isLoading ? (
                   <Box sx={{ padding: '40px 0 24px' }}>
                     <Box
                       sx={{
@@ -150,8 +164,8 @@ export const Home = ({ applyEndTime, isEditActive, isVoteActive, isPendingResult
                   </Box>
                 ) : (
                   <>
-                    {!!data.topVotes.length && <TopResultsList results={data.topVotes} />}
-                    {!!data.restVotes.length && <OtherResultsList results={data.restVotes} />}
+                    {!!results.data.topVotes.length && <TopResultsList results={results.data.topVotes} />}
+                    {!!results.data.restVotes.length && <OtherResultsList results={results.data.restVotes} />}
                   </>
                 )}
               </Box>

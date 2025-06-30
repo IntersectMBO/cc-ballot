@@ -61,7 +61,9 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
       }
     }
 
-    fetchVotes();
+    if (isVoteActive) {
+      fetchVotes();
+    }
 
     pubDRepKeyRef.current = pubDRepKey;
   }, [pubDRepKey]);
