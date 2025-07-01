@@ -7,7 +7,7 @@ import { getInitials } from "@utils";
 import { VoteResultsListItem } from "@/components/VoteResultsListItem/VoteResultsListItem.tsx";
 import { Proof, VoteDetails } from "@services";
 
-type Result = CandidateDetails & { votes: number, votesDetails: VoteDetails[], proofs: Proof[] };
+type Result = CandidateDetails & { votes: number; votesCount: number; votesDetails: VoteDetails[]; proofs: Proof[]; };
 
 type TopResultsListProps = {
   results: Result[];
@@ -60,6 +60,7 @@ export const TopResultsList = (props: TopResultsListProps) => {
             candidateType={item.candidateType}
             verified={item.verified}
             votes={item.votes}
+            votesCount={item.votesCount}
             votesDetails={item.votesDetails}
             proofs={item.proofs}
           />

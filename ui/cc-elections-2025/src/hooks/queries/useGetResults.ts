@@ -3,7 +3,7 @@ import { useQuery } from "react-query";
 import {getAllCandidates, getResults, getProofs, Proof, VoteDetails} from "@services";
 import {CandidateDetails} from "@models";
 
-type Result = CandidateDetails & { votes: number, votesDetails: VoteDetails[], proofs: Proof[] };
+type Result = CandidateDetails & { votes: number; votesCount: number; votesDetails: VoteDetails[]; proofs: Proof[]; };
 
 type CombinedData = {
   topVotes: Result[];
@@ -27,6 +27,9 @@ export const useGetResults = (eventId: string, categoryId: string) => {
       ...candidate.candidate,
         votes: results.candidatesResults[candidate.candidate.id]
           ? results.candidatesResults[candidate.candidate.id].votes * Number(results.candidatesResults[candidate.candidate.id].votingPower)
+          : 0,
+        votesCount: results.candidatesResults[candidate.candidate.id]
+          ? results.candidatesResults[candidate.candidate.id].votes
           : 0,
         votesDetails,
         proofs: proofs.filter((proof) => votesDetails.some((detail) => detail.walletId === proof.drepId)),

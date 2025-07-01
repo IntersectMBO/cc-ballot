@@ -5,7 +5,7 @@ import {CandidateDetails} from "@models";
 import {getInitials} from "@utils";
 import { Proof, VoteDetails } from "@services";
 
-type Result = CandidateDetails & { votes: number, votesDetails: VoteDetails[], proofs: Proof[] };
+type Result = CandidateDetails & { votes: number; votesCount: number; votesDetails: VoteDetails[]; proofs: Proof[]; };
 
 type OtherResultsListProps = {
   results: Result[];
@@ -54,6 +54,7 @@ export const OtherResultsList = (props: OtherResultsListProps) => {
             candidateType={item.candidateType}
             verified={item.verified}
             votes={item.votes}
+            votesCount={item.votesCount}
             votesDetails={item.votesDetails}
             proofs={item.proofs}
           />

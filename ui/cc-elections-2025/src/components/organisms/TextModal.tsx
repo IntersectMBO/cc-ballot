@@ -20,7 +20,7 @@ export const TextModal = forwardRef<HTMLDivElement>((_, ref) => {
       dataTestId={ "voting-modal"}
       hideCloseButton={true}
       ref={ref}
-      sx={{ padding: '32px 40px', minWidth: '800px' }}
+      sx={{ padding: { md: '32px 40px' }, minWidth: { lg: '800px' } }}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px'}}>
         <Typography variant="h1">{state?.title}</Typography>

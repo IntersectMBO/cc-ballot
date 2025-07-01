@@ -17,6 +17,7 @@ type VoteResultsListItemProps = {
   candidateType: "individual" | "company" | "consortium";
   verified: boolean;
   votes: number;
+  votesCount: number;
   votingPower?: string;
   votesDetails: VoteDetails[];
   proofs?: Proof[];
@@ -47,8 +48,9 @@ export const VoteResultsListItem = (props: VoteResultsListItemProps) => {
         borderBottom: "1px solid #D9DEE8",
         display: "flex",
         gap: "8px",
-        justifyContent: "space-between",
+        justifyContent: { md: "space-between" },
         alignItems: 'center',
+        flexWrap: { xxs: 'wrap', md: 'nowrap' },
       }}
     >
       <Box
@@ -56,6 +58,7 @@ export const VoteResultsListItem = (props: VoteResultsListItemProps) => {
           display: "flex",
           gap: "24px",
           alignItems: "center",
+          flex: { xxs: '1 1 auto', md: '0 1 auto' },
         }}
       >
         <Box
@@ -65,7 +68,7 @@ export const VoteResultsListItem = (props: VoteResultsListItemProps) => {
             alignItems: "center",
           }}
         >
-          <Box sx={{ position: 'relative'}}>
+          <Box sx={{ position: 'relative', display: { xxs: 'none', md: 'contents' } }}>
             <Avatar
               sx={{
                 width: 40,
@@ -93,22 +96,24 @@ export const VoteResultsListItem = (props: VoteResultsListItemProps) => {
             borderRadius: '100px',
             color: '#212A3D',
             backgroundColor: '#EDEBFF',
+            display: { xxs: 'none', lg: 'contents' }
           }}
         />
       </Box>
       <Box
         sx={{
-          display: "flex",
+          display: { xxs: 'contents', md: "flex" },
           gap: "8px",
           alignItems: "center",
         }}
       >
         <Box
           sx={{
+            flex: { xxs: '1 1 auto', md: '0 1 auto' },
             height: '21px',
             borderRadius: '100px',
             border: "1px solid #D9DEE8",
-            display: 'inline-flex',
+            display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
             padding: "6px 12px 6px 8px",
@@ -117,10 +122,34 @@ export const VoteResultsListItem = (props: VoteResultsListItemProps) => {
         >
           <img src={ICONS.voteIcon} alt="verified" />
           <Typography variant="body2">
-            {`${props.votes} votes`}
+            {`${new Intl.NumberFormat("en-US").format(props.votes)} votes`}
           </Typography>
         </Box>
-        <Button variant="text" onClick={handleDetails}>See details</Button>
+        <Box
+          sx={{
+            flex: { xxs: '1 1 auto', md: '0 1 auto' },
+            height: '21px',
+            borderRadius: '100px',
+            border: "1px solid #D9DEE8",
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: "6px 12px 6px 8px",
+            gap: '8px',
+          }}
+        >
+          <img src={ICONS.voteIcon} alt="verified" />
+          <Typography variant="body2">
+            {`${props.votesCount} votes`}
+          </Typography>
+        </Box>
+        <Button
+          sx={{ flex: { xxs: '1 1 auto', md: '0 1 auto' } }}
+          variant="text"
+          onClick={handleDetails}
+        >
+          See details
+        </Button>
       </Box>
     </Box>
   )
