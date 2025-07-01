@@ -58,7 +58,7 @@ export const VoteResultsListItem = (props: VoteResultsListItemProps) => {
           display: "flex",
           gap: "24px",
           alignItems: "center",
-          flex: { xxs: '1 1 auto', md: '0 1 auto' },
+          flex: { xxs: '1 1 35%', md: '0 1 auto' },
         }}
       >
         <Box
@@ -96,7 +96,7 @@ export const VoteResultsListItem = (props: VoteResultsListItemProps) => {
             borderRadius: '100px',
             color: '#212A3D',
             backgroundColor: '#EDEBFF',
-            display: { xxs: 'none', lg: 'contents' }
+            display: { xxs: 'none', lg: 'inline-flex' }
           }}
         />
       </Box>
@@ -109,7 +109,7 @@ export const VoteResultsListItem = (props: VoteResultsListItemProps) => {
       >
         <Box
           sx={{
-            flex: { xxs: '1 1 auto', md: '0 1 auto' },
+            flex: { xxs: '1 1 45%', md: '0 1 auto' },
             height: '21px',
             borderRadius: '100px',
             border: "1px solid #D9DEE8",
@@ -120,9 +120,11 @@ export const VoteResultsListItem = (props: VoteResultsListItemProps) => {
             gap: '8px',
           }}
         >
-          <img src={ICONS.voteIcon} alt="verified" />
           <Typography variant="body2">
-            {`${new Intl.NumberFormat("en-US").format(props.votes)} votes`}
+            {`₳ ${new Intl.NumberFormat(
+              "en-US",
+              { maximumFractionDigits: 2, minimumFractionDigits: 2 }
+            ).format(props.votes / 100000)}`}
           </Typography>
         </Box>
         <Box
@@ -131,7 +133,7 @@ export const VoteResultsListItem = (props: VoteResultsListItemProps) => {
             height: '21px',
             borderRadius: '100px',
             border: "1px solid #D9DEE8",
-            display: 'flex',
+            display: { xxs: 'none', md: 'flex' },
             justifyContent: 'center',
             alignItems: 'center',
             padding: "6px 12px 6px 8px",
