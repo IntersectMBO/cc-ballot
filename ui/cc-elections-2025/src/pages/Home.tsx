@@ -143,7 +143,7 @@ export const Home = ({ applyEndTime, isEditActive, isVoteActive, isPendingResult
                 <Box>
                   <Typography variant="h2">Voting has ended</Typography>
                 </Box>
-                <Typography variant="body1">Please wait for the results to be audited. Once the audit is completed, the results will be available.</Typography>
+                <Typography variant="body1">Voting officially closed on July 2nd at 12:00 PM UTC. The results are currently undergoing an audit to ensure accuracy and integrity. Final results will be published on July 6th at 12:00 PM UTC.</Typography>
               </Box>
             )}
 
