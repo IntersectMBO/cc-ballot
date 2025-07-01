@@ -198,6 +198,12 @@ public class BlackfrostIntegrationClient {
                         .withDetail("Unable to get transactions by label from blackfrost-integration-service, reason: " + e.getMessage())
                         .withStatus(new HttpStatusAdapter(e.getStatusCode()))
                         .build());
+            } catch (Exception e) {
+                return Either.left(Problem.builder()
+                        .withTitle("UNEXPECTED_ERROR")
+                        .withDetail("Unexpected error occurred: " + e.getMessage())
+                        .withStatus(Status.INTERNAL_SERVER_ERROR)
+                        .build());
             }
         }
 
