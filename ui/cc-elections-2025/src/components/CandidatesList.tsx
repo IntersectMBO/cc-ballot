@@ -23,9 +23,10 @@ type CandidatesListProps = {
   candidates: Candidate[];
   isEditActive: boolean;
   isVoteActive: boolean;
+  isPendingResultActive:boolean;
 };
 
-export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: CandidatesListProps) => {
+export const CandidatesList = ({ candidates, isEditActive, isVoteActive, isPendingResultActive }: CandidatesListProps) => {
   const EVENT: string = import.meta.env.VITE_EVENT;
   const CATEGORY: string  = import.meta.env.VITE_CATEGORY;
   const PROPOSAL: string  = import.meta.env.VITE_PROPOSAL;
@@ -36,6 +37,10 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
 
   const walletApiRef = useRef(walletApi);
   const pubDRepKeyRef = useRef(pubDRepKey);
+
+  useEffect(() => {
+    walletApiRef.current = walletApi;
+  }, [walletApi])
 
   useEffect(() => {
     if (pubDRepKeyRef.current && !pubDRepKey) {
@@ -61,9 +66,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
       }
     }
 
-    if (isVoteActive) {
-      fetchVotes();
-    }
+    fetchVotes();
 
     pubDRepKeyRef.current = pubDRepKey;
   }, [pubDRepKey]);
@@ -430,7 +433,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
               </Button>
             </Box>
           )}
-          {isVoteActive && isEnabled && !!votes.length && !recastVote && (
+          {(isVoteActive || isPendingResultActive) && isEnabled && !!votes.length && !recastVote && (
             <Box sx={{ display: 'flex', gap: '16px', alignItems: 'center'}}>
               <Box
                 sx={{
@@ -478,6 +481,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
             walletAddress={candidate.candidate.walletAddress}
             isEditActive={isEditActive}
             isVoteActive={isVoteActive}
+            isPendingResultActive={isPendingResultActive}
             onCandidateSelect={onCandidateSelect}
             onCandidateDeselect={onCandidateDeselect}
             selected={selectedCandidates.includes(candidate.candidate.id)}

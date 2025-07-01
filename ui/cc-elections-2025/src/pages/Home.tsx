@@ -190,6 +190,7 @@ export const Home = ({ applyEndTime, isEditActive, isVoteActive, isPendingResult
                     candidates={allCandidates}
                     isEditActive={isEditActive}
                     isVoteActive={isVoteActive}
+                    isPendingResultActive={isPendingResultActive}
                   />
                 )}
               </Box>

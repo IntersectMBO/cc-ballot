@@ -30,6 +30,7 @@ type CandidatesListItemProps = {
   walletAddress: string;
   isEditActive: boolean;
   isVoteActive: boolean;
+  isPendingResultActive: boolean;
   onCandidateSelect: (id: number) => void;
   onCandidateDeselect: (id: number) => void;
   selected: boolean;
@@ -176,7 +177,7 @@ export const CandidatesListItem = (props: CandidatesListItemProps) => {
             Candidate selected
           </Button>
         )}
-        {props.isVoteActive && props.voted && !props.recast && (
+        {(props.isVoteActive || props.isPendingResultActive) && props.voted && !props.recast && (
           <Button
             variant="text"
             disabled={true}
