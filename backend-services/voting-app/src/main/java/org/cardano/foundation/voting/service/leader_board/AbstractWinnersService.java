@@ -83,6 +83,19 @@ public class AbstractWinnersService {
         return isCategoryLeaderboardAvailable(eventDetails, forceLeaderboard);
     }
 
+    protected Either<Problem, Boolean> isCategoryLeaderboardAvailableForCandidates(ChainFollowerClient.EventDetailsResponse eventDetails,
+                                                                                   boolean forceLeaderboard) {
+        if (forceLeaderboard) {
+            return Either.right(true);
+        }
+
+        if (eventDetails.categoryResultsWhileVoting()) {
+            return Either.right(true);
+        }
+
+        return Either.right(eventDetails.finished());
+    }
+
     protected Either<Problem, Boolean> isCategoryLeaderboardAvailable(ChainFollowerClient.EventDetailsResponse eventDetails,
                                                                     boolean forceLeaderboard) {
         if (forceLeaderboard) {

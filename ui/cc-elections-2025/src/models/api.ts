@@ -52,43 +52,45 @@ export type MemberBody = {
 }
 
 export type Candidate = {
-  candidate: {
-    id: number;
-    candidateType: "individual" | "company" | "consortium";
-    name: string;
-    email: string;
-    country: string;
-    coldCredential: string;
-    governanceActionRationale: string;
-    socialX: string;
-    socialLinkedin: string;
-    socialDiscord: string;
-    socialTelegram: string;
-    socialWebsite: string;
-    socialOther: string;
-    publicContact: string;
-    about: string;
-    bio: string;
-    additionalInfo: string;
-    videoPresentationLink: string;
-    reasonToServe: string;
-    governanceExperience: string;
-    communicationStrategy: string;
-    ecosystemContributions: string;
-    legalExpertise: string;
-    weeklyCommitmentHours: string;
-    conflictOfInterest: string;
-    drepId: string;
-    stakeId: string;
-    walletAddress: string;
-    verified: boolean;
-    createdAt: string;
-    updatedAt: string;
-    xverification: string;
-  };
+  candidate: CandidateDetails;
   registrationNumber?: string;
   keyContactPerson?: string;
   members?: Member[];
+}
+
+export type CandidateDetails = {
+  id: number;
+  candidateType: "individual" | "company" | "consortium";
+  name: string;
+  email: string;
+  country: string;
+  coldCredential: string;
+  governanceActionRationale: string;
+  socialX: string;
+  socialLinkedin: string;
+  socialDiscord: string;
+  socialTelegram: string;
+  socialWebsite: string;
+  socialOther: string;
+  publicContact: string;
+  about: string;
+  bio: string;
+  additionalInfo: string;
+  videoPresentationLink: string;
+  reasonToServe: string;
+  governanceExperience: string;
+  communicationStrategy: string;
+  ecosystemContributions: string;
+  legalExpertise: string;
+  weeklyCommitmentHours: string;
+  conflictOfInterest: string;
+  drepId: string;
+  stakeId: string;
+  walletAddress: string;
+  verified: boolean;
+  createdAt: string;
+  updatedAt: string;
+  xverification: string;
 }
 
 export type Member = {

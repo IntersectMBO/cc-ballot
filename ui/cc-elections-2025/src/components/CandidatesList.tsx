@@ -23,9 +23,10 @@ type CandidatesListProps = {
   candidates: Candidate[];
   isEditActive: boolean;
   isVoteActive: boolean;
+  isPendingResultActive:boolean;
 };
 
-export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: CandidatesListProps) => {
+export const CandidatesList = ({ candidates, isEditActive, isVoteActive, isPendingResultActive }: CandidatesListProps) => {
   const EVENT: string = import.meta.env.VITE_EVENT;
   const CATEGORY: string  = import.meta.env.VITE_CATEGORY;
   const PROPOSAL: string  = import.meta.env.VITE_PROPOSAL;
@@ -35,9 +36,14 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
   const { isEnabled, walletApi, dRepID, pubDRepKey } = useCardano();
 
   const walletApiRef = useRef(walletApi);
+  const pubDRepKeyRef = useRef(pubDRepKey);
 
   useEffect(() => {
-    if (walletApiRef.current && !walletApi) {
+    walletApiRef.current = walletApi;
+  }, [walletApi])
+
+  useEffect(() => {
+    if (pubDRepKeyRef.current && !pubDRepKey) {
       setVotes([]);
     }
 
@@ -60,13 +66,10 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
       }
     }
 
+    fetchVotes();
 
-    if (!walletApiRef.current && walletApi || walletApi && votes.length === 0) {
-      fetchVotes();
-    }
-
-    walletApiRef.current = walletApi;
-  }, [walletApi, pubDRepKey]);
+    pubDRepKeyRef.current = pubDRepKey;
+  }, [pubDRepKey]);
 
   const { openModal, closeModal } = useModal();
 
@@ -430,7 +433,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
               </Button>
             </Box>
           )}
-          {isVoteActive && isEnabled && !!votes.length && !recastVote && (
+          {(isVoteActive || isPendingResultActive) && isEnabled && !!votes.length && !recastVote && (
             <Box sx={{ display: 'flex', gap: '16px', alignItems: 'center'}}>
               <Box
                 sx={{
@@ -478,6 +481,7 @@ export const CandidatesList = ({ candidates, isEditActive, isVoteActive }: Candi
             walletAddress={candidate.candidate.walletAddress}
             isEditActive={isEditActive}
             isVoteActive={isVoteActive}
+            isPendingResultActive={isPendingResultActive}
             onCandidateSelect={onCandidateSelect}
             onCandidateDeselect={onCandidateDeselect}
             selected={selectedCandidates.includes(candidate.candidate.id)}

@@ -8,6 +8,7 @@ import org.cardano.foundation.voting.repository.VoteMerkleProofRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,6 +22,12 @@ public class VoteMerkleProofService {
     @Timed(value = "service.merkle.findLatestProof", histogram = true)
     public Optional<VoteMerkleProof> findLatestProof(String eventId, String voteId) {
         return voteMerkleProofRepository.findLatestProof(eventId, voteId);
+    }
+
+    @Transactional(readOnly = true)
+    @Timed(value = "service.merkle.findAllProofs", histogram = true)
+    public List<VoteMerkleProof> findAllProofs(String eventId) {
+        return voteMerkleProofRepository.findAllProofs(eventId);
     }
 
 }

@@ -467,7 +467,7 @@ public class L1LeaderboardWinnersService extends AbstractWinnersService implemen
 
                 yield Optional.of(Leaderboard.ByCandidatesInCategoryStats.builder()
                         .category(category)
-                        .candidates(reInitialiseResultsToEmptyIfMissing(categoryDetails, proposalResults, eventDetails))
+                        .candidatesResults(reInitialiseResultsToEmptyIfMissing(categoryDetails, proposalResults, eventDetails))
                         .build()
                 );
             }
@@ -483,7 +483,7 @@ public class L1LeaderboardWinnersService extends AbstractWinnersService implemen
 
                 yield Optional.of(Leaderboard.ByCandidatesInCategoryStats.builder()
                         .category(category)
-                        .candidates(reInitialiseResultsToEmptyIfMissing(categoryDetails, proposalResults, eventDetails))
+                        .candidatesResults(reInitialiseResultsToEmptyIfMissing(categoryDetails, proposalResults, eventDetails))
                         .build()
                 );
             }
@@ -561,7 +561,7 @@ public class L1LeaderboardWinnersService extends AbstractWinnersService implemen
 
                 yield Optional.of(Leaderboard.ByCandidatesInCategoryStats.builder()
                         .category(categoryDetails.id())
-                        .candidates(reInitialiseResultsToEmptyIfMissing(categoryDetails, proposalResults, eventDetails))
+                        .candidatesResults(reInitialiseResultsToEmptyIfMissing(categoryDetails, proposalResults, eventDetails))
                         .build()
                 );
             }
@@ -577,7 +577,7 @@ public class L1LeaderboardWinnersService extends AbstractWinnersService implemen
 
                 yield Optional.of(Leaderboard.ByCandidatesInCategoryStats.builder()
                         .category(categoryDetails.id())
-                        .candidates(reInitialiseResultsToEmptyIfMissing(categoryDetails, proposalResults, eventDetails))
+                        .candidatesResults(reInitialiseResultsToEmptyIfMissing(categoryDetails, proposalResults, eventDetails))
                         .build()
                 );
             }

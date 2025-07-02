@@ -34,6 +34,10 @@ export const App = () => {
 
   const isVoteActive = now >= Date.parse(import.meta.env.VITE_EDIT_END_DATE) && Date.parse(import.meta.env.VITE_VOTE_END_DATE) > now;
 
+  const isPendingResultActive = now >= Date.parse(import.meta.env.VITE_VOTE_END_DATE) && Date.parse(import.meta.env.VITE_PENDING_RESULT_END_DATE) > now;
+
+  const isResultsActive = now >= Date.parse(import.meta.env.VITE_PENDING_RESULT_END_DATE);
+
   useWalletConnectionListener();
 
   const checkTheWalletIsActive = useCallback(() => {
@@ -70,6 +74,8 @@ export const App = () => {
               applyEndTime={applyEndTime}
               isEditActive={isEditActive}
               isVoteActive={isVoteActive}
+              isPendingResultActive={isPendingResultActive}
+              isResultsActive={isResultsActive}
             />
           }
         />
