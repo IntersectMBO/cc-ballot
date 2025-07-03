@@ -130,6 +130,7 @@ public class ChainFollowerClient {
             return Either.right(Optional.of(txResponse));
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == NOT_FOUND) {
+                log.info("Transaction " + txHash + " not found in chain follower service yet. Trying again...");
                 return Either.right(Optional.empty());
             }
 
