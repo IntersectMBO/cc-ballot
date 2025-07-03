@@ -50,6 +50,27 @@ public class ChainFollowerClient {
         }
     }
 
+    public Either<Problem, List<EventSummary>> findAllEvents() {
+        var url = String.format("%s/api/reference/event", ledgerFollowerBaseUrl);
+
+        try {
+            var allEventSummaries = Optional.ofNullable(restTemplate.getForObject(url, EventSummary[].class))
+                    .map(Arrays::asList).orElse(List.of());
+
+            return Either.right(allEventSummaries);
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == NOT_FOUND) {
+                return Either.right(List.of());
+            }
+
+            return Either.left(Problem.builder()
+                    .withTitle("REFERENCE_ERROR")
+                    .withDetail("Unable to get event details from ledger follower service, reason:" + e.getMessage())
+                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))
+                    .build());
+        }
+    }
+
     public Either<Problem, List<EventSummary>> findAllCommitmentWindowOpenEvents() {
         var url = String.format("%s/api/reference/event", ledgerFollowerBaseUrl);
 
