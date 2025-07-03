@@ -47,6 +47,9 @@ public class DefaultTransactionSubmissionService implements TransactionSubmissio
         while (LocalDateTime.now(clock).isBefore(future)) {
             var transactionDetailsE = chainFollowerClient.getTransactionDetails(txHash);
             if (transactionDetailsE.isEmpty() || transactionDetailsE.get().isEmpty()) {
+                if (transactionDetailsE.isLeft()) {
+                    log.info(transactionDetailsE.getLeft().getDetail());
+                }
                 log.warn("Transaction not found in chain follower yet. Sleeping for {} seconds... until deadline:{}", sleepTimeInSeconds, future);
                 Thread.sleep(sleepTimeInSeconds * 1000L);
                 continue;

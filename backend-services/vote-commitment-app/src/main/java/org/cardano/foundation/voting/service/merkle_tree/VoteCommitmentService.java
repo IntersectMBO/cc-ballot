@@ -76,20 +76,19 @@ public class VoteCommitmentService {
     }
 
     private List<L1MerkleCommitment> getValidL1MerkleCommitments() {
-        val allCommitmentWindowOpenEventsE = chainFollowerClient.findAllCommitmentWindowOpenEvents();
+        val allEventsE = chainFollowerClient.findAllEvents();
 
+        if (allEventsE.isEmpty()) {
+            val issue = allEventsE.swap().get();
 
-        if (allCommitmentWindowOpenEventsE.isEmpty()) {
-            val issue = allCommitmentWindowOpenEventsE.swap().get();
-
-            log.error("Failed to get open window eventSummaries issue:{}, will try again in some time...", issue.toString());
+            log.error("Failed to get eventSummaries issue:{}, will try again in some time...", issue.toString());
 
             return List.of();
         }
 
-        val eventsToProcess1 = allCommitmentWindowOpenEventsE.get();
+        val eventsToProcess1 = allEventsE.get();
 
-        log.info("Found events with active commitments window: {}", eventsToProcess1.stream()
+        log.info("Found events: {}", eventsToProcess1.stream()
                 .map(ChainFollowerClient.EventSummary::id)
                 .toList());
 
