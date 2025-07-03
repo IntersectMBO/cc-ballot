@@ -58,7 +58,7 @@ export const VoteResultsListItem = (props: VoteResultsListItemProps) => {
           display: "flex",
           gap: "24px",
           alignItems: "center",
-          flex: { xxs: '1 1 35%', md: '0 1 auto' },
+          flex: { xxs: '1 1 80%', md: '0 1 auto' },
         }}
       >
         <Box
@@ -68,7 +68,7 @@ export const VoteResultsListItem = (props: VoteResultsListItemProps) => {
             alignItems: "center",
           }}
         >
-          <Box sx={{ position: 'relative', display: { xxs: 'none', md: 'contents' } }}>
+          <Box sx={{ position: 'relative' }}>
             <Avatar
               sx={{
                 width: 40,

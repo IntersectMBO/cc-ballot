@@ -29,9 +29,10 @@ export const TopResultsList = (props: TopResultsListProps) => {
       <Box
         sx={{
           display: 'flex',
-          padding: '16px 12px 8px 8px',
+          padding: { xxs: '16px 24px 8px 24px', md: '16px 12px 8px 8px' },
           gap: '8px',
           alignItems: 'center',
+          flexDirection: { xxs: 'column', md: 'row' },
         }}
       >
         <Box
