@@ -124,7 +124,7 @@ export const VoteResultsListItem = (props: VoteResultsListItemProps) => {
             {`₳ ${new Intl.NumberFormat(
               "en-US",
               { maximumFractionDigits: 2, minimumFractionDigits: 2 }
-            ).format(props.votes / 100000)}`}
+            ).format(props.votes / 1000000)}`}
           </Typography>
         </Box>
         <Box
