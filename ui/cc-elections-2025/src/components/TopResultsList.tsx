@@ -63,7 +63,6 @@ export const TopResultsList = (props: TopResultsListProps) => {
             votes={item.votes}
             votesCount={item.votesCount}
             votesDetails={item.votesDetails}
-            proofs={item.proofs}
           />
         ))}
       </Box>

@@ -145,13 +145,6 @@ export const VoteResultsListItem = (props: VoteResultsListItemProps) => {
             {`${props.votesCount} votes`}
           </Typography>
         </Box>
-        <Button
-          sx={{ flex: { xxs: '1 1 auto', md: '0 1 auto' } }}
-          variant="text"
-          onClick={handleDetails}
-        >
-          See details
-        </Button>
       </Box>
     </Box>
   )

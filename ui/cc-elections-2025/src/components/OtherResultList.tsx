@@ -55,8 +55,6 @@ export const OtherResultsList = (props: OtherResultsListProps) => {
             verified={item.verified}
             votes={item.votes}
             votesCount={item.votesCount}
-            votesDetails={item.votesDetails}
-            proofs={item.proofs}
           />
         ))}
       </Box>

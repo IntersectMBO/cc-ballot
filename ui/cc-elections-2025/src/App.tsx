@@ -26,17 +26,12 @@ export const App = () => {
 
   const now = useDateNow();
 
-  const applyEndTime = Date.parse(import.meta.env.VITE_APPLY_END_DATE) - now;
-
-  const isApplyActive = applyEndTime > 0;
-
-  const isEditActive = Date.parse(import.meta.env.VITE_EDIT_END_DATE) > now;
-
-  const isVoteActive = now >= Date.parse(import.meta.env.VITE_EDIT_END_DATE) && Date.parse(import.meta.env.VITE_VOTE_END_DATE) > now;
-
-  const isPendingResultActive = now >= Date.parse(import.meta.env.VITE_VOTE_END_DATE) && Date.parse(import.meta.env.VITE_PENDING_RESULT_END_DATE) > now;
-
-  const isResultsActive = now >= Date.parse(import.meta.env.VITE_PENDING_RESULT_END_DATE);
+  const isApplyActive = false;
+  const isEditActive = false;
+  const isVoteActive = false;
+  const isPendingResultActive = false;
+  const isResultsActive = true;
+  const applyEndTime = 0;
 
   useWalletConnectionListener();
 

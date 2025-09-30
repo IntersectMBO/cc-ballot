@@ -8,7 +8,6 @@ import Typography from "@mui/material/Typography";
 import { Button } from '@atoms';
 import { ICONS } from "@consts"
 import { useCardano, useModal } from "@context";
-import {useGetAllCandidates, useGetResults} from "@hooks";
 import { Footer } from "@organisms";
 
 import { CandidatesList } from "@/components/CandidatesList.tsx";
@@ -26,6 +25,8 @@ type HomeProps = {
   isResultsActive: boolean;
 }
 
+const SHOW_DETAILS = false;
+
 export const Home = ({ applyEndTime, isEditActive, isVoteActive, isPendingResultActive, isResultsActive }: HomeProps) => {
   const EVENT: string = import.meta.env.VITE_EVENT;
   const CATEGORY: string  = import.meta.env.VITE_CATEGORY;
@@ -40,12 +41,40 @@ export const Home = ({ applyEndTime, isEditActive, isVoteActive, isPendingResult
 
   const isApplyActive = applyEndTime > 0;
 
-  const { allCandidates, isAllCandidatesLoading } = useGetAllCandidates();
+  const allCandidates: any[] = [];
+  const isAllCandidatesLoading = false;
 
   let results;
 
   if (isResultsActive) {
-    results = useGetResults(EVENT, CATEGORY);
+    results = {
+      isLoading: false,
+      data: {
+        topVotes: [
+          {id: 13, name: "Cardano Atlantic Council", candidateType: "Consortium", votes: 2437091844446090, votesCount: 85},
+          {id: 5, name: "Tingvard", candidateType: "Consortium", votes: 2038104313727180, votesCount: 53},
+          {id: 17, name: "Eastern Cardano Council", candidateType: "Consortium", votes: 1790636842643230, votesCount: 68},
+          {id: 15, name: "KtorZ", candidateType: "Individual", votes: 1706293941979230, votesCount: 56},
+          {id: 23, name: "Ace Alliance", candidateType: "Consortium", votes: 1633525358388650, votesCount: 75},
+          {id: 19, name: "Cardano Japan Council", candidateType: "Consortium", votes: 1625533718874270, votesCount: 61},
+          {id: 16, name: "phil_uplc", candidateType: "Individual", votes: 1616883528296610, votesCount: 65},
+        ],
+        restVotes: [
+          {id: 18, name: "Adara Consortium", candidateType: "Consortium", votes: 1474973215260120, votesCount: 38},
+          {id: 6, name: "Cardano Constitutional Consortium", candidateType: "Consortium", votes: 969126575839273, votesCount: 45},
+          {id: 20, name: "Wanchain", candidateType: "Company", votes: 836685545388075, votesCount: 20},
+          {id: 22, name: "SIDAN Lab", candidateType: "Company", votes: 303866948728127, votesCount: 24},
+          {id: 21, name: "STORM Partners", candidateType: "Company", votes: 237044646097433, votesCount: 17},
+          {id: 14, name: "Cardano Ethical Oversight (CEO)", candidateType: "Consortium", votes: 70337853320572, votesCount: 5},
+          {id: 11, name: "Cardano Lover", candidateType: "Individual", votes: 63659592527165, votesCount: 2},
+          {id: 9, name: "Quality of Life World Foundation", candidateType: "Company", votes: 42920172594650, votesCount: 3},
+          {id: 4, name: "Kevin G Mohr", candidateType: "Individual", votes: 1359714504097, votesCount: 3},
+          {id: 2, name: "Emurgone", candidateType: "Individual", votes: 239223502597, votesCount: 1},
+          {id: 3, name: "Waldo", candidateType: "Individual", votes: 131117804227, votesCount: 1},
+          {id: 12, name: "FutureProduct LLC dba Futurism Products", candidateType: "Company", votes: 0, votesCount: 0},
+        ],
+      },
+    };
   }
 
   return (
@@ -57,6 +86,7 @@ export const Home = ({ applyEndTime, isEditActive, isVoteActive, isPendingResult
             <Box sx={{ padding: '24px 0' }}>
               <CCStepper activeStep={isResultsActive ? 3 : isPendingResultActive ? 2 : isVoteActive ? 1 : 0} steps={steps} />
             </Box>
+            {SHOW_DETAILS && (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px', backgroundColor: 'white', borderRadius: '16px', padding: '20px 24px 32px 24px', boxShadow: '0px 20px 25px -5px #212A3D14' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 <Typography variant="h2">Details</Typography>
@@ -124,7 +154,8 @@ export const Home = ({ applyEndTime, isEditActive, isVoteActive, isPendingResult
                 <Typography variant="body2">Guide for voting can be found <Link variant="body2" target="_blank" rel="noopener" href="https://docs.intersectmbo.org/cardano/cardano-governance/cardano-constitution/2025-constitutional-committee-elections/guide-for-voting">here</Link>.</Typography>
               </Box>
             </Box>
-
+            )}
+            
             {isVoteActive && (
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px', backgroundColor: 'white', borderRadius: '16px', padding: '20px 24px 32px 24px', boxShadow: '0px 20px 25px -5px #212A3D14', marginTop: '16px' }}>
                 <Box>
